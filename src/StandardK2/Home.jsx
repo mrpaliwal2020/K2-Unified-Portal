@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Header from "../components/Common/Header";
 import Footer from "../components/Common/Footer";
@@ -11,17 +11,29 @@ const heroContainer = {
 
 const heroItem = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: "easeOut" } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: "easeOut" },
+  },
 };
 
 const ctaItem = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 const sectionFadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: "easeOut" } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: "easeOut" },
+  },
 };
 
 const cardContainer = {
@@ -40,11 +52,26 @@ const Home = () => {
   const [subscribed, setSubscribed] = useState(false);
 
   const faqs = [
-    { q: "What is the K2 app?", a: "K2 is an all-in-one agriculture platform for farmers, workers, and FPOs. It helps manage farms, hire labor, rent machines, and access markets easily." },
-    { q: "Who can use the K2 app?", a: "Farmers, technicians, machine owners, and FPOs can all use the app. It's designed to support every stakeholder in the farming ecosystem." },
-    { q: "Is K2 available in regional languages?", a: "Yes, the app supports 10+ Indian languages and uses icon-based design. This ensures easy use for rural users with limited digital literacy." },
-    { q: "What services does K2 provide?", a: "It offers farm tracking, labor/machine booking, marketplace, and FPO tools. Everything a farmer needs is available in one platform." },
-    { q: "Is the K2 app free to use?", a: "Yes, it's free for farmers and basic users. Some premium features may be introduced in the future." },
+    {
+      q: "What is the K2 app?",
+      a: "K2 is an all-in-one agriculture platform for farmers, workers, and FPOs. It helps manage farms, hire labor, rent machines, and access markets easily.",
+    },
+    {
+      q: "Who can use the K2 app?",
+      a: "Farmers, technicians, machine owners, and FPOs can all use the app. It's designed to support every stakeholder in the farming ecosystem.",
+    },
+    {
+      q: "Is K2 available in regional languages?",
+      a: "Yes, the app supports 10+ Indian languages and uses icon-based design. This ensures easy use for rural users with limited digital literacy.",
+    },
+    {
+      q: "What services does K2 provide?",
+      a: "It offers farm tracking, labor/machine booking, marketplace, and FPO tools. Everything a farmer needs is available in one platform.",
+    },
+    {
+      q: "Is the K2 app free to use?",
+      a: "Yes, it's free for farmers and basic users. Some premium features may be introduced in the future.",
+    },
   ];
 
   const handleSubscribe = async (e) => {
@@ -61,7 +88,8 @@ const Home = () => {
     setTimeout(() => setSubscribed(false), 3000);
   };
 
-  const playstore = "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1";
+  const playstore =
+    "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1";
   const openApp = () => window.open(playstore, "_blank", "noopener,noreferrer");
 
   return (
@@ -117,12 +145,17 @@ const Home = () => {
           </motion.h1>
 
           <motion.p variants={heroItem} className="text-gray-700">
-            K2 is a unified agri-platform connecting farmers, workers, FPOs, and services in one smart ecosystem.
-            From soil to market, manage everything in your language, your way — easily, efficiently, powerfully.
+            K2 is a unified agri-platform connecting farmers, workers, FPOs, and
+            services in one smart ecosystem. From soil to market, manage
+            everything in your language, your way — easily, efficiently,
+            powerfully.
           </motion.p>
 
           <motion.div
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1 } },
+            }}
             className="flex flex-col sm:flex-row gap-4 mt-4"
           >
             <motion.button
@@ -153,7 +186,11 @@ const Home = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
         >
-          <img src="/Images/girl.png" alt="Hero Image" className="w-48 md:w-56 lg:w-64 relative lg:absolute lg:left-[70%] lg:top-[18%]" />
+          <img
+            src="/Images/girl.png"
+            alt="Hero Image"
+            className="w-48 md:w-56 lg:w-64 relative lg:absolute lg:left-[70%] lg:top-[18%]"
+          />
         </motion.div>
 
         <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-10">
@@ -180,7 +217,7 @@ const Home = () => {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
-          Elevating Excellence Beyond expectations
+          Elevating Excellence Beyond Expectations
         </motion.h1>
 
         <motion.div
@@ -191,9 +228,21 @@ const Home = () => {
           viewport={{ once: true, amount: 0.1 }}
         >
           {[
-            { img: "/Images/tracktor.webp", title: "Machine Rental", desc: "Easily find and book nearby farm machinery for rent, saving time and cost." },
-            { img: "/Images/men1.jpg", title: "Labour / Technician Hire", desc: "Hire skilled workers and technicians for farm tasks, repairs, and expert services." },
-            { img: "/Images/men2.jpg", title: "Group Farming / FPO", desc: "Collaborate with farmer groups or FPOs for shared resources, planning, and better market access." },
+            {
+              img: "/Images/tracktor.webp",
+              title: "Machine Rental",
+              desc: "Easily find and book nearby farm machinery for rent, saving time and cost.",
+            },
+            {
+              img: "/Images/men1.jpg",
+              title: "Labour / Technician Hire",
+              desc: "Hire skilled workers and technicians for farm tasks, repairs, and expert services.",
+            },
+            {
+              img: "/Images/men2.jpg",
+              title: "Group Farming / FPO",
+              desc: "Collaborate with farmer groups or FPOs for shared resources, planning, and better market access.",
+            },
           ].map((card) => (
             <motion.div
               key={card.title}
@@ -201,10 +250,19 @@ const Home = () => {
               className="bg-white shadow-md rounded-xl p-6 hover:shadow-2xl transition duration-300 text-left"
               whileHover={{ y: -5, scale: 1.02 }}
             >
-              <img src={card.img} alt={card.title} className="w-full h-48 object-cover rounded-md mb-4" />
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">{card.title}</h2>
+              <img
+                src={card.img}
+                alt={card.title}
+                className="w-full h-48 object-cover rounded-md mb-4"
+              />
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                {card.title}
+              </h2>
               <p className="text-gray-600 text-sm mb-4">{card.desc}</p>
-              <button onClick={openApp} className="inline-flex items-center text-green-700 font-semibold hover:underline">
+              <button
+                onClick={openApp}
+                className="inline-flex items-center text-green-700 font-semibold hover:underline"
+              >
                 Get the App for More
               </button>
             </motion.div>
@@ -254,7 +312,11 @@ const Home = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65, ease: "easeOut" }}
           >
-            <img src="/Images/men3.png" alt="Illustration" className="w-[400px] h-auto" />
+            <img
+              src="/Images/men3.png"
+              alt="Illustration"
+              className="w-[400px] h-auto"
+            />
           </motion.div>
 
           <motion.div
@@ -265,10 +327,26 @@ const Home = () => {
             viewport={{ once: true, amount: 0.1 }}
           >
             {[
-              { icon: "fa-tractor", title: "For Farmers", desc: "Connect, share experiences, and learn sustainable practices from fellow farming experts." },
-              { icon: "fa-people-roof", title: "For Workers", desc: "Collaborate, upskill, and support modern agriculture with shared tools and expertise." },
-              { icon: "fa-screwdriver-wrench", title: "For Technicians", desc: "Exchange knowledge, improve farming systems, and enable smart, tech-driven solutions together." },
-              { icon: "fa-lightbulb", title: "For Innovators", desc: "Bring new ideas, tools, and technology to revolutionize modern agricultural practices." },
+              {
+                icon: "fa-tractor",
+                title: "For Farmers",
+                desc: "Connect, share experiences, and learn sustainable practices from fellow farming experts.",
+              },
+              {
+                icon: "fa-people-roof",
+                title: "For Workers",
+                desc: "Collaborate, upskill, and support modern agriculture with shared tools and expertise.",
+              },
+              {
+                icon: "fa-screwdriver-wrench",
+                title: "For Technicians",
+                desc: "Exchange knowledge, improve farming systems, and enable smart, tech-driven solutions together.",
+              },
+              {
+                icon: "fa-lightbulb",
+                title: "For Innovators",
+                desc: "Bring new ideas, tools, and technology to revolutionize modern agricultural practices.",
+              },
             ].map((f) => (
               <motion.div
                 key={f.title}
@@ -277,7 +355,9 @@ const Home = () => {
                 whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
               >
                 <div className="flex items-start gap-3 mb-2">
-                  <i className={`fa-solid ${f.icon} text-green-700 text-lg mt-1`}></i>
+                  <i
+                    className={`fa-solid ${f.icon} text-green-700 text-lg mt-1`}
+                  ></i>
                   <h3 className="font-semibold text-[17px]">{f.title}</h3>
                 </div>
                 <p className="text-gray-600 text-sm leading-snug">{f.desc}</p>
@@ -327,7 +407,9 @@ const Home = () => {
               className="w-full text-left flex justify-between items-center text-lg md:text-xl font-medium text-gray-800"
             >
               <span>{faq.q}</span>
-              <i className={`fa-solid fa-chevron-down text-gray-500 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}></i>
+              <i
+                className={`fa-solid fa-chevron-down text-gray-500 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
+              ></i>
             </button>
             {openFaq === i && (
               <motion.div
@@ -368,11 +450,19 @@ const Home = () => {
         viewport={{ once: true, amount: 0.2 }}
       >
         <div className="max-w-4xl mx-auto text-center space-y-4 px-4">
-          <h5 className="text-2xl text-gray-600 font-semibold">NEVER MISS AN UPDATE!</h5>
-          <h1 className="text-3xl font-bold text-gray-800" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+          <h5 className="text-2xl text-gray-600 font-semibold">
+            NEVER MISS AN UPDATE!
+          </h5>
+          <h1
+            className="text-3xl font-bold text-gray-800"
+            style={{ fontFamily: "'Times New Roman', Times, serif" }}
+          >
             Subscribe to Our Newsletter
           </h1>
-          <form onSubmit={handleSubscribe} className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+          <form
+            onSubmit={handleSubscribe}
+            className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
+          >
             <input
               type="email"
               value={email}
