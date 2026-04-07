@@ -32,6 +32,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: "dist/"              
-          target: "/usr/share/nginx/html/" 
-          strip_components: 1           
+          source: "dist/"
+          target: "/usr/share/nginx/html/dist"
+          strip_components: 1

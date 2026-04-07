@@ -122,7 +122,7 @@ const Blog1 = () => {
               and there's barely any system for real-time communication or
               updates. This makes FPOs slow, reactive, and difficult to scale.
               With limited tools, even the most motivated FPO leaders struggle
-              to organize operations Smartly.
+              to organize Operations Smartly.
             </motion.p>
           </motion.section>
 
