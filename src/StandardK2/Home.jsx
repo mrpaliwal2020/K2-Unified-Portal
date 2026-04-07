@@ -180,7 +180,7 @@ const Home = () => {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
-          Elevating Excellence Beyond Expectations
+          Elevating Excellence Beyond expectations
         </motion.h1>
 
         <motion.div
