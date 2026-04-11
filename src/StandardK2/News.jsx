@@ -52,6 +52,46 @@ const shortUrl = (url = "") => {
   }
 };
 
+// ─── PDF Labels for Hindi / English ───────────────────────────────────────────
+const PDF_LABELS = {
+  en: {
+    masthead: "Development Connects",
+    subtitle: "Agriculture and Rural Development Daily",
+    international: "International News",
+    national: "National News — India",
+    local: "Local News",
+    policy: "Government Policies & Schemes",
+    source: "Source",
+    published: "Published",
+    page: "Page",
+    edition: "India Edition",
+    localEdition: "Local Edition",
+    govtScheme: "GOVT POLICY",
+    news: "NEWS",
+    officialSite: "[Official Site]",
+    link: "[link]",
+    footer: "Development Connects -- Agriculture & Rural Development Daily",
+  },
+  hi: {
+    masthead: "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938",
+    subtitle: "\u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
+    international: "\u0905\u0902\u0924\u0930\u094D\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
+    national: "\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930 -- \u092D\u093E\u0930\u0924",
+    local: "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
+    policy: "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E\u090F\u0902 \u0914\u0930 \u0928\u0940\u0924\u093F\u092F\u093E\u0902",
+    source: "\u0938\u094D\u0930\u094B\u0924",
+    published: "\u092A\u094D\u0930\u0915\u093E\u0936\u093F\u0924",
+    page: "\u092A\u0943\u0937\u094D\u0920",
+    edition: "\u092D\u093E\u0930\u0924 \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
+    localEdition: "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
+    govtScheme: "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E",
+    news: "\u0938\u092E\u093E\u091A\u093E\u0930",
+    officialSite: "[\u0906\u0927\u093F\u0915\u093E\u0930\u093F\u0915 \u0938\u093E\u0907\u091F]",
+    link: "[\u0932\u093F\u0902\u0915]",
+    footer: "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938 -- \u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
+  },
+};
+
 // ─── 24-Hour Cache Helpers ────────────────────────────────────────────────────
 const CACHE_KEY = "k2k_news_cache";
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
@@ -342,17 +382,42 @@ const loadJsPDF = () =>
     document.head.appendChild(s);
   });
 
-// ─── Sanitize text for jsPDF (Helvetica only supports latin-1) ───────────────
-const sanitize = (str = "") =>
-  str
-    .replace(/[\u20B9\u0024\u20AC]/g, (c) =>
-      c === "\u20B9" ? "Rs." : c === "\u20AC" ? "EUR " : "$",
-    )
+// ─── Sanitize text for jsPDF ──────────────────────────────────────────────────
+const sanitize = (str = "", lang = "en") => {
+  let r = str
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201C\u201D]/g, '"')
     .replace(/\u2014/g, "--")
-    .replace(/\u2013/g, "-")
-    .replace(/[^\x00-\xFF]/g, "");
+    .replace(/\u2013/g, "-");
+  if (lang === "en") {
+    r = r
+      .replace(/[\u20B9]/g, "Rs.")
+      .replace(/[\u20AC]/g, "EUR ")
+      .replace(/[^\x00-\xFF]/g, "");
+  }
+  return r;
+};
+
+// ─── Load Hindi Font for jsPDF ────────────────────────────────────────────────
+let _hindiFontB64 = null;
+const loadHindiFont = async (doc) => {
+  if (!_hindiFontB64) {
+    const res = await fetch("/fonts/NotoSansDevanagari-Regular.ttf");
+    if (!res.ok) throw new Error("Hindi font not found");
+    const buf = await res.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    let bin = "";
+    const CHUNK = 8192;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+    }
+    _hindiFontB64 = btoa(bin);
+  }
+  doc.addFileToVFS("NotoSans.ttf", _hindiFontB64);
+  doc.addFont("NotoSans.ttf", "NotoSans", "normal");
+  doc.addFont("NotoSans.ttf", "NotoSans", "bold");
+  doc.addFont("NotoSans.ttf", "NotoSans", "italic");
+};
 
 // ─── Download Newspaper PDF (3-column newspaper layout) ──────────────────────
 const downloadNewspaperPDF = async (allData, locationLabel) => {

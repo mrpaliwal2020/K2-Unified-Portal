@@ -181,7 +181,7 @@ const Home = () => {
 
         {/* Hero image — fade in with zoom */}
         <motion.div
-          className="mt-10 md:mt-0 relative z-10"
+          className="mt-10 md:mt-0 relative z-10 self-end md:-translate-x-16 lg:-translate-x-24 md:-translate-y-[30%]"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
@@ -189,7 +189,7 @@ const Home = () => {
           <img
             src="/Images/girl.png"
             alt="Hero Image"
-            className="w-48 md:w-56 lg:w-64 relative lg:absolute lg:left-[70%] lg:top-[18%]"
+            className="w-60 md:w-72 lg:w-80"
           />
         </motion.div>
 

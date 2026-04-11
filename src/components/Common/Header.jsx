@@ -84,17 +84,17 @@ const Header = ({
   const background = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(255,255,255,0.85)", "rgba(255,255,255,0.98)"]
+    ["rgba(255,255,255,0.85)", "rgba(255,255,255,0.98)"],
   );
   const boxShadow = useTransform(
     scrollY,
     [0, 80],
-    ["0px 1px 4px rgba(0,0,0,0.03)", "0px 4px 24px rgba(0,0,0,0.09)"]
+    ["0px 1px 4px rgba(0,0,0,0.03)", "0px 4px 24px rgba(0,0,0,0.09)"],
   );
   const backdropFilter = useTransform(
     scrollY,
     [0, 80],
-    ["blur(0px)", "blur(10px)"]
+    ["blur(0px)", "blur(10px)"],
   );
 
   React.useEffect(() => {
@@ -153,9 +153,16 @@ const Header = ({
               alt="Krishi Kutumb Logo"
               className="h-14 sm:h-16 w-auto object-contain"
             />
-            <h1 className="text-2xl sm:text-3xl font-semibold text-green-700">
-              Krishi Kutumb
-            </h1>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-green-700">
+                Krishi Kutumb
+              </h1>
+              {selectedUnit?.unitCode && (
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">
+                  {selectedUnit.unitCode}
+                </p>
+              )}
+            </div>
           </motion.div>
 
           {/* ── Center — Nav Links: staggered fade from top ── */}
