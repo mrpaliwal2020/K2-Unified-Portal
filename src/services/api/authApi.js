@@ -13,6 +13,18 @@ export const getProfile = async (mobileNumber) => {
   return null;
 };
 
+// ─── Get Unit Details ─────────────────────────────────────────────────────────
+export const getUnitDetails = async (profileId, unitCode) => {
+  const result = await apiPost(ENDPOINTS.PROFILE, OPS.UNIT_DETAILS, {
+    profileId,
+    unitCode,
+  });
+  if (result.success && result.data?.userList?.length > 0) {
+    return result.data.userList[0];
+  }
+  return null;
+};
+
 // ─── Create Profile ───────────────────────────────────────────────────────────
 export const createProfile = async (profileData) => {
   try {

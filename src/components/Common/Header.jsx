@@ -16,6 +16,7 @@ import useAuthStore from "../../store/authStore";
 import { getInitials } from "../../utils/formatters";
 import { ROUTES } from "../../routes/routeConfig";
 import useAuth from "../../hooks/useAuth";
+import { getUnitDetails } from "../../services/api/authApi";
 
 const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
@@ -77,6 +78,7 @@ const Header = ({
   const { logout } = useAuth();
   const [dropOpen, setDropOpen] = React.useState(false);
   const [resourcesOpen, setResourcesOpen] = React.useState(false);
+  const [unitData, setUnitData] = React.useState(null);
   const dropRef = React.useRef(null);
   const resourcesRef = React.useRef(null);
 
@@ -109,6 +111,22 @@ const Header = ({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  React.useEffect(() => {
+    const fetchUnitDetails = async () => {
+      if (isLoggedIn && profile?.profileId && selectedUnit?.unitCode) {
+        try {
+          const res = await getUnitDetails(profile.profileId, selectedUnit.unitCode);
+          if (res) {
+            setUnitData(res);
+          }
+        } catch (error) {
+          console.error("Failed to fetch unit details", error);
+        }
+      }
+    };
+    fetchUnitDetails();
+  }, [isLoggedIn, profile?.profileId, selectedUnit?.unitCode]);
 
   const initials = getInitials(profile?.firstName, profile?.lastName);
   const fullName =
@@ -149,13 +167,17 @@ const Header = ({
             onClick={() => navigate(ROUTES.HOME)}
           >
             <img
-              src="\Images\Krishi-Kutumb.jpeg"
-              alt="Krishi Kutumb Logo"
-              className="h-14 sm:h-16 w-auto object-contain"
+              src={
+                isLoggedIn && selectedUnit
+                  ? unitData?.unitDetails?.[0]?.iconLink || selectedUnit.imageUrl || "https://media.licdn.com/dms/image/v2/D4D22AQF10FJ5HpESzg/feedshare-shrink_800/feedshare-shrink_800/0/1682150238013?e=2147483647&v=beta&t=NXxWtzVmkHYdQfVk_KbDWwk73X2vcMlhG26ULb8LG1E"
+                  : "\\Images\\Krishi-Kutumb.jpeg"
+              }
+              alt={isLoggedIn && selectedUnit ? (unitData?.unitName || selectedUnit.unitName) : "Krishi Kutumb Logo"}
+              className={`h-14 sm:h-16 ${isLoggedIn && selectedUnit ? "w-14 sm:w-16 rounded-full object-cover" : "w-auto object-contain"}`}
             />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-green-700">
-                Krishi Kutumb
+              <h1 className={`font-semibold text-green-700 ${isLoggedIn && selectedUnit ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}>
+                {isLoggedIn && selectedUnit ? (unitData?.unitName || selectedUnit.unitName) : "Krishi Kutumb"}
               </h1>
               {selectedUnit?.unitCode && (
                 <p className="text-xs sm:text-sm text-gray-500 font-medium">
