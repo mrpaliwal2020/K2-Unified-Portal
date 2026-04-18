@@ -10,7 +10,7 @@ import {
   Loader2,
   LocateFixed,
 } from "lucide-react";
-import Header from "../components/Common/Header";
+import Header from "./StandardHeader";
 import ENDPOINTS from "../services/api/endpoints";
 
 // ─── Category Colors ──────────────────────────────────────────────────────────

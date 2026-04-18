@@ -22,6 +22,7 @@ const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
   { label: "About", path: ROUTES.ABOUT },
   { label: "News", path: ROUTES.NEWS },
+  { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
   { label: "FPO", path: ROUTES.FPO },
   { label: "Login", path: ROUTES.LOGIN },
@@ -31,6 +32,7 @@ const NAV_LINKS_POST = [
   { label: "Home", path: ROUTES.HOME },
   { label: "About", path: ROUTES.ABOUT },
   { label: "News", path: ROUTES.NEWS },
+  { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
   { label: "FPO", path: ROUTES.UNITS },
   {
@@ -78,9 +80,11 @@ const Header = ({
   const { logout } = useAuth();
   const [dropOpen, setDropOpen] = React.useState(false);
   const [resourcesOpen, setResourcesOpen] = React.useState(false);
+  const [appDropOpen, setAppDropOpen] = React.useState(false);
   const [unitData, setUnitData] = React.useState(null);
   const dropRef = React.useRef(null);
   const resourcesRef = React.useRef(null);
+  const appDropRef = React.useRef(null);
 
   const { scrollY } = useScroll();
   const background = useTransform(
@@ -106,6 +110,9 @@ const Header = ({
       }
       if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
         setResourcesOpen(false);
+      }
+      if (appDropRef.current && !appDropRef.current.contains(e.target)) {
+        setAppDropOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -246,16 +253,38 @@ const Header = ({
 
               {navLinksRest.map((link) =>
                 link.label === "Get App" ? (
-                  <motion.button
+                  <motion.div
                     key={link.label}
                     variants={navItemVariants}
-                    onClick={() => handleNavClick(link)}
-                    className="bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.97 }}
+                    className="relative"
+                    ref={appDropRef}
                   >
-                    {link.label}
-                  </motion.button>
+                    <motion.button
+                      onClick={() => setAppDropOpen(!appDropOpen)}
+                      className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      Get App
+                      <ChevronDown className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`} />
+                    </motion.button>
+                    {appDropOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+                        <button
+                          onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                          className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
+                        >
+                          Android 
+                        </button>
+                        <button
+                          onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                          className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
+                        >
+                          iOS 
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
                 ) : (
                   <motion.button
                     key={link.label}
@@ -282,20 +311,33 @@ const Header = ({
             className="flex items-center gap-3"
           >
             {!isLoggedIn ? (
-              <motion.button
-                onClick={() =>
-                  window.open(
-                    "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
-                    "_blank",
-                    "noopener,noreferrer",
-                  )
-                }
-                className="hidden md:block bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Get Started
-              </motion.button>
+              <div className="hidden md:block relative" ref={appDropRef}>
+                <motion.button
+                  onClick={() => setAppDropOpen(!appDropOpen)}
+                  className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Get Started
+                  <ChevronDown className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`} />
+                </motion.button>
+                {appDropOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+                    <button
+                      onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                      className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
+                    >
+                      Android (Google Play)
+                    </button>
+                    <button
+                      onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                      className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
+                    >
+                      iOS (App Store)
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <button className="relative hover:bg-gray-100 p-2 rounded-lg transition-all">

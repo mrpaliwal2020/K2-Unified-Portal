@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search, Phone, MapPin, ChevronDown } from "lucide-react";
+import { Input, Button } from "../../../components/ui";
 import { getUnitItems, getUnitMembers } from "../../../services/api/authApi";
 import useAuthStore from "../../../store/authStore";
 
@@ -107,12 +108,12 @@ const Store = () => {
               className="absolute left-4 top-3.5 text-slate-400"
               size={20}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search products or sellers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-12"
             />
           </div>
         </div>
@@ -213,16 +214,17 @@ const Store = () => {
                 <p className="text-sm font-bold text-slate-600 mb-3 line-clamp-2">
                   {product.description}
                 </p>
-                <button
-                  className={`w-full ${
+                <Button
+                  fullWidth
+                  className={`${
                     status === "In Stock"
                       ? "bg-emerald-600 hover:bg-emerald-700"
                       : "bg-gray-400 cursor-not-allowed"
-                  } text-white font-semibold px-4 py-2 rounded-lg transition text-sm`}
+                  } text-sm`}
                   disabled={status === "Out of Stock"}
                 >
                   {status === "In Stock" ? "Purchase" : "Out of Stock"}
-                </button>
+                </Button>
               </div>
             </div>
           );

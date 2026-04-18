@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Inbox, Clock, MapPin, Users, Tag, Phone } from "lucide-react";
+import { Input, Button } from "../../../components/ui";
 import { getUnitIssues, getUnitMembers } from "../../../services/api/authApi";
 import useAuthStore from "../../../store/authStore";
 
@@ -193,12 +194,13 @@ const IssueBox = () => {
         {/* Search and Filter Bar */}
         <div className="mb-8 space-y-4">
           <div className="flex gap-4 flex-col md:flex-row">
-            <input
+            <Input
               type="text"
               placeholder="Search issues..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-lg border-2 border-slate-200 focus:outline-none focus:border-emerald-500"
+              size="lg"
+              className="flex-1"
             />
             <div className="flex gap-2">
               <select
@@ -328,16 +330,17 @@ const IssueBox = () => {
                     )}
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => handleJoin(issue.id)}
-                    className={`ml-auto px-6 py-2 rounded-lg font-semibold transition-all ${
+                    asMotion={false}
+                    className={`ml-auto px-6 py-2 ${
                       issue.hasJoined
                         ? "bg-red-100 text-red-700 border-2 border-red-300 hover:bg-red-200"
                         : "bg-emerald-500 text-white hover:bg-emerald-600"
                     }`}
                   >
                     {issue.hasJoined ? "Leave" : "Join"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

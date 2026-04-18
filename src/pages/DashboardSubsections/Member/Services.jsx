@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Users, ChevronRight, Phone, MapPin } from "lucide-react";
+import { Button } from "../../../components/ui";
 
 const services = [
   { id: 1,  name: "Thresher",     members: 124, img: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=250&fit=crop" },
@@ -192,13 +193,15 @@ export default function Services() {
 
                   <div className="px-4 py-3">
                     {/* dynamic color — must stay inline */}
-                    <button
-                      className="w-full py-2.5 rounded-xl text-white font-bold text-[14px] transition-opacity duration-150 disabled:cursor-not-allowed"
+                    <Button
+                      fullWidth
+                      asMotion={false}
+                      className="py-2.5 text-[14px] transition-opacity duration-150 disabled:cursor-not-allowed"
                       style={{ background: m.available ? "#16a34a" : "#9ca3af" }}
                       disabled={!m.available}
                     >
                       Book
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}

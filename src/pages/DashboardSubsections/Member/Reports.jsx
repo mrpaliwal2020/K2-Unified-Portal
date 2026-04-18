@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { Button } from "../../../components/ui";
 
 // ─── PDF Section Imports ───────────────────────────────────────────────────────
 import InventoryPDF from "./Reports/InventoryPDF";
@@ -135,13 +136,14 @@ const Reports = () => {
     return (
       <div>
         {/* Back */}
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setActiveReport(null)}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 transition"
+          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6"
         >
           <ChevronRight size={18} className="rotate-180" />
           <span className="font-medium">Back to Reports</span>
-        </button>
+        </Button>
 
         {/* Header */}
         <div className={`rounded-xl border-2 ${c.card} p-6 mb-6`}>

@@ -55,7 +55,7 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
   ];
 
   return (
-    <aside className="w-64 bg-white h-[calc(100vh-64px)] fixed left-0 top-16 shadow-lg border-r border-gray-100">
+    <aside className="w-64 min-w-[16rem] bg-white h-[calc(100vh-64px)] sticky top-0 shadow-lg border-r border-gray-100">
       <nav className="p-6 space-y-3">
         {navigationItems.map((item, i) => (
           <button

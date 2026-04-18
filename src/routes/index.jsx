@@ -29,6 +29,7 @@ const Produce = lazy(
 const Home = lazy(() => import("../StandardK2/Home"));
 const About = lazy(() => import("../StandardK2/About"));
 const News = lazy(() => import("../StandardK2/News"));
+const K2Store = lazy(() => import("../StandardK2/K2Store"));
 const GetInTouch = lazy(() => import("../StandardK2/Connect"));
 const FPO = lazy(() => import("../StandardK2/FPO"));
 
@@ -44,6 +45,7 @@ const AppRoutes = () => {
       <Route path={ROUTES.HOME} element={<Home />} />
       <Route path={ROUTES.ABOUT} element={<About />} />
       <Route path={ROUTES.NEWS} element={<News />} />
+      <Route path={ROUTES.STORE} element={<K2Store />} />
       <Route path={ROUTES.GETINTOUCH} element={<GetInTouch />} />
       <Route path={ROUTES.FPO} element={<FPO />} />
       <Route path={ROUTES.TERMS} element={<Terms />} />
@@ -58,6 +60,14 @@ const AppRoutes = () => {
 
       <Route
         path={ROUTES.DASHBOARD}
+        element={
+          <ProtectedRoute>
+            <MainDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.DASHBOARD_UNIT}
         element={
           <ProtectedRoute>
             <MainDashboard />

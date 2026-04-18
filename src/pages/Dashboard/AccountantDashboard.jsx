@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import Header from "../../components/Common/Header";
+import { useState } from "react";
+import { DashboardLayout } from "../../components/ui/Layouts/DashboardLayout";
+import { Button, Card } from "../../components/ui";
+import { cn } from "../../utils/cn";
 import {
   DollarSign,
   TrendingUp,
@@ -8,18 +10,39 @@ import {
   Wallet,
   CreditCard,
   BarChart3,
-  CheckCircle,
-  Clock,
-  AlertCircle,
   ChevronRight,
   Download,
   Plus,
   IndianRupee,
-  FileText,
   User,
 } from "lucide-react";
 
-// ─── Dashboard View (unchanged) ───────────────────────────────────────────────
+// ─── KPI Card ─────────────────────────────────────────────────────────────────
+const gradientMap = {
+  green: "from-green-50 to-green-100",
+  red: "from-red-50 to-red-100",
+  blue: "from-blue-50 to-blue-100",
+  purple: "from-purple-50 to-purple-100",
+};
+const iconColorMap = {
+  green: "text-green-600",
+  red: "text-red-600",
+  blue: "text-blue-600",
+  purple: "text-purple-600",
+};
+
+const KPICard = ({ icon: Icon, label, value, subtext, color }) => (
+  <div className={cn("bg-gradient-to-br rounded-lg p-6 shadow-md", gradientMap[color])}>
+    <div className="flex justify-between items-start mb-4">
+      <p className="text-sm font-semibold text-slate-700">{label}</p>
+      <Icon size={24} className={iconColorMap[color]} />
+    </div>
+    <p className="text-2xl font-bold text-slate-900 mb-1">{value}</p>
+    <p className="text-xs text-slate-600">{subtext}</p>
+  </div>
+);
+
+// ─── Dashboard View ───────────────────────────────────────────────────────────
 const DashboardView = () => {
   const todayTransactions = [
     { id: 1, member: "John Singh", amount: 50000, product: "Wheat", type: "inward", time: "10:30 AM" },
@@ -28,61 +51,48 @@ const DashboardView = () => {
     { id: 4, member: "Priya Sharma", amount: 25000, product: "Vegetables", type: "inward", time: "03:45 PM" },
   ];
 
-  const KPICard = ({ icon: Icon, label, value, subtext, color }) => {
-    const colorMap = {
-      green: "from-green-50 to-green-100",
-      red: "from-red-50 to-red-100",
-      blue: "from-blue-50 to-blue-100",
-      purple: "from-purple-50 to-purple-100",
-    };
-    return (
-      <div className={`bg-gradient-to-br ${colorMap[color]} rounded-lg p-6 shadow-md`}>
-        <div className="flex justify-between items-start mb-4">
-          <p className="text-sm font-semibold text-slate-700">{label}</p>
-          <Icon size={24} className={`text-${color}-600`} />
-        </div>
-        <p className="text-2xl font-bold text-slate-900 mb-1">{value}</p>
-        <p className="text-xs text-slate-600">{subtext}</p>
-      </div>
-    );
-  };
-
   return (
     <div>
-      <h1 className="text-4xl font-bold text-slate-900 mb-8">Accountant Dashboard 💰</h1>
+      <h1 className="text-4xl font-bold text-slate-900 mb-8">Accountant Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <KPICard icon={Wallet} label="Cash Balance" value="₹12.5L" subtext="Available" color="green" />
-        <KPICard icon={DollarSign} label="Bank Balance" value="₹8.75L" subtext="Current Account" color="blue" />
-        <KPICard icon={TrendingUp} label="Today's Collection" value="₹3.45L" subtext="5 transactions" color="purple" />
-        <KPICard icon={TrendingDown} label="Today's Expense" value="₹78K" subtext="3 payments" color="red" />
+        <KPICard icon={Wallet}      label="Cash Balance"        value="₹12.5L"  subtext="Available"        color="green"  />
+        <KPICard icon={DollarSign}  label="Bank Balance"        value="₹8.75L"  subtext="Current Account"  color="blue"   />
+        <KPICard icon={TrendingUp}  label="Today's Collection"  value="₹3.45L"  subtext="5 transactions"   color="purple" />
+        <KPICard icon={TrendingDown} label="Today's Expense"    value="₹78K"    subtext="3 payments"       color="red"    />
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
+      <Card>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-slate-900">Today's Transactions</h2>
           <span className="text-sm font-medium text-slate-600">{todayTransactions.length} transactions</span>
         </div>
         <div className="space-y-3">
           {todayTransactions.map((txn, idx) => (
-            <div key={idx} className={`flex items-center justify-between p-4 rounded-lg border-l-4 ${txn.type === "inward" ? "bg-green-50 border-green-500" : "bg-red-50 border-red-500"}`}>
+            <div key={idx} className={cn(
+              "flex items-center justify-between p-4 rounded-lg border-l-4",
+              txn.type === "inward" ? "bg-green-50 border-green-500" : "bg-red-50 border-red-500"
+            )}>
               <div className="flex-1">
                 <p className="font-semibold text-slate-900">{txn.member || txn.vendor}</p>
                 <p className="text-sm text-slate-600">{txn.product || txn.item} • {txn.time}</p>
               </div>
-              <p className={`text-lg font-bold ${txn.type === "inward" ? "text-green-600" : "text-red-600"}`}>
+              <p className={cn("text-lg font-bold", txn.type === "inward" ? "text-green-600" : "text-red-600")}>
                 {txn.type === "inward" ? "+" : "-"}₹{(txn.amount / 1000).toFixed(0)}K
               </p>
             </div>
           ))}
         </div>
-        <button className="w-full mt-6 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-          ➕ Add Transaction
-        </button>
-      </div>
+        <Button
+          fullWidth
+          className="mt-6 py-3 bg-blue-600 hover:bg-blue-700"
+        >
+          Add Transaction
+        </Button>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <Card>
           <h2 className="text-xl font-bold text-slate-900 mb-6">Outstanding Receivables</h2>
           <div className="space-y-3">
             {[
@@ -90,27 +100,33 @@ const DashboardView = () => {
               { buyer: "Retail Shop", amount: 80000, status: "paid" },
               { buyer: "State Co-op", amount: 300000, status: "due" },
             ].map((item, idx) => (
-              <div key={idx} className={`p-4 rounded-lg border-l-4 ${item.status === "due" ? "border-yellow-500 bg-yellow-50" : "border-green-500 bg-green-50"}`}>
+              <div key={idx} className={cn(
+                "p-4 rounded-lg border-l-4",
+                item.status === "due" ? "border-yellow-500 bg-yellow-50" : "border-green-500 bg-green-50"
+              )}>
                 <div className="flex justify-between items-start mb-2">
                   <p className="font-semibold text-slate-900">{item.buyer}</p>
                   <p className="text-lg font-bold text-slate-900">₹{(item.amount / 100000).toFixed(1)}L</p>
                 </div>
                 {item.status === "due" && (
-                  <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">📞 Follow Up</button>
+                  <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Follow Up</button>
                 )}
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <Card>
           <h2 className="text-xl font-bold text-slate-900 mb-6">Outstanding Payables</h2>
           <div className="space-y-3">
             {[
               { vendor: "Seed Company", amount: 50000, status: "due-soon" },
               { vendor: "Fertilizer Supplier", amount: 100000, status: "urgent" },
             ].map((item, idx) => (
-              <div key={idx} className={`p-4 rounded-lg border-l-4 ${item.status === "urgent" ? "border-red-500 bg-red-50" : "border-yellow-500 bg-yellow-50"}`}>
+              <div key={idx} className={cn(
+                "p-4 rounded-lg border-l-4",
+                item.status === "urgent" ? "border-red-500 bg-red-50" : "border-yellow-500 bg-yellow-50"
+              )}>
                 <div className="flex justify-between items-start">
                   <p className="font-semibold text-slate-900">{item.vendor}</p>
                   <p className="text-lg font-bold text-slate-900">₹{(item.amount / 1000).toFixed(0)}K</p>
@@ -118,7 +134,7 @@ const DashboardView = () => {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
@@ -129,19 +145,25 @@ const TransactionsView = () => {
   const [filter, setFilter] = useState("all");
 
   const transactions = [
-    { id: "TXN-001", date: "14 Mar 2024", party: "John Singh", category: "Procurement", product: "Wheat", type: "inward", amount: 50000 },
-    { id: "TXN-002", date: "14 Mar 2024", party: "Ram Kumar", category: "Procurement", product: "Cotton", type: "inward", amount: 30000 },
-    { id: "TXN-003", date: "14 Mar 2024", party: "Seed Co.", category: "Input Supply", product: "Seeds", type: "outward", amount: 30000 },
-    { id: "TXN-004", date: "13 Mar 2024", party: "Priya Sharma", category: "Procurement", product: "Vegetables", type: "inward", amount: 25000 },
-    { id: "TXN-005", date: "13 Mar 2024", party: "Fertilizer Depot", category: "Input Supply", product: "Urea", type: "outward", amount: 18000 },
-    { id: "TXN-006", date: "13 Mar 2024", party: "Wholesaler A", category: "Sales", product: "Wheat Lot", type: "inward", amount: 120000 },
+    { id: "TXN-001", date: "14 Mar 2024", party: "John Singh",        category: "Procurement", product: "Wheat",            type: "inward",  amount: 50000  },
+    { id: "TXN-002", date: "14 Mar 2024", party: "Ram Kumar",         category: "Procurement", product: "Cotton",           type: "inward",  amount: 30000  },
+    { id: "TXN-003", date: "14 Mar 2024", party: "Seed Co.",          category: "Input Supply", product: "Seeds",           type: "outward", amount: 30000  },
+    { id: "TXN-004", date: "13 Mar 2024", party: "Priya Sharma",      category: "Procurement", product: "Vegetables",       type: "inward",  amount: 25000  },
+    { id: "TXN-005", date: "13 Mar 2024", party: "Fertilizer Depot",  category: "Input Supply", product: "Urea",            type: "outward", amount: 18000  },
+    { id: "TXN-006", date: "13 Mar 2024", party: "Wholesaler A",      category: "Sales",        product: "Wheat Lot",       type: "inward",  amount: 120000 },
     { id: "TXN-007", date: "12 Mar 2024", party: "Electricity Board", category: "Office Expense", product: "Electricity Bill", type: "outward", amount: 3500 },
-    { id: "TXN-008", date: "12 Mar 2024", party: "State Co-op", category: "Sales", product: "Cotton Lot", type: "inward", amount: 95000 },
+    { id: "TXN-008", date: "12 Mar 2024", party: "State Co-op",       category: "Sales",        product: "Cotton Lot",      type: "inward",  amount: 95000  },
   ];
 
   const filtered = filter === "all" ? transactions : transactions.filter(t => t.type === filter);
-  const totalIn = transactions.filter(t => t.type === "inward").reduce((s, t) => s + t.amount, 0);
+  const totalIn  = transactions.filter(t => t.type === "inward").reduce((s, t) => s + t.amount, 0);
   const totalOut = transactions.filter(t => t.type === "outward").reduce((s, t) => s + t.amount, 0);
+
+  const filters = [
+    { id: "all",     label: "All" },
+    { id: "inward",  label: "Inward ↓" },
+    { id: "outward", label: "Outward ↑" },
+  ];
 
   return (
     <div>
@@ -165,20 +187,23 @@ const TransactionsView = () => {
 
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
-          {["all", "inward", "outward"].map(f => (
-            <button key={f} onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition capitalize ${filter === f ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
-              {f === "all" ? "All" : f === "inward" ? "Inward ↓" : "Outward ↑"}
+          {filters.map(f => (
+            <button key={f.id} onClick={() => setFilter(f.id)}
+              className={cn(
+                "px-4 py-1.5 rounded-md text-sm font-medium transition capitalize",
+                filter === f.id ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-900"
+              )}>
+              {f.label}
             </button>
           ))}
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <Button size="md" className="bg-blue-600 hover:bg-blue-700 flex items-center space-x-2">
           <Plus size={15} />
           <span>Add Entry</span>
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <Card padding="none" className="overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b-2 border-slate-100">
@@ -199,11 +224,14 @@ const TransactionsView = () => {
                 <td className="py-3 px-4 font-medium text-slate-900">{t.party}</td>
                 <td className="py-3 px-4 text-slate-500">{t.category}</td>
                 <td className="py-3 px-4 text-slate-600">{t.product}</td>
-                <td className={`py-3 px-4 text-right font-bold ${t.type === "inward" ? "text-green-600" : "text-red-600"}`}>
+                <td className={cn("py-3 px-4 text-right font-bold", t.type === "inward" ? "text-green-600" : "text-red-600")}>
                   {t.type === "inward" ? "+" : "-"}₹{(t.amount / 1000).toFixed(0)}K
                 </td>
                 <td className="py-3 px-4 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${t.type === "inward" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                  <span className={cn(
+                    "px-2 py-0.5 rounded-full text-xs font-semibold",
+                    t.type === "inward" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                  )}>
                     {t.type === "inward" ? "Inward" : "Outward"}
                   </span>
                 </td>
@@ -211,7 +239,7 @@ const TransactionsView = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
     </div>
   );
 };
@@ -221,26 +249,30 @@ const InvoicesView = () => {
   const [tab, setTab] = useState("purchase");
 
   const purchaseInvoices = [
-    { no: "PI-2024-031", date: "14 Mar 2024", vendor: "Seed Company", item: "Paddy Seeds", qty: "50 kg", amount: 12500, status: "Paid" },
-    { no: "PI-2024-030", date: "13 Mar 2024", vendor: "Fertilizer Depot", item: "Urea", qty: "200 kg", amount: 18000, status: "Paid" },
-    { no: "PI-2024-029", date: "10 Mar 2024", vendor: "Agro Tools", item: "Sprayers", qty: "5 pcs", amount: 22000, status: "Pending" },
-    { no: "PI-2024-028", date: "05 Mar 2024", vendor: "Seed Company", item: "Wheat Seeds", qty: "100 kg", amount: 21000, status: "Pending" },
+    { no: "PI-2024-031", date: "14 Mar 2024", vendor: "Seed Company",      item: "Paddy Seeds",  qty: "50 kg",  amount: 12500, status: "Paid"    },
+    { no: "PI-2024-030", date: "13 Mar 2024", vendor: "Fertilizer Depot",  item: "Urea",          qty: "200 kg", amount: 18000, status: "Paid"    },
+    { no: "PI-2024-029", date: "10 Mar 2024", vendor: "Agro Tools",        item: "Sprayers",      qty: "5 pcs",  amount: 22000, status: "Pending" },
+    { no: "PI-2024-028", date: "05 Mar 2024", vendor: "Seed Company",      item: "Wheat Seeds",   qty: "100 kg", amount: 21000, status: "Pending" },
   ];
 
   const saleInvoices = [
-    { no: "SI-2024-018", date: "14 Mar 2024", buyer: "Wholesaler A", item: "Wheat", qty: "2 MT", amount: 120000, status: "Paid" },
-    { no: "SI-2024-017", date: "12 Mar 2024", buyer: "State Co-op", item: "Cotton", qty: "1.5 MT", amount: 95000, status: "Due" },
-    { no: "SI-2024-016", date: "08 Mar 2024", buyer: "Retail Shop", item: "Vegetables", qty: "500 kg", amount: 80000, status: "Paid" },
-    { no: "SI-2024-015", date: "01 Mar 2024", buyer: "Wholesaler B", item: "Soybean", qty: "3 MT", amount: 200000, status: "Due" },
+    { no: "SI-2024-018", date: "14 Mar 2024", buyer: "Wholesaler A", item: "Wheat",      qty: "2 MT",    amount: 120000, status: "Paid" },
+    { no: "SI-2024-017", date: "12 Mar 2024", buyer: "State Co-op",  item: "Cotton",     qty: "1.5 MT",  amount: 95000,  status: "Due"  },
+    { no: "SI-2024-016", date: "08 Mar 2024", buyer: "Retail Shop",  item: "Vegetables", qty: "500 kg",  amount: 80000,  status: "Paid" },
+    { no: "SI-2024-015", date: "01 Mar 2024", buyer: "Wholesaler B", item: "Soybean",    qty: "3 MT",    amount: 200000, status: "Due"  },
   ];
 
   const data = tab === "purchase" ? purchaseInvoices : saleInvoices;
-
   const statusColor = {
-    Paid: "bg-green-100 text-green-700",
+    Paid:    "bg-green-100 text-green-700",
     Pending: "bg-yellow-100 text-yellow-700",
-    Due: "bg-red-100 text-red-700",
+    Due:     "bg-red-100 text-red-700",
   };
+
+  const tabs = [
+    { id: "purchase", label: "Purchase Invoices" },
+    { id: "sale",     label: "Sale Invoices" },
+  ];
 
   return (
     <div>
@@ -249,20 +281,23 @@ const InvoicesView = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
-          {[{ id: "purchase", label: "Purchase Invoices" }, { id: "sale", label: "Sale Invoices" }].map(t => (
+          {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${tab === t.id ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+              className={cn(
+                "px-4 py-1.5 rounded-md text-sm font-medium transition",
+                tab === t.id ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-900"
+              )}>
               {t.label}
             </button>
           ))}
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <Button size="md" className="bg-blue-600 hover:bg-blue-700 flex items-center space-x-2">
           <Plus size={15} />
           <span>New Invoice</span>
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <Card padding="none" className="overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b-2 border-slate-100">
@@ -286,7 +321,7 @@ const InvoicesView = () => {
                 <td className="py-3 px-4 text-slate-500">{inv.qty}</td>
                 <td className="py-3 px-4 text-right font-bold text-slate-900">₹{(inv.amount / 1000).toFixed(0)}K</td>
                 <td className="py-3 px-4 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusColor[inv.status]}`}>{inv.status}</span>
+                  <span className={cn("px-2 py-0.5 rounded-full text-xs font-semibold", statusColor[inv.status])}>{inv.status}</span>
                 </td>
                 <td className="py-3 px-4 text-center">
                   <button className="p-1.5 hover:bg-slate-100 rounded-lg transition">
@@ -297,7 +332,7 @@ const InvoicesView = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
     </div>
   );
 };
@@ -306,58 +341,60 @@ const InvoicesView = () => {
 const ReportsView = () => {
   const [activeReport, setActiveReport] = useState(null);
 
-  // Annex-D data
   const expenditureRows = [
-    { sr: "1", label: "Salary – CEO/Manager", amount: 35000 },
-    { sr: "2", label: "Salary – Accountant", amount: 20000 },
-    { sr: "", label: "Sub-Total (Salaries)", amount: 55000, bold: true },
-    { sr: "3", label: "Office Rent", amount: 8000 },
-    { sr: "4a", label: "Electricity Charges", amount: 2200 },
-    { sr: "4b", label: "Telephone Charges", amount: 1300 },
-    { sr: "5a", label: "Travel Cost", amount: 3500 },
-    { sr: "5b", label: "Meeting Cost", amount: 1500 },
-    { sr: "6a/b/c", label: "Stationery, Cleaning, Misc.", amount: 2500 },
-    { sr: "", label: "Sub-Total (Recurring)", amount: 19000, bold: true },
-    { sr: "7", label: "One-time Registration Charges", amount: 0 },
-    { sr: "8", label: "One-time Equipment/Furniture", amount: 0 },
-    { sr: "", label: "GRAND TOTAL", amount: 74000, bold: true, grand: true },
+    { sr: "1",      label: "Salary – CEO/Manager",          amount: 35000 },
+    { sr: "2",      label: "Salary – Accountant",           amount: 20000 },
+    { sr: "",       label: "Sub-Total (Salaries)",          amount: 55000, bold: true },
+    { sr: "3",      label: "Office Rent",                   amount: 8000  },
+    { sr: "4a",     label: "Electricity Charges",           amount: 2200  },
+    { sr: "4b",     label: "Telephone Charges",             amount: 1300  },
+    { sr: "5a",     label: "Travel Cost",                   amount: 3500  },
+    { sr: "5b",     label: "Meeting Cost",                  amount: 1500  },
+    { sr: "6a/b/c", label: "Stationery, Cleaning, Misc.",   amount: 2500  },
+    { sr: "",       label: "Sub-Total (Recurring)",         amount: 19000, bold: true },
+    { sr: "7",      label: "One-time Registration Charges", amount: 0     },
+    { sr: "8",      label: "One-time Equipment/Furniture",  amount: 0     },
+    { sr: "",       label: "GRAND TOTAL",                   amount: 74000, bold: true, grand: true },
   ];
 
-  // Salary records
   const salaryRecords = [
     { month: "Mar 2024", ceo: 35000, accountant: 20000, status: "Pending" },
-    { month: "Feb 2024", ceo: 35000, accountant: 20000, status: "Paid" },
-    { month: "Jan 2024", ceo: 35000, accountant: 20000, status: "Paid" },
-    { month: "Dec 2023", ceo: 32000, accountant: 18000, status: "Paid" },
-    { month: "Nov 2023", ceo: 32000, accountant: 18000, status: "Paid" },
-    { month: "Oct 2023", ceo: 32000, accountant: 18000, status: "Paid" },
+    { month: "Feb 2024", ceo: 35000, accountant: 20000, status: "Paid"    },
+    { month: "Jan 2024", ceo: 35000, accountant: 20000, status: "Paid"    },
+    { month: "Dec 2023", ceo: 32000, accountant: 18000, status: "Paid"    },
+    { month: "Nov 2023", ceo: 32000, accountant: 18000, status: "Paid"    },
+    { month: "Oct 2023", ceo: 32000, accountant: 18000, status: "Paid"    },
   ];
 
   const reports = [
-    { id: "annex-d", title: "Annex-D: Expenditure Statement + UC", subtitle: "Half-yearly — submit to CBBO → NCDC/NABARD", icon: IndianRupee, color: "green", freq: "Half-Yearly" },
-    { id: "salary", title: "Salary Register", subtitle: "CEO + Accountant monthly salary records", icon: User, color: "blue", freq: "Monthly" },
-    { id: "bank-reconciliation", title: "Bank Reconciliation", subtitle: "Cash book vs bank statement matching", icon: Wallet, color: "purple", freq: "Monthly" },
-    { id: "pl", title: "P&L Statement", subtitle: "Revenue, expenses, net profit summary", icon: BarChart3, color: "orange", freq: "Monthly" },
+    { id: "annex-d",           title: "Annex-D: Expenditure Statement + UC", subtitle: "Half-yearly — submit to CBBO → NCDC/NABARD", icon: IndianRupee, color: "green",  freq: "Half-Yearly" },
+    { id: "salary",            title: "Salary Register",                      subtitle: "CEO + Accountant monthly salary records",     icon: User,        color: "blue",   freq: "Monthly"     },
+    { id: "bank-reconciliation", title: "Bank Reconciliation",                subtitle: "Cash book vs bank statement matching",         icon: Wallet,      color: "purple", freq: "Monthly"     },
+    { id: "pl",                title: "P&L Statement",                        subtitle: "Revenue, expenses, net profit summary",        icon: BarChart3,   color: "orange", freq: "Monthly"     },
   ];
 
   const colorMap = {
-    green: { card: "border-green-200 bg-green-50", badge: "bg-green-100 text-green-700", icon: "text-green-600", btn: "bg-green-600 hover:bg-green-700" },
-    blue: { card: "border-blue-200 bg-blue-50", badge: "bg-blue-100 text-blue-700", icon: "text-blue-600", btn: "bg-blue-600 hover:bg-blue-700" },
-    purple: { card: "border-purple-200 bg-purple-50", badge: "bg-purple-100 text-purple-700", icon: "text-purple-600", btn: "bg-purple-600 hover:bg-purple-700" },
-    orange: { card: "border-orange-200 bg-orange-50", badge: "bg-orange-100 text-orange-700", icon: "text-orange-600", btn: "bg-orange-600 hover:bg-orange-700" },
+    green:  { card: "border-green-200 bg-green-50",   badge: "bg-green-100 text-green-700",   icon: "text-green-600"  },
+    blue:   { card: "border-blue-200 bg-blue-50",     badge: "bg-blue-100 text-blue-700",     icon: "text-blue-600"   },
+    purple: { card: "border-purple-200 bg-purple-50", badge: "bg-purple-100 text-purple-700", icon: "text-purple-600" },
+    orange: { card: "border-orange-200 bg-orange-50", badge: "bg-orange-100 text-orange-700", icon: "text-orange-600" },
   };
+
+  const BackButton = ({ onClick }) => (
+    <button onClick={onClick} className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6 transition">
+      <ChevronRight size={18} className="rotate-180" />
+      <span className="font-medium">Back to Reports</span>
+    </button>
+  );
 
   if (activeReport === "annex-d") {
     return (
       <div>
-        <button onClick={() => setActiveReport(null)} className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6 transition">
-          <ChevronRight size={18} className="rotate-180" />
-          <span className="font-medium">Back to Reports</span>
-        </button>
+        <BackButton onClick={() => setActiveReport(null)} />
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Annex-D: Expenditure Statement + UC</h2>
         <p className="text-slate-500 mb-6">Period: Oct 2023 – Mar 2024 (H2)</p>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+        <Card padding="none" className="overflow-hidden mb-6">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 border-b-2 border-slate-100">
@@ -368,17 +405,20 @@ const ReportsView = () => {
             </thead>
             <tbody>
               {expenditureRows.map((row, i) => (
-                <tr key={i} className={`border-b border-slate-100 ${row.grand ? "bg-slate-100" : row.bold ? "bg-slate-50" : "hover:bg-slate-50"}`}>
+                <tr key={i} className={cn(
+                  "border-b border-slate-100",
+                  row.grand ? "bg-slate-100" : row.bold ? "bg-slate-50" : "hover:bg-slate-50"
+                )}>
                   <td className="py-3 px-5 text-slate-400 font-mono text-xs">{row.sr}</td>
-                  <td className={`py-3 px-5 ${row.bold ? "font-bold text-slate-900" : "text-slate-700"}`}>{row.label}</td>
-                  <td className={`py-3 px-5 text-right ${row.bold ? "font-bold text-slate-900" : "text-slate-700"}`}>
+                  <td className={cn("py-3 px-5", row.bold ? "font-bold text-slate-900" : "text-slate-700")}>{row.label}</td>
+                  <td className={cn("py-3 px-5 text-right", row.bold ? "font-bold text-slate-900" : "text-slate-700")}>
                     {row.amount > 0 ? `₹${row.amount.toLocaleString()}` : "—"}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
 
         <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-5 mb-6">
           <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-3">Utilization Certificate (UC)</p>
@@ -391,10 +431,10 @@ const ReportsView = () => {
           </div>
         </div>
 
-        <button className="flex items-center space-x-2 px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">
+        <Button variant="primary" className="flex items-center space-x-2 px-5 py-2.5">
           <Download size={15} />
           <span>Generate PDF</span>
-        </button>
+        </Button>
       </div>
     );
   }
@@ -402,13 +442,9 @@ const ReportsView = () => {
   if (activeReport === "salary") {
     return (
       <div>
-        <button onClick={() => setActiveReport(null)} className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6 transition">
-          <ChevronRight size={18} className="rotate-180" />
-          <span className="font-medium">Back to Reports</span>
-        </button>
+        <BackButton onClick={() => setActiveReport(null)} />
         <h2 className="text-2xl font-bold text-slate-900 mb-6">Salary Register</h2>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <Card padding="none" className="overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 border-b-2 border-slate-100">
@@ -427,7 +463,10 @@ const ReportsView = () => {
                   <td className="py-3 px-5 text-right text-slate-700">₹{r.accountant.toLocaleString()}</td>
                   <td className="py-3 px-5 text-right font-bold text-slate-900">₹{(r.ceo + r.accountant).toLocaleString()}</td>
                   <td className="py-3 px-5 text-center">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${r.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-semibold",
+                      r.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
+                    )}>
                       {r.status}
                     </span>
                   </td>
@@ -435,79 +474,84 @@ const ReportsView = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       </div>
     );
   }
 
   if (activeReport === "bank-reconciliation") {
     const bankItems = [
-      { label: "Opening Balance (Cash Book)", amount: "₹8,20,000", type: "neutral" },
-      { label: "Add: Receipts this month", amount: "+₹3,20,000", type: "green" },
-      { label: "Less: Payments this month", amount: "-₹74,000", type: "red" },
-      { label: "Closing Balance (Cash Book)", amount: "₹8,66,000", type: "bold" },
-      { label: "Bank Statement Balance", amount: "₹8,75,000", type: "bold" },
-      { label: "Difference (Outstanding cheque)", amount: "₹9,000", type: "yellow" },
+      { label: "Opening Balance (Cash Book)",  amount: "₹8,20,000",  type: "neutral" },
+      { label: "Add: Receipts this month",      amount: "+₹3,20,000", type: "green"   },
+      { label: "Less: Payments this month",     amount: "-₹74,000",   type: "red"     },
+      { label: "Closing Balance (Cash Book)",   amount: "₹8,66,000",  type: "bold"    },
+      { label: "Bank Statement Balance",        amount: "₹8,75,000",  type: "bold"    },
+      { label: "Difference (Outstanding cheque)", amount: "₹9,000",   type: "yellow"  },
     ];
     return (
       <div>
-        <button onClick={() => setActiveReport(null)} className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6 transition">
-          <ChevronRight size={18} className="rotate-180" />
-          <span className="font-medium">Back to Reports</span>
-        </button>
+        <BackButton onClick={() => setActiveReport(null)} />
         <h2 className="text-2xl font-bold text-slate-900 mb-6">Bank Reconciliation — Mar 2024</h2>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-lg">
+        <Card className="max-w-lg">
           {bankItems.map((item, i) => (
-            <div key={i} className={`flex justify-between py-3 border-b border-slate-100 ${item.type === "bold" ? "font-bold text-slate-900" : "text-slate-700"}`}>
+            <div key={i} className={cn(
+              "flex justify-between py-3 border-b border-slate-100",
+              item.type === "bold" ? "font-bold text-slate-900" : "text-slate-700"
+            )}>
               <span className="text-sm">{item.label}</span>
-              <span className={`text-sm font-semibold ${item.type === "green" ? "text-green-600" : item.type === "red" ? "text-red-600" : item.type === "yellow" ? "text-orange-500" : "text-slate-900"}`}>
+              <span className={cn(
+                "text-sm font-semibold",
+                item.type === "green" ? "text-green-600" : item.type === "red" ? "text-red-600" : item.type === "yellow" ? "text-orange-500" : "text-slate-900"
+              )}>
                 {item.amount}
               </span>
             </div>
           ))}
-        </div>
+        </Card>
       </div>
     );
   }
 
   if (activeReport === "pl") {
     const plData = [
-      { label: "Sales Revenue", amount: 320000, type: "income" },
-      { label: "Other Income", amount: 15000, type: "income" },
-      { label: "Total Income", amount: 335000, bold: true },
-      { label: "Procurement Cost", amount: 210000, type: "expense" },
-      { label: "Salary – CEO", amount: 35000, type: "expense" },
+      { label: "Sales Revenue",     amount: 320000, type: "income"  },
+      { label: "Other Income",      amount: 15000,  type: "income"  },
+      { label: "Total Income",      amount: 335000, bold: true      },
+      { label: "Procurement Cost",  amount: 210000, type: "expense" },
+      { label: "Salary – CEO",      amount: 35000,  type: "expense" },
       { label: "Salary – Accountant", amount: 20000, type: "expense" },
-      { label: "Office & Misc.", amount: 19000, type: "expense" },
-      { label: "Total Expenses", amount: 284000, bold: true },
-      { label: "Net Profit", amount: 51000, bold: true, grand: true },
+      { label: "Office & Misc.",    amount: 19000,  type: "expense" },
+      { label: "Total Expenses",    amount: 284000, bold: true      },
+      { label: "Net Profit",        amount: 51000,  bold: true, grand: true },
     ];
     return (
       <div>
-        <button onClick={() => setActiveReport(null)} className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6 transition">
-          <ChevronRight size={18} className="rotate-180" />
-          <span className="font-medium">Back to Reports</span>
-        </button>
+        <BackButton onClick={() => setActiveReport(null)} />
         <h2 className="text-2xl font-bold text-slate-900 mb-6">P&L Statement — Mar 2024</h2>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-lg">
+        <Card padding="none" className="overflow-hidden max-w-lg">
           <table className="w-full text-sm">
             <tbody>
               {plData.map((row, i) => (
-                <tr key={i} className={`border-b border-slate-100 ${row.grand ? "bg-emerald-50" : row.bold ? "bg-slate-50" : "hover:bg-slate-50"}`}>
-                  <td className={`py-3 px-5 ${row.bold ? "font-bold text-slate-900" : "text-slate-600"}`}>{row.label}</td>
-                  <td className={`py-3 px-5 text-right font-semibold ${row.grand ? "text-emerald-600 font-bold" : row.type === "expense" ? "text-red-600" : row.type === "income" ? "text-green-600" : "text-slate-900"}`}>
+                <tr key={i} className={cn(
+                  "border-b border-slate-100",
+                  row.grand ? "bg-emerald-50" : row.bold ? "bg-slate-50" : "hover:bg-slate-50"
+                )}>
+                  <td className={cn("py-3 px-5", row.bold ? "font-bold text-slate-900" : "text-slate-600")}>{row.label}</td>
+                  <td className={cn(
+                    "py-3 px-5 text-right font-semibold",
+                    row.grand ? "text-emerald-600 font-bold" : row.type === "expense" ? "text-red-600" : row.type === "income" ? "text-green-600" : "text-slate-900"
+                  )}>
                     ₹{row.amount.toLocaleString()}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       </div>
     );
   }
 
-  // Reports list
   return (
     <div>
       <h1 className="text-4xl font-bold text-slate-900 mb-2">Reports</h1>
@@ -518,10 +562,10 @@ const ReportsView = () => {
           const Icon = r.icon;
           return (
             <div key={r.id} onClick={() => setActiveReport(r.id)}
-              className={`border-2 ${c.card} rounded-xl p-6 cursor-pointer hover:shadow-md transition group`}>
+              className={cn("border-2 rounded-xl p-6 cursor-pointer hover:shadow-md transition group", c.card)}>
               <div className="flex items-start justify-between mb-3">
                 <Icon size={24} className={c.icon} />
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${c.badge}`}>{r.freq}</span>
+                <span className={cn("px-3 py-1 rounded-full text-xs font-semibold", c.badge)}>{r.freq}</span>
               </div>
               <h3 className="font-bold text-slate-900 text-base mb-1">{r.title}</h3>
               <p className="text-slate-500 text-sm mb-4">{r.subtitle}</p>
@@ -542,46 +586,53 @@ const AccountantDashboard = ({ onSwitchRole }) => {
   const [activePage, setActivePage] = useState("dashboard");
 
   const navItems = [
-    { id: "dashboard", icon: Home, label: "Dashboard" },
-    { id: "transactions", icon: Wallet, label: "Transactions" },
-    { id: "invoices", icon: CreditCard, label: "Invoices" },
-    { id: "reports", icon: BarChart3, label: "Reports" },
+    { id: "dashboard",    icon: Home,       label: "Dashboard"    },
+    { id: "transactions", icon: Wallet,     label: "Transactions" },
+    { id: "invoices",     icon: CreditCard, label: "Invoices"     },
+    { id: "reports",      icon: BarChart3,  label: "Reports"      },
   ];
 
   const renderPage = () => {
     switch (activePage) {
-      case "dashboard": return <DashboardView />;
+      case "dashboard":    return <DashboardView />;
       case "transactions": return <TransactionsView />;
-      case "invoices": return <InvoicesView />;
-      case "reports": return <ReportsView />;
-      default: return <DashboardView />;
+      case "invoices":     return <InvoicesView />;
+      case "reports":      return <ReportsView />;
+      default:             return <DashboardView />;
     }
   };
 
+  const sidebarContent = (
+    <aside className="w-64 min-w-[16rem] bg-white h-[calc(100vh-64px)] sticky top-0 shadow-lg border-r border-gray-100">
+      <nav className="p-6 space-y-3">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActivePage(item.id)}
+            className={cn(
+              "w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-all",
+              activePage === item.id
+                ? "bg-emerald-50 text-emerald-700"
+                : "text-gray-700 hover:bg-green-50 hover:text-emerald-600"
+            )}
+          >
+            <item.icon
+              size={20}
+              className={cn(activePage === item.id ? "text-emerald-600" : "text-gray-600")}
+            />
+            <span className={cn("font-medium text-sm", activePage === item.id && "text-emerald-700")}>
+              {item.label}
+            </span>
+          </button>
+        ))}
+      </nav>
+    </aside>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Header onSwitchRole={onSwitchRole} />
-      <div className="flex">
-        <aside className="w-64 bg-white h-[calc(100vh-64px)] fixed left-0 top-16 shadow-lg border-r border-gray-100">
-          <nav className="p-6 space-y-3">
-            {navItems.map((item) => (
-              <button key={item.id} onClick={() => setActivePage(item.id)}
-                className={`w-full flex items-center space-x-3 px-4 py-2 rounded-lg transition-all ${
-                  activePage === item.id ? "bg-emerald-50 text-emerald-700" : "text-gray-700 hover:bg-green-50 hover:text-emerald-600"
-                }`}>
-                <item.icon size={20} className={activePage === item.id ? "text-emerald-600" : "text-gray-600"} />
-                <span className={`font-medium text-sm ${activePage === item.id ? "text-emerald-700" : ""}`}>{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </aside>
-        <main className="ml-64 flex-1">
-          <div className="p-8 max-w-7xl">
-            {renderPage()}
-          </div>
-        </main>
-      </div>
-    </div>
+    <DashboardLayout onSwitchRole={onSwitchRole} sidebar={sidebarContent} contentClassName="p-8">
+      {renderPage()}
+    </DashboardLayout>
   );
 };
 

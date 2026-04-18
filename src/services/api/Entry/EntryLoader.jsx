@@ -6,7 +6,7 @@ import { ROUTES } from "../../../routes/routeConfig";
 
 const EntryLoader = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, role } = useAuthStore();
+  const { isLoggedIn, role, selectedUnit } = useAuthStore();
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
@@ -16,7 +16,10 @@ const EntryLoader = () => {
     const t4 = setTimeout(() => setPhase(4), 1400);
     const t5 = setTimeout(() => {
       if (isLoggedIn && role) {
-        navigate(ROUTES.DASHBOARD, { replace: true });
+        const dest = selectedUnit?.unitCode
+          ? `/dashboard/${selectedUnit.unitCode}`
+          : ROUTES.DASHBOARD;
+        navigate(dest, { replace: true });
       } else {
         navigate(ROUTES.HOME, { replace: true });
       }

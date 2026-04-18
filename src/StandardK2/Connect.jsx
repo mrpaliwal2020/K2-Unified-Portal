@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Header from "../components/Common/Header";
+import Header from "./StandardHeader";
 import Footer from "../components/Common/Footer";
 
 const GetInTouch = () => {

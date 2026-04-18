@@ -6,6 +6,7 @@ export const ROUTES = {
   REGISTER: "/auth/register",
   UNITS: "/auth/units",
   DASHBOARD: "/dashboard",
+  DASHBOARD_UNIT: "/dashboard/:unitCode",
   MEMBER_PROFILE: "/dashboard/members/:id",
 
   // ── Dashboard Subsections ─────────────────────────────────────────────────
@@ -19,6 +20,7 @@ export const ROUTES = {
   FPO: "/fpo",
   TERMS: "/terms",
   CANCELLATION: "/cancellation",
+  STORE: "/store",
   BLOG: "/blog",
   BLOG_1: "/blog/1",
   BLOG_2: "/blog/2",

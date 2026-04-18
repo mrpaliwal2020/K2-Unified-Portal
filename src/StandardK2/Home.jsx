@@ -1,78 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Header from "../components/Common/Header";
+import Header from "./StandardHeader";
 import Footer from "../components/Common/Footer";
 
-const heroContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
-};
-
-const heroItem = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, ease: "easeOut" },
-  },
-};
-
-const ctaItem = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-};
-
-const sectionFadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, ease: "easeOut" },
-  },
-};
-
-const cardContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12 } },
-};
-
-const cardItem = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-};
+import { VARIANTS, TRANSITIONS, PRESETS } from "../animations";
+import { CONTENT, ASSETS } from "../constants";
+import { Button, Card, Input, AccordionItem } from "../components/ui";
 
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(null);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const faqs = [
-    {
-      q: "What is the K2 app?",
-      a: "K2 is an all-in-one agriculture platform for farmers, workers, and FPOs. It helps manage farms, hire labor, rent machines, and access markets easily.",
-    },
-    {
-      q: "Who can use the K2 app?",
-      a: "Farmers, technicians, machine owners, and FPOs can all use the app. It's designed to support every stakeholder in the farming ecosystem.",
-    },
-    {
-      q: "Is K2 available in regional languages?",
-      a: "Yes, the app supports 10+ Indian languages and uses icon-based design. This ensures easy use for rural users with limited digital literacy.",
-    },
-    {
-      q: "What services does K2 provide?",
-      a: "It offers farm tracking, labor/machine booking, marketplace, and FPO tools. Everything a farmer needs is available in one platform.",
-    },
-    {
-      q: "Is the K2 app free to use?",
-      a: "Yes, it's free for farmers and basic users. Some premium features may be introduced in the future.",
-    },
-  ];
+  const faqs = CONTENT.faqs.items;
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -88,67 +29,63 @@ const Home = () => {
     setTimeout(() => setSubscribed(false), 3000);
   };
 
-  const playstore =
-    "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1";
-  const openApp = () => window.open(playstore, "_blank", "noopener,noreferrer");
+  const openApp = () => window.open(CONTENT.common.playStoreLink, "_blank", "noopener,noreferrer");
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={TRANSITIONS.default}
     >
       <Header />
 
       {/* ── Hero Section ── */}
       <main
         className="flex flex-col md:flex-row items-center justify-between px-6 md:px-16 pt-32 pb-16 md:py-16 bg-cover bg-center relative"
-        style={{ backgroundImage: "url('/Images/bg.png')", minHeight: "100vh" }}
+        style={{ backgroundImage: `url('${ASSETS.images.heroBg}')`, minHeight: "100vh" }}
       >
         {/* Hero background image zoom-in */}
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/Images/bg.png')" }}
+          style={{ backgroundImage: `url('${ASSETS.images.heroBg}')` }}
           initial={{ scale: 1.05, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={TRANSITIONS.slow}
         />
 
         {/* Hero text content — staggered children */}
         <motion.div
           className="text-center md:text-left max-w-xl space-y-6 relative z-10"
-          variants={heroContainer}
+          variants={VARIANTS.heroContainer}
           initial="hidden"
           animate="visible"
         >
-          <motion.button
-            variants={heroItem}
-            className="bg-white text-black px-5 py-1 rounded-xl shadow hover:bg-green-700 hover:text-white transition"
+          <Button
+            asMotion
+            variants={VARIANTS.heroItem}
+            variant="secondary"
+            size="sm"
+            className="rounded-xl px-5 py-1 text-black font-normal border border-transparent"
           >
-            Trusted by Thousands!
-          </motion.button>
+            {CONTENT.hero.badge}
+          </Button>
 
           <motion.h1
-            variants={heroItem}
-            className="text-5xl font-semibold leading-tight"
-            style={{ fontFamily: "'Times New Roman', Times, serif" }}
+            variants={VARIANTS.heroItem}
+            className="text-5xl font-semibold leading-tight font-serif"
           >
-            Rooted in Tradition.
+            {CONTENT.hero.titleLine1}
           </motion.h1>
 
           <motion.h1
-            variants={heroItem}
-            className="text-5xl font-semibold leading-tight"
-            style={{ fontFamily: "'Times New Roman', Times, serif" }}
+            variants={VARIANTS.heroItem}
+            className="text-5xl font-semibold leading-tight font-serif"
           >
-            Powered by <span className="text-green-600">Innovation</span>
+            {CONTENT.hero.titleLine2.split('Innovation')[0]}<span className="text-green-600">Innovation</span>{CONTENT.hero.titleLine2.split('Innovation')[1]}
           </motion.h1>
 
-          <motion.p variants={heroItem} className="text-gray-700">
-            K2 is a unified agri-platform connecting farmers, workers, FPOs, and
-            services in one smart ecosystem. From soil to market, manage
-            everything in your language, your way — easily, efficiently,
-            powerfully.
+          <motion.p variants={VARIANTS.heroItem} className="text-gray-700">
+            {CONTENT.hero.description}
           </motion.p>
 
           <motion.div
@@ -158,24 +95,25 @@ const Home = () => {
             }}
             className="flex flex-col sm:flex-row gap-4 mt-4"
           >
-            <motion.button
-              variants={ctaItem}
+            <Button
+              asMotion
+              variants={VARIANTS.ctaItem}
               onClick={openApp}
-              className="bg-green-700 text-white px-6 py-2 rounded-xl hover:bg-green-800 transition"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={PRESETS.hover.scaleSlight}
+              whileTap={PRESETS.tap.scaleDown}
             >
-              Get Started
-            </motion.button>
-            <motion.button
-              variants={ctaItem}
+              {CONTENT.hero.primaryButton}
+            </Button>
+            <Button
+              asMotion
+              variants={VARIANTS.ctaItem}
+              variant="ghost"
               onClick={openApp}
-              className="text-green-900 px-6 py-2 rounded-xl hover:bg-green-800 hover:text-white transition"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={PRESETS.hover.scaleSlight}
+              whileTap={PRESETS.tap.scaleDown}
             >
-              Learn more
-            </motion.button>
+              {CONTENT.hero.secondaryButton}
+            </Button>
           </motion.div>
         </motion.div>
 
@@ -184,10 +122,10 @@ const Home = () => {
           className="mt-10 md:mt-0 relative z-10 self-end md:-translate-x-16 lg:-translate-x-24 md:-translate-y-[30%]"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          transition={{ ...TRANSITIONS.slow, delay: 0.3 }}
         >
           <img
-            src="/Images/girl.png"
+            src={ASSETS.images.heroGirl}
             alt="Hero Image"
             className="w-60 md:w-72 lg:w-80"
           />
@@ -202,53 +140,41 @@ const Home = () => {
       <section className="text-center py-16 px-4 bg-gray-50">
         <motion.h5
           className="text-green-700 font-semibold mb-2 uppercase tracking-wide"
-          variants={sectionFadeUp}
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          Services
+          {CONTENT.services.subtitle}
         </motion.h5>
         <motion.h1
-          className="text-3xl md:text-4xl font-semibold pb-10"
-          style={{ fontFamily: "'Times New Roman', Times, serif" }}
-          variants={sectionFadeUp}
+          className="text-3xl md:text-4xl font-semibold pb-10 font-serif"
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          Elevating Excellence Beyond Expectations
+          {CONTENT.services.title}
         </motion.h1>
 
         <motion.div
           className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-10"
-          variants={cardContainer}
+          variants={VARIANTS.cardContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
+          viewport={PRESETS.viewportSmall}
         >
           {[
-            {
-              img: "/Images/tracktor.webp",
-              title: "Machine Rental",
-              desc: "Easily find and book nearby farm machinery for rent, saving time and cost.",
-            },
-            {
-              img: "/Images/men1.jpg",
-              title: "Labour / Technician Hire",
-              desc: "Hire skilled workers and technicians for farm tasks, repairs, and expert services.",
-            },
-            {
-              img: "/Images/men2.jpg",
-              title: "Group Farming / FPO",
-              desc: "Collaborate with farmer groups or FPOs for shared resources, planning, and better market access.",
-            },
+            { img: ASSETS.images.tractor, ...CONTENT.services.cards[0] },
+            { img: ASSETS.images.men1, ...CONTENT.services.cards[1] },
+            { img: ASSETS.images.men2, ...CONTENT.services.cards[2] },
           ].map((card) => (
-            <motion.div
+            <Card
+              asMotion
               key={card.title}
-              variants={cardItem}
-              className="bg-white shadow-md rounded-xl p-6 hover:shadow-2xl transition duration-300 text-left"
-              whileHover={{ y: -5, scale: 1.02 }}
+              variants={VARIANTS.cardItem}
+              className="text-left"
+              whileHover={PRESETS.hover.lift}
             >
               <img
                 src={card.img}
@@ -263,45 +189,46 @@ const Home = () => {
                 onClick={openApp}
                 className="inline-flex items-center text-green-700 font-semibold hover:underline"
               >
-                Get the App for More
+                {CONTENT.common.getAppText}
               </button>
-            </motion.div>
+            </Card>
           ))}
         </motion.div>
 
-        <motion.button
+        <Button
+          asMotion
           onClick={openApp}
-          className="bg-green-700 text-white px-8 py-2 rounded-full text-sm font-semibold hover:bg-green-800 transition"
-          variants={sectionFadeUp}
+          className="rounded-full text-sm"
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
+          viewport={PRESETS.viewport}
+          whileHover={PRESETS.hover.scaleUp}
+          whileTap={PRESETS.tap.scaleDown}
         >
-          View more
-        </motion.button>
+          {CONTENT.services.buttonText}
+        </Button>
       </section>
 
       {/* ── Features Section ── */}
       <section className="text-center py-16 px-4 bg-white">
         <motion.h5
           className="text-green-700 font-semibold mb-2 uppercase tracking-wide"
-          variants={sectionFadeUp}
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          Features
+          {CONTENT.features.subtitle}
         </motion.h5>
         <motion.h1
           className="text-3xl md:text-4xl font-bold pb-10 font-serif"
-          variants={sectionFadeUp}
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          Elevate Your Ambitions with Purpose
+          {CONTENT.features.title}
         </motion.h1>
 
         <div className="flex flex-col lg:flex-row items-start gap-10 max-w-6xl mx-auto">
@@ -309,8 +236,8 @@ const Home = () => {
             className="w-full lg:w-[30%] flex justify-center"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.65, ease: "easeOut" }}
+            viewport={PRESETS.viewport}
+            transition={TRANSITIONS.default}
           >
             <img
               src="/Images/men3.png"
@@ -321,38 +248,20 @@ const Home = () => {
 
           <motion.div
             className="w-full lg:w-[70%] grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6"
-            variants={cardContainer}
+            variants={VARIANTS.cardContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={PRESETS.viewportSmall}
           >
-            {[
-              {
-                icon: "fa-tractor",
-                title: "For Farmers",
-                desc: "Connect, share experiences, and learn sustainable practices from fellow farming experts.",
-              },
-              {
-                icon: "fa-people-roof",
-                title: "For Workers",
-                desc: "Collaborate, upskill, and support modern agriculture with shared tools and expertise.",
-              },
-              {
-                icon: "fa-screwdriver-wrench",
-                title: "For Technicians",
-                desc: "Exchange knowledge, improve farming systems, and enable smart, tech-driven solutions together.",
-              },
-              {
-                icon: "fa-lightbulb",
-                title: "For Innovators",
-                desc: "Bring new ideas, tools, and technology to revolutionize modern agricultural practices.",
-              },
-            ].map((f) => (
-              <motion.div
+            {CONTENT.features.cards.map((f) => (
+              <Card
+                asMotion
                 key={f.title}
-                variants={cardItem}
-                className="border border-green-200 rounded-xl p-5 text-left h-[160px] shadow-sm"
-                whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
+                variants={VARIANTS.cardItem}
+                className="border border-green-200 p-5 text-left h-[160px]"
+                variant="flat"
+                padding="none"
+                whileHover={PRESETS.hover.liftSmall}
               >
                 <div className="flex items-start gap-3 mb-2">
                   <i
@@ -361,7 +270,7 @@ const Home = () => {
                   <h3 className="font-semibold text-[17px]">{f.title}</h3>
                 </div>
                 <p className="text-gray-600 text-sm leading-snug">{f.desc}</p>
-              </motion.div>
+              </Card>
             ))}
           </motion.div>
         </div>
@@ -371,122 +280,106 @@ const Home = () => {
       <section className="text-center pt-16 px-4 bg-gray-50 flex flex-col justify-center items-center mb-10">
         <motion.h5
           className="text-green-700 font-semibold mb-2 uppercase tracking-wide"
-          variants={sectionFadeUp}
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          FAQs Section
+          {CONTENT.faqs.subtitle}
         </motion.h5>
         <motion.h1
           className="text-3xl md:text-4xl font-semibold font-serif mb-6"
-          variants={sectionFadeUp}
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={PRESETS.viewport}
         >
-          Frequently Asked Questions
+          {CONTENT.faqs.title}
         </motion.h1>
       </section>
 
       <motion.div
         className="w-full md:w-3/4 lg:w-1/2 border-2 border-gray-200 rounded-xl p-4 mx-auto -mt-2"
-        variants={cardContainer}
+        variants={VARIANTS.cardContainer}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
+        viewport={PRESETS.viewportSmall}
       >
         {faqs.map((faq, i) => (
-          <motion.div
-            key={i}
-            variants={cardItem}
-            className={`bg-white p-5 rounded-xl shadow-md ${i < faqs.length - 1 ? "mb-4" : ""}`}
-          >
-            <button
+          <motion.div key={i} variants={VARIANTS.cardItem}>
+            <AccordionItem
+              className={i < faqs.length - 1 ? "mb-4" : ""}
+              question={faq.q}
+              answer={faq.a}
+              isOpen={openFaq === i}
               onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              className="w-full text-left flex justify-between items-center text-lg md:text-xl font-medium text-gray-800"
-            >
-              <span>{faq.q}</span>
-              <i
-                className={`fa-solid fa-chevron-down text-gray-500 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
-              ></i>
-            </button>
-            {openFaq === i && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="mt-4 text-gray-600 text-sm leading-relaxed"
-              >
-                <p>{faq.a}</p>
-              </motion.div>
-            )}
+            />
           </motion.div>
         ))}
       </motion.div>
 
       <div className="py-10 flex justify-center">
-        <motion.button
+        <Button
+          asMotion
           onClick={openApp}
-          className="bg-green-700 text-white px-8 py-2 rounded-full text-sm font-semibold hover:bg-green-800 transition"
-          variants={sectionFadeUp}
+          className="rounded-full text-sm"
+          variants={VARIANTS.sectionFadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
+          viewport={PRESETS.viewport}
+          whileHover={PRESETS.hover.scaleUp}
+          whileTap={PRESETS.tap.scaleDown}
         >
-          View more
-        </motion.button>
+          {CONTENT.services.buttonText}
+        </Button>
       </div>
 
       {/* ── Subscribe Section ── */}
       <motion.section
-        style={{ backgroundColor: "#eef9d4" }}
-        className="py-12 mx-4 sm:mx-10 rounded-xl my-10"
-        variants={sectionFadeUp}
+        className="py-12 mx-4 sm:mx-10 rounded-xl my-10 bg-[var(--color-custom-accentLight)]"
+        variants={VARIANTS.sectionFadeUp}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={PRESETS.viewport}
+        style={{ backgroundColor: "#eef9d4" }}
       >
         <div className="max-w-4xl mx-auto text-center space-y-4 px-4">
           <h5 className="text-2xl text-gray-600 font-semibold">
-            NEVER MISS AN UPDATE!
+            {CONTENT.subscribe.subtitle}
           </h5>
-          <h1
-            className="text-3xl font-bold text-gray-800"
-            style={{ fontFamily: "'Times New Roman', Times, serif" }}
-          >
-            Subscribe to Our Newsletter
+          <h1 className="text-3xl font-bold text-gray-800 font-serif">
+            {CONTENT.subscribe.title}
           </h1>
           <form
             onSubmit={handleSubscribe}
             className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
           >
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter Your Email"
+              placeholder={CONTENT.subscribe.placeholder}
               required
-              className="px-3 py-2 border border-green-700 rounded-md w-full sm:w-64 bg-mauve-50"
+              className="w-full sm:w-64"
             />
-            <motion.button
+            <Button
+              asMotion
               type="submit"
-              className="px-6 py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition w-full sm:w-auto"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
+              className="w-full sm:w-auto"
+              whileHover={PRESETS.hover.scaleUp}
+              whileTap={PRESETS.tap.scaleDown}
             >
-              Subscribe Now
-            </motion.button>
+              {CONTENT.subscribe.button}
+            </Button>
           </form>
           {subscribed && (
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
+              variants={VARIANTS.slideDown}
+              initial="hidden"
+              animate="visible"
               className="mt-4 text-green-700 bg-green-100 px-4 py-2 rounded-md text-center inline-block"
             >
-              Thanks for subscribing!
+              {CONTENT.subscribe.successMessage}
             </motion.div>
           )}
         </div>
