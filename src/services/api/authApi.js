@@ -381,3 +381,21 @@ export const deleteDistribution = async (distributionId) => {
   });
   return result.success && result.data?.result?.toLowerCase() === "success";
 };
+
+// ═══════════════════════════════════════════════════════════════════
+// ─── Agri Business Plan ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+// ─── Get Agri Business Plan ───────────────────────────────────────
+export const getAgriBusinessPlan = async (unitCode, unitProfileId, planVersion = "1.0") => {
+  const result = await apiPost(ENDPOINTS.CROP_DATA, OPS.GET_AGRI_BUSINESS_PLAN, {
+    unitCode,
+    unitProfileId,
+    planVersion,
+  });
+  if (result.success && result.data?.plans?.length > 0) {
+    return result.data.plans[0];
+  }
+  return null;
+};
+

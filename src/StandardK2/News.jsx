@@ -73,22 +73,33 @@ const PDF_LABELS = {
     footer: "Development Connects -- Agriculture & Rural Development Daily",
   },
   hi: {
-    masthead: "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938",
-    subtitle: "\u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
-    international: "\u0905\u0902\u0924\u0930\u094D\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
-    national: "\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930 -- \u092D\u093E\u0930\u0924",
-    local: "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
-    policy: "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E\u090F\u0902 \u0914\u0930 \u0928\u0940\u0924\u093F\u092F\u093E\u0902",
+    masthead:
+      "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938",
+    subtitle:
+      "\u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
+    international:
+      "\u0905\u0902\u0924\u0930\u094D\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
+    national:
+      "\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930 -- \u092D\u093E\u0930\u0924",
+    local:
+      "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u092E\u093E\u091A\u093E\u0930",
+    policy:
+      "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E\u090F\u0902 \u0914\u0930 \u0928\u0940\u0924\u093F\u092F\u093E\u0902",
     source: "\u0938\u094D\u0930\u094B\u0924",
     published: "\u092A\u094D\u0930\u0915\u093E\u0936\u093F\u0924",
     page: "\u092A\u0943\u0937\u094D\u0920",
-    edition: "\u092D\u093E\u0930\u0924 \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
-    localEdition: "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
-    govtScheme: "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E",
+    edition:
+      "\u092D\u093E\u0930\u0924 \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
+    localEdition:
+      "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0938\u0902\u0938\u094D\u0915\u0930\u0923",
+    govtScheme:
+      "\u0938\u0930\u0915\u093E\u0930\u0940 \u092F\u094B\u091C\u0928\u093E",
     news: "\u0938\u092E\u093E\u091A\u093E\u0930",
-    officialSite: "[\u0906\u0927\u093F\u0915\u093E\u0930\u093F\u0915 \u0938\u093E\u0907\u091F]",
+    officialSite:
+      "[\u0906\u0927\u093F\u0915\u093E\u0930\u093F\u0915 \u0938\u093E\u0907\u091F]",
     link: "[\u0932\u093F\u0902\u0915]",
-    footer: "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938 -- \u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
+    footer:
+      "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0915\u0928\u0947\u0915\u094D\u091F\u094D\u0938 -- \u0915\u0943\u0937\u093F \u0914\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0935\u093F\u0915\u093E\u0938 \u0926\u0948\u0928\u093F\u0915",
   },
 };
 
@@ -360,8 +371,8 @@ const LocationDeniedUI = ({ onRequestLocation }) => (
 const TABS = [
   { id: "international", label: "International News", Icon: Globe },
   { id: "national", label: "National News", Icon: Map },
-  { id: "local", label: "Local News", Icon: MapPin },
-  { id: "policy", label: "Govt Policies", Icon: ScrollText },
+  { id: "policy", label: "Indian State", Icon: ScrollText },
+  { id: "local", label: "Local", Icon: MapPin },
 ];
 
 // ─── Load jsPDF dynamically ───────────────────────────────────────────────────
@@ -419,7 +430,7 @@ const loadHindiFont = async (doc) => {
   doc.addFont("NotoSans.ttf", "NotoSans", "italic");
 };
 
-// ─── Download Newspaper PDF (3-column newspaper layout) ──────────────────────
+// ─── Download Newspaper PDF — 4 dedicated pages, one section per page ─────────
 const downloadNewspaperPDF = async (allData, locationLabel) => {
   let jsPDF;
   try {
@@ -438,35 +449,69 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
   const CW = (PW - M * 2 - GAP * (COLS - 1)) / COLS; // ~60.67mm per column
   const COL_X = [M, M + CW + GAP, M + (CW + GAP) * 2];
   const BODY_BOTTOM = PH - 14;
+  const BODY_TOP = 46; // below masthead
 
-  // Page 1 body starts below the tall masthead; continuation pages start lower
-  const BODY_TOP_P1 = 46;
-  const BODY_TOP_CONT = 22;
-
-  let pageNum = 1;
-  let col = 0;
-  let bodyTop = BODY_TOP_P1; // tracks current page's top
-  const cy = [BODY_TOP_P1, BODY_TOP_P1, BODY_TOP_P1];
-
-  // ── Column dividers for current page ─────────────────────────────────
-  const drawDividers = (top) => {
-    doc.setDrawColor(180, 180, 180);
-    doc.setLineWidth(0.2);
-    for (let i = 1; i < COLS; i++) {
-      const x = COL_X[i] - GAP / 2;
-      doc.line(x, top, x, BODY_BOTTOM);
-    }
-  };
-
-  // ── Footer ────────────────────────────────────────────────────────────
-  const drawFooter = () => {
-    const yesterday2 = new Date();
-    yesterday2.setDate(yesterday2.getDate() - 1);
-    const footDate = yesterday2.toLocaleDateString("en-IN", {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const dateStr = sanitize(
+    yesterday.toLocaleDateString("en-IN", {
+      weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric",
+    }),
+  );
+  const footDate = yesterday.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  // ── Draw masthead on current page ─────────────────────────────────────
+  const drawMasthead = (sectionTitle, pageNum) => {
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(50, 50, 50);
+    doc.text(dateStr, M, 8);
+    doc.text("dcdt.net", PW - M, 8, { align: "right" });
+
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.3);
+    doc.line(M, 10, PW - M, 10);
+
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Development Connects", PW / 2, 23, { align: "center" });
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(60, 60, 60);
+    const subtitle = "Agriculture and Rural Development Daily";
+    doc.text(subtitle, PW / 2, 29, { align: "center" });
+    const subW = doc.getTextWidth(subtitle);
+    doc.setDrawColor(120, 120, 120);
+    doc.setLineWidth(0.2);
+    doc.line(M, 29, (PW - subW) / 2 - 3, 29);
+    doc.line((PW + subW) / 2 + 3, 29, PW - M, 29);
+
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.3);
+    doc.line(M, 33, PW - M, 33);
+
+    // Section title below masthead (replaces edition line)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(21, 128, 61); // green
+    doc.text(sanitize(sectionTitle).toUpperCase(), PW / 2, 40, {
+      align: "center",
     });
+
+    doc.setDrawColor(21, 128, 61);
+    doc.setLineWidth(0.4);
+    doc.line(M, 43, PW - M, 43);
+
+    // Footer
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.3);
     doc.line(M, BODY_BOTTOM + 2, PW - M, BODY_BOTTOM + 2);
@@ -479,136 +524,58 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
       BODY_BOTTOM + 7,
     );
     doc.text(`Page ${pageNum}`, PW - M, BODY_BOTTOM + 7, { align: "right" });
+
+    // Column dividers
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.2);
+    for (let i = 1; i < COLS; i++) {
+      const x = COL_X[i] - GAP / 2;
+      doc.line(x, BODY_TOP, x, BODY_BOTTOM);
+    }
   };
 
-  // ── Continuation page header (compact) ───────────────────────────────
-  const drawContinuationHeader = () => {
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.3);
-    doc.line(M, 8, PW - M, 8);
-    doc.setFontSize(10);
+  // ── Compute article height (must match drawArticle's layout) ─────────
+  const computeArticleHeight = (item, isFeatured) => {
+    const titleFS = isFeatured ? 11 : 9;
+    const titleLH = isFeatured ? 5.5 : 4.5;
+    const bodyLH = 3.8;
+    const title = sanitize(item.title || "");
+    const summary = sanitize(item.summary || "");
+
+    doc.setFontSize(titleFS);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0);
-    doc.text("Development Connects", PW / 2, 14, { align: "center" });
-    doc.setFontSize(7);
-    doc.setFont("helvetica", "italic");
-    doc.setTextColor(90, 90, 90);
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.3);
-    doc.line(M, 21, PW - M, 21);
-  };
-
-  // ── New page ──────────────────────────────────────────────────────────
-  const newPage = () => {
-    doc.addPage();
-    pageNum++;
-    col = 0;
-    bodyTop = BODY_TOP_CONT;
-    cy[0] = cy[1] = cy[2] = BODY_TOP_CONT;
-    drawContinuationHeader();
-    drawDividers(BODY_TOP_CONT);
-    drawFooter();
-  };
-
-  // ── Advance to next column (or new page) ──────────────────────────────
-  const nextCol = () => {
-    col++;
-    if (col >= COLS) newPage();
-  };
-
-  // ── Ensure `h` mm fits in current column; advance if not ─────────────
-  const ensure = (h) => {
-    if (cy[col] + h > BODY_BOTTOM) nextCol();
-  };
-
-  // ── MASTHEAD (page 1) ─────────────────────────────────────────────────
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const dateStr = sanitize(
-    yesterday.toLocaleDateString("en-IN", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }),
-  );
-
-  doc.setFontSize(7);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(50, 50, 50);
-  doc.text(dateStr, M, 8);
-  doc.text("dcdt.net", PW - M, 8, { align: "right" });
-
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.3);
-  doc.line(M, 10, PW - M, 10);
-
-  doc.setFontSize(28);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(0, 0, 0);
-  doc.text("Development Connects", PW / 2, 23, { align: "center" });
-
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(60, 60, 60);
-  const subtitle = "Agriculture and Rural Development Daily";
-  doc.text(subtitle, PW / 2, 29, { align: "center" });
-  const subW = doc.getTextWidth(subtitle);
-  doc.setDrawColor(120, 120, 120);
-  doc.setLineWidth(0.2);
-  doc.line(M, 29, (PW - subW) / 2 - 3, 29);
-  doc.line((PW + subW) / 2 + 3, 29, PW - M, 29);
-
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.3);
-  doc.line(M, 33, PW - M, 33);
-
-  doc.setFontSize(7);
-  doc.setFont("helvetica", "italic");
-  doc.setTextColor(70, 70, 70);
-  const editionText = locationLabel
-    ? sanitize(
-        `Local Edition: ${locationLabel}  |  Agriculture & Rural Development`,
-      )
-    : "Agriculture & Rural Development  |  India Edition";
-  doc.text(editionText, PW / 2, 39, { align: "center" });
-
-  doc.setDrawColor(180, 180, 180);
-  doc.setLineWidth(0.2);
-  doc.line(M, 42, PW - M, 42);
-
-  drawDividers(BODY_TOP_P1);
-  drawFooter();
-
-  // ── Section header — always starts in a fresh column if < 40mm remain ──
-  const sectionHeader = (label) => {
-    // If less than 40mm remain in current column, push to next
-    if (cy[col] > BODY_BOTTOM - 40) nextCol();
-
-    const x = COL_X[col];
-    let y = cy[col];
-
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.3);
-    doc.line(x, y, x + CW, y);
-    y += 4.5;
+    const titleLines = doc.splitTextToSize(title, CW);
 
     doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    const bodyLines = doc.splitTextToSize(summary, CW);
+    const maxBody = isFeatured
+      ? Math.min(bodyLines.length, 9)
+      : Math.min(bodyLines.length, 5);
+
+    return 4 + titleLines.length * titleLH + 2 + maxBody * bodyLH + 5 + 4;
+  };
+
+  // ── Compute policy height (must match drawPolicy's layout) ───────────
+  const computePolicyHeight = (policy) => {
+    const title = sanitize(policy.title || "");
+    const desc = sanitize(policy.description || "");
+
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0);
-    doc.text(sanitize(label).toUpperCase(), x + CW / 2, y, { align: "center" });
-    y += 2.5;
+    const titleLines = doc.splitTextToSize(title, CW);
 
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.3);
-    doc.line(x, y, x + CW, y);
-    y += 5;
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    const descLines = doc.splitTextToSize(desc, CW);
+    const maxDesc = Math.min(descLines.length, 4);
 
-    cy[col] = y;
+    return 4 + titleLines.length * 4.5 + 2 + maxDesc * 3.8 + 5 + 4;
   };
 
   // ── Draw one article ──────────────────────────────────────────────────
-  const drawArticle = (item, isFeatured = false) => {
+  // Returns updated [col, cy] after drawing
+  const drawArticle = (item, isFeatured, col, cy) => {
     const titleFS = isFeatured ? 11 : 9;
     const titleLH = isFeatured ? 5.5 : 4.5;
     const bodyLH = 3.8;
@@ -628,21 +595,26 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
       ? Math.min(bodyLines.length, 9)
       : Math.min(bodyLines.length, 5);
 
-    // category(4) + title + gap(2) + body + source(5) + sep(4)
     const estH = 4 + titleLines.length * titleLH + 2 + maxBody * bodyLH + 5 + 4;
-    ensure(estH);
+
+    // Safety: advance column if overflowing bottom
+    if (cy + estH > BODY_BOTTOM) {
+      col++;
+      cy = BODY_TOP;
+      if (col >= COLS) {
+        return [col, cy];
+      }
+    }
 
     const x = COL_X[col];
-    let y = cy[col];
+    let y = cy;
 
-    // Category
     doc.setFontSize(6.5);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(100, 100, 100);
     doc.text(category, x, y);
     y += 4;
 
-    // Title
     doc.setFontSize(titleFS);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(0, 0, 0);
@@ -652,7 +624,6 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
     }
     y += 2;
 
-    // Body
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(30, 30, 30);
@@ -661,7 +632,6 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
       y += bodyLH;
     }
 
-    // Source
     y += 2;
     doc.setFontSize(6);
     doc.setFont("helvetica", "italic");
@@ -676,17 +646,16 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
     }
     y += 4;
 
-    // Separator
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.2);
     doc.line(x, y, x + CW, y);
     y += 4;
 
-    cy[col] = y;
+    return [col, y];
   };
 
   // ── Draw one policy ───────────────────────────────────────────────────
-  const drawPolicy = (policy) => {
+  const drawPolicy = (policy, col, cy) => {
     const title = sanitize(policy.title || "");
     const desc = sanitize(policy.description || "");
 
@@ -700,10 +669,15 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
     const maxDesc = Math.min(descLines.length, 4);
 
     const estH = 4 + titleLines.length * 4.5 + 2 + maxDesc * 3.8 + 5 + 4;
-    ensure(estH);
+
+    if (cy + estH > BODY_BOTTOM) {
+      col++;
+      cy = BODY_TOP;
+      if (col >= COLS) return [col, cy];
+    }
 
     const x = COL_X[col];
-    let y = cy[col];
+    let y = cy;
 
     doc.setFontSize(6.5);
     doc.setFont("helvetica", "bold");
@@ -747,29 +721,91 @@ const downloadNewspaperPDF = async (allData, locationLabel) => {
     doc.line(x, y, x + CW, y);
     y += 4;
 
-    cy[col] = y;
+    return [col, y];
   };
 
-  // ── Render all sections ───────────────────────────────────────────────
-  const sections = [
-    { label: "International News", items: allData.international || [] },
-    { label: "National News -- India", items: allData.national || [] },
-    {
-      label: locationLabel ? `Local News -- ${locationLabel}` : "Local News",
-      items: allData.local || [],
-    },
-  ];
+  // ── Balanced renderer for articles: distributes across all 3 columns ──
+  const renderArticlesBalanced = (items) => {
+    if (!items.length) return false;
+    const heights = items.map((item, i) => computeArticleHeight(item, i === 0));
+    const total = heights.reduce((a, b) => a + b, 0);
+    const available = BODY_BOTTOM - BODY_TOP;
+    const target = Math.min(total / COLS + 6, available);
 
-  for (const sec of sections) {
-    if (!sec.items.length) continue;
-    sectionHeader(sec.label);
-    sec.items.forEach((item, i) => drawArticle(item, i === 0));
+    let col = 0,
+      cy = BODY_TOP;
+    items.forEach((item, i) => {
+      const h = heights[i];
+      // Pre-emptive balance break — move to next column before current gets too tall
+      if (col < COLS - 1 && cy !== BODY_TOP && cy - BODY_TOP + h > target) {
+        col++;
+        cy = BODY_TOP;
+      }
+      [col, cy] = drawArticle(item, i === 0, col, cy);
+    });
+    return true;
+  };
+
+  // ── Balanced renderer for policies ────────────────────────────────────
+  const renderPoliciesBalanced = (policies) => {
+    if (!policies.length) return false;
+    const heights = policies.map((p) => computePolicyHeight(p));
+    const total = heights.reduce((a, b) => a + b, 0);
+    const available = BODY_BOTTOM - BODY_TOP;
+    const target = Math.min(total / COLS + 6, available);
+
+    let col = 0,
+      cy = BODY_TOP;
+    policies.forEach((p, i) => {
+      const h = heights[i];
+      if (col < COLS - 1 && cy !== BODY_TOP && cy - BODY_TOP + h > target) {
+        col++;
+        cy = BODY_TOP;
+      }
+      [col, cy] = drawPolicy(p, col, cy);
+    });
+    return true;
+  };
+
+  const drawEmptyNotice = (msg) => {
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(150, 150, 150);
+    doc.text(msg, M, BODY_TOP + 10);
+  };
+
+  // ── PAGE 1: International News ────────────────────────────────────────
+  drawMasthead("International News", 1);
+  if (!renderArticlesBalanced(allData.international || [])) {
+    drawEmptyNotice("No international news available.");
   }
 
-  const policies = allData.government_policies || [];
-  if (policies.length) {
-    sectionHeader("Government Policies & Schemes");
-    policies.forEach(drawPolicy);
+  // ── PAGE 2: National News ─────────────────────────────────────────────
+  doc.addPage();
+  drawMasthead("National News — India", 2);
+  if (!renderArticlesBalanced(allData.national || [])) {
+    drawEmptyNotice("No national news available.");
+  }
+
+  // ── PAGE 3: Government Policies & Schemes ────────────────────────────
+  doc.addPage();
+  drawMasthead("Government Policies & Schemes", 3);
+  if (!renderPoliciesBalanced(allData.government_policies || [])) {
+    drawEmptyNotice("No government policies available.");
+  }
+
+  // ── PAGE 4: Local News ────────────────────────────────────────────────
+  doc.addPage();
+  const localTitle = locationLabel
+    ? `Local News — ${locationLabel}`
+    : "Local News";
+  drawMasthead(localTitle, 4);
+  if (!renderArticlesBalanced(allData.local || [])) {
+    drawEmptyNotice(
+      locationLabel
+        ? "No local news available for your area."
+        : "Enable location to see local news.",
+    );
   }
 
   doc.save(`DevelopmentConnects_${yesterday.toISOString().slice(0, 10)}.pdf`);

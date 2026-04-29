@@ -15,18 +15,38 @@ import { VARIANTS } from "../../animations/variants";
 import { FullScreenLoader } from "../../components/ui";
 import { cn } from "../../utils/cn";
 
-function RoleCard({ icon, title, subtitle, description, badge, badgeColor, bgGradient, borderColor, onClick, locked = false }) {
+function RoleCard({
+  icon,
+  title,
+  subtitle,
+  description,
+  badge,
+  badgeColor,
+  bgGradient,
+  borderColor,
+  onClick,
+  locked = false,
+}) {
   return (
     <motion.div
       onClick={locked ? undefined : onClick}
-      whileHover={!locked ? { y: -8, scale: 1.03, boxShadow: "0 20px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.07)" } : undefined}
+      whileHover={
+        !locked
+          ? {
+              y: -8,
+              scale: 1.03,
+              boxShadow:
+                "0 20px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.07)",
+            }
+          : undefined
+      }
       whileTap={!locked ? PRESETS.tap.scaleDown : undefined}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
         "group relative bg-gradient-to-br border-2 rounded-2xl p-6 overflow-hidden",
         bgGradient,
         borderColor,
-        locked ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+        locked ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       )}
     >
       {locked && (
@@ -43,16 +63,25 @@ function RoleCard({ icon, title, subtitle, description, badge, badgeColor, bgGra
 
       <h3 className="text-xl font-bold text-gray-900 mb-1">{title}</h3>
       <p className="text-sm font-semibold text-gray-700 mb-2">{subtitle}</p>
-      <p className="text-xs text-gray-600 mb-4 leading-relaxed">{description}</p>
+      <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+        {description}
+      </p>
 
-      <span className={cn("inline-block px-3 py-1 rounded-full text-xs font-semibold", badgeColor)}>
+      <span
+        className={cn(
+          "inline-block px-3 py-1 rounded-full text-xs font-semibold",
+          badgeColor,
+        )}
+      >
         {badge}
       </span>
 
-      <div className={cn(
-        "absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-green-500 rounded-b-2xl opacity-0 transition-opacity duration-300",
-        !locked && "group-hover:opacity-100"
-      )} />
+      <div
+        className={cn(
+          "absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-green-500 rounded-b-2xl opacity-0 transition-opacity duration-300",
+          !locked && "group-hover:opacity-100",
+        )}
+      />
     </motion.div>
   );
 }
@@ -107,11 +136,16 @@ const ROLES_CONFIG = [
 const MainDashboard = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const { unitCode } = useParams();
-  const { userType, _hasHydrated, profile, selectedUnit, setSelectedUnit } = useAuthStore();
+  const { userType, _hasHydrated, profile, selectedUnit, setSelectedUnit } =
+    useAuthStore();
 
   // Restore selectedUnit from URL if store lost it (e.g. page refresh)
   useEffect(() => {
-    if (unitCode && profile?.unitDetails && (!selectedUnit || selectedUnit.unitCode !== unitCode)) {
+    if (
+      unitCode &&
+      profile?.unitDetails &&
+      (!selectedUnit || selectedUnit.unitCode !== unitCode)
+    ) {
       const match = profile.unitDetails.find((u) => u.unitCode === unitCode);
       if (match) setSelectedUnit(match);
     }
@@ -121,11 +155,16 @@ const MainDashboard = () => {
 
   const isMember = userType?.toLowerCase() === ROLES.MEMBER.toLowerCase();
 
-  if (selectedRole === "ceo")       return <CEODashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "director")  return <DirectorDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "accountant") return <AccountantDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "promoter")  return <PromoterDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "member")    return <MemberDashboard onSwitchRole={() => setSelectedRole(null)} />;
+  if (selectedRole === "ceo")
+    return <CEODashboard onSwitchRole={() => setSelectedRole(null)} />;
+  if (selectedRole === "director")
+    return <DirectorDashboard onSwitchRole={() => setSelectedRole(null)} />;
+  if (selectedRole === "accountant")
+    return <AccountantDashboard onSwitchRole={() => setSelectedRole(null)} />;
+  if (selectedRole === "promoter")
+    return <PromoterDashboard onSwitchRole={() => setSelectedRole(null)} />;
+  if (selectedRole === "member")
+    return <MemberDashboard onSwitchRole={() => setSelectedRole(null)} />;
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -161,6 +200,7 @@ const MainDashboard = () => {
                   bgGradient={role.bgGradient}
                   borderColor={role.borderColor}
                   locked={isMember}
+                  // locked={false}
                   onClick={() => setSelectedRole(role.key)}
                 />
               ))}

@@ -10,7 +10,7 @@ export const DashboardLayout = ({
   contentClassName,
 }) => {
   return (
-    <div className={cn("min-h-screen bg-gray-50 flex flex-col", className)}>
+    <div className={cn("h-screen bg-gray-50 flex flex-col", className)}>
       <Header onSwitchRole={onSwitchRole} />
 
       <div className="flex flex-1 overflow-hidden">

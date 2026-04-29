@@ -29,3 +29,6 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Ignored source files
+src/StandardK2/K2Store.jsx

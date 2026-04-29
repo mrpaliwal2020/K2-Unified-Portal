@@ -9,6 +9,7 @@ import ServicesPage from "../DashboardSubsections/Member/Services";
 import IssueBoxPage from "../DashboardSubsections/Member/IssueBox";
 import ReportsPage from "../DashboardSubsections/Member/Reports";
 import Inventory from "../DashboardSubsections/Member/Inventory";
+import BusinessPlan from "../DashboardSubsections/Member/BusinessPlain";
 
 const CEODashboard = ({ onSwitchRole }) => {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -26,6 +27,8 @@ const CEODashboard = ({ onSwitchRole }) => {
       {currentPage === "inventory" && <Inventory />}
       {/* STORE PAGE */}
       {currentPage === "store" && <StorePage />}
+      {/* BUSINESS PLAN PAGE */}
+      {currentPage === "businessplan" && <BusinessPlan />}
       {/* PRODUCE PAGE */}
       {currentPage === "produce" && <ProducePage />}
       {/* SERVICES PAGE */}

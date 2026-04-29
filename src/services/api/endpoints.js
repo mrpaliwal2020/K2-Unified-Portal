@@ -25,6 +25,8 @@ const ENDPOINTS = {
   GET_NEWS: `/k2kapi/News/`,
   // ── myBusiness ───────────────────────────────────────────────────
   MY_BUSINESS: `/k2kapi/myBusiness/`,
+
+
 };
 
 // ─── All Operations ───────────────────────────────────────────────────────────
@@ -75,6 +77,9 @@ export const OPS = {
   GET_DISTRIBUTIONS: "getDistributions",
   EDIT_DISTRIBUTION: "editDistribution",
   DELETE_DISTRIBUTION: "deleteDistribution",
+
+  // agriPlan
+  GET_AGRI_BUSINESS_PLAN: "getAgriBusinessPlan",
 };
 
 export default ENDPOINTS;

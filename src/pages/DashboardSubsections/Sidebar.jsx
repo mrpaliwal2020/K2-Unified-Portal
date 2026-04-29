@@ -8,8 +8,8 @@ import {
   Wrench,
   Inbox,
   FileText,
+  BookOpen,
 } from "lucide-react";
-
 const Sidebar = ({ currentPage, setCurrentPage }) => {
   const navigationItems = [
     {
@@ -32,6 +32,7 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
       label: "Store",
       id: "store",
     },
+    { icon: BookOpen, label: "Business Plan", id: "businessplan" },
     {
       icon: Sprout,
       label: "Produce",
