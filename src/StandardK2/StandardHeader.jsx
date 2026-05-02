@@ -137,9 +137,10 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
   const showUnitBranding = false;
 
   // FPO tab path when logged in: go directly to the selected unit's dashboard
-  const fpoPath = isLoggedIn && selectedUnit?.unitCode
-    ? `/dashboard/${selectedUnit.unitCode}`
-    : ROUTES.UNITS;
+  const fpoPath =
+    isLoggedIn && selectedUnit?.unitCode
+      ? `/dashboard/${selectedUnit.unitCode.replace(/\s+/g, '')}`
+      : ROUTES.UNITS;
 
   const navLinks = isLoggedIn ? NAV_LINKS_POST : NAV_LINKS_PRE;
   const newsIndex = navLinks.findIndex((l) => l.label === "News");
@@ -321,11 +322,10 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                     variants={navItemVariants}
                     onClick={() => handleNavClick(link)}
                     className={`text-base lg:text-lg font-medium transition-colors ${
-                      !link.external && (
-                        link.label === "FPO"
-                          ? location.pathname.startsWith("/dashboard/")
-                          : location.pathname === link.path
-                      )
+                      !link.external &&
+                      (link.label === "FPO"
+                        ? location.pathname.startsWith("/dashboard/")
+                        : location.pathname === link.path)
                         ? "text-green-600"
                         : "text-gray-700 hover:text-green-600"
                     }`}

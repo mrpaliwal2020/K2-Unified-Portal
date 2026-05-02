@@ -17,7 +17,7 @@ const EntryLoader = () => {
     const t5 = setTimeout(() => {
       if (isLoggedIn && role) {
         const dest = selectedUnit?.unitCode
-          ? `/dashboard/${selectedUnit.unitCode}`
+          ? `/dashboard/${selectedUnit.unitCode.replace(/\s+/g, '')}`
           : ROUTES.DASHBOARD;
         navigate(dest, { replace: true });
       } else {

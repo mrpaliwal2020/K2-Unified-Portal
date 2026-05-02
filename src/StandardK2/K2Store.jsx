@@ -1,835 +1,833 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search,
-  ShoppingCart,
-  Heart,
-  Star,
-  Truck,
-  Shield,
-  Headphones,
-  ChevronRight,
-  ChevronLeft,
-  Flame,
-  BadgeCheck,
-  Tag,
-  ArrowRight,
-  CheckCircle2,
-  Zap,
-  Gift,
+  Search, ShoppingCart, Package, MapPin, Loader2,
+  X, SlidersHorizontal, Plus, Minus, Trash2,
 } from "lucide-react";
 import Header from "./StandardHeader";
 import Footer from "../components/Common/Footer";
+import { apiPost } from "../services/api/apiClient";
+import ENDPOINTS from "../services/api/endpoints";
 
-// ── Animation Variants ─────────────────────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-};
+/* ─── Motion variants ─── */
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.09 } },
+  visible: { transition: { staggerChildren: 0.055 } },
 };
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.88 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-// ── Unsplash helper ────────────────────────────────────────────────────────
-const unsplash = (id, w = 600, h = 400) =>
-  `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
-
-// ── Data ───────────────────────────────────────────────────────────────────
-const HERO_SLIDES = [
-  {
-    id: 1,
-    title: "किसान का अपना बाज़ार",
-    sub: "Quality Seeds, Fertilizers & Tools — Direct from Trusted Sources",
-    cta: "Shop Now",
-    img: unsplash("1625246333195-78d9c38ad449", 1400, 520),
-    from: "#064e3b",
-    to: "#065f46",
+const cardAnim = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
   },
-  {
-    id: 2,
-    title: "Farm Tools Mega Sale",
-    sub: "Up to 40% off on premium agricultural equipment this season",
-    cta: "Explore Deals",
-    img: unsplash("1592838064575-70ed626d3a0e", 1400, 520),
-    from: "#1e3a5f",
-    to: "#1d4ed8",
-  },
-  {
-    id: 3,
-    title: "Organic Krishi Week",
-    sub: "Certified organic products for a healthier harvest and soil",
-    cta: "Go Organic",
-    img: unsplash("1500382017468-9049fed747ef", 1400, 520),
-    from: "#78350f",
-    to: "#b45309",
-  },
-];
-
-const CATEGORIES = [
-  { name: "Seeds & Plants", img: unsplash("1521737604893-d14cc237f11d", 200, 200), count: "120+" },
-  { name: "Fertilizers",    img: unsplash("1416879595882-3373a0480b5b", 200, 200), count: "80+"  },
-  { name: "Pesticides",     img: unsplash("1516467508483-a7212febe31a", 200, 200), count: "65+"  },
-  { name: "Farm Tools",     img: unsplash("1592838064575-70ed626d3a0e", 200, 200), count: "95+"  },
-  { name: "Irrigation",     img: unsplash("1558618666-fcd25c85cd64", 200, 200),    count: "40+"  },
-  { name: "Organic",        img: unsplash("1471193945509-9ad0617afabf", 200, 200), count: "55+"  },
-  { name: "Animal Feed",    img: unsplash("1516467508483-a7212febe31a", 200, 200), count: "30+"  },
-  { name: "FPO Specials",   img: unsplash("1521737604893-d14cc237f11d", 200, 200), count: "25+"  },
-];
-
-const PRODUCTS = [
-  {
-    id: 1,
-    name: "Hybrid Tomato Seeds (10g)",
-    category: "Seeds",
-    price: 149,
-    mrp: 199,
-    rating: 4.5,
-    reviews: 128,
-    tag: "Bestseller",
-    img: unsplash("1592921870789-04563d55041c", 400, 320),
-  },
-  {
-    id: 2,
-    name: "NPK Granular Fertilizer (5kg)",
-    category: "Fertilizers",
-    price: 389,
-    mrp: 450,
-    rating: 4.3,
-    reviews: 94,
-    tag: "Popular",
-    img: unsplash("1416879595882-3373a0480b5b", 400, 320),
-  },
-  {
-    id: 3,
-    name: "Organic Vermicompost (10kg)",
-    category: "Organic",
-    price: 299,
-    mrp: 380,
-    rating: 4.7,
-    reviews: 213,
-    tag: "Top Rated",
-    img: unsplash("1471193945509-9ad0617afabf", 400, 320),
-  },
-  {
-    id: 4,
-    name: "Portable Hand Sprayer (5L)",
-    category: "Tools",
-    price: 549,
-    mrp: 699,
-    rating: 4.4,
-    reviews: 76,
-    tag: "Sale",
-    img: unsplash("1587974928442-e0a1f94c28c5", 400, 320),
-  },
-  {
-    id: 5,
-    name: "Hybrid Cauliflower Seeds (5g)",
-    category: "Seeds",
-    price: 129,
-    mrp: 175,
-    rating: 4.2,
-    reviews: 89,
-    tag: null,
-    img: unsplash("1459156212016-c812468e2115", 400, 320),
-  },
-  {
-    id: 6,
-    name: "Bio Neem Oil Spray (500ml)",
-    category: "Pesticides",
-    price: 249,
-    mrp: 320,
-    rating: 4.6,
-    reviews: 156,
-    tag: "Organic",
-    img: unsplash("1527489377706-5bf97e608852", 400, 320),
-  },
-  {
-    id: 7,
-    name: "Drip Irrigation Starter Kit",
-    category: "Irrigation",
-    price: 1499,
-    mrp: 1999,
-    rating: 4.8,
-    reviews: 67,
-    tag: "New",
-    img: unsplash("1558618666-fcd25c85cd64", 400, 320),
-  },
-  {
-    id: 8,
-    name: "Premium Cattle Feed (25kg)",
-    category: "Animal Feed",
-    price: 899,
-    mrp: 1100,
-    rating: 4.5,
-    reviews: 43,
-    tag: null,
-    img: unsplash("1516467508483-a7212febe31a", 400, 320),
-  },
-];
-
-const DEAL_PRODUCT = {
-  name: "Solar Powered Drip Irrigation System",
-  price: 4999,
-  mrp: 8999,
-  rating: 4.9,
-  reviews: 34,
-  img: unsplash("1558618666-fcd25c85cd64", 500, 400),
-  features: ["Solar Powered", "5 Acre Coverage", "Auto Timer", "1 Year Warranty"],
 };
 
-const NEW_ARRIVALS = [
-  { id: 9,  name: "Paddy Hybrid Seeds (1kg)",  price: 299, mrp: 399, rating: 4.4, img: unsplash("1508193638397-1c4234db14d8", 300, 240) },
-  { id: 10, name: "Soil Test Kit",              price: 449, mrp: 599, rating: 4.6, img: unsplash("1574943320219-cfe792d3a119", 300, 240) },
-  { id: 11, name: "Organic DAP (5kg)",          price: 549, mrp: 699, rating: 4.3, img: unsplash("1416879595882-3373a0480b5b", 300, 240) },
-  { id: 12, name: "Garden Rake Set",            price: 349, mrp: 450, rating: 4.5, img: unsplash("1592838064575-70ed626d3a0e", 300, 240) },
-  { id: 13, name: "Chilli Hybrid Seeds (5g)",   price: 99,  mrp: 149, rating: 4.2, img: unsplash("1583842761827-9d4e0a7cb5dc", 300, 240) },
-  { id: 14, name: "Pheromone Trap Kit",         price: 199, mrp: 280, rating: 4.7, img: unsplash("1625246333195-78d9c38ad449", 300, 240) },
-];
+const FALLBACK_IMG = "https://diy01hshsh1oh.cloudfront.net/Product/default.png";
 
-// ── Star Rating ────────────────────────────────────────────────────────────
-const StarRating = ({ rating, size = 13 }) => (
-  <div className="flex items-center gap-0.5">
-    {[1, 2, 3, 4, 5].map((s) => (
-      <Star
-        key={s}
-        size={size}
-        className={
-          s <= Math.floor(rating)
-            ? "text-yellow-400 fill-yellow-400"
-            : "text-gray-300 fill-gray-300"
-        }
+/* Category badge color map */
+const BADGE_PALETTE = [
+  { bg: "#dcfce7", color: "#15803d" },
+  { bg: "#dbeafe", color: "#1d4ed8" },
+  { bg: "#fef9c3", color: "#854d0e" },
+  { bg: "#ede9fe", color: "#6d28d9" },
+  { bg: "#ffe4e6", color: "#be123c" },
+  { bg: "#cffafe", color: "#0e7490" },
+  { bg: "#fce7f3", color: "#9d174d" },
+];
+const getBadge = (name = "") => {
+  const idx =
+    Math.abs(name.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) %
+    BADGE_PALETTE.length;
+  return BADGE_PALETTE[idx];
+};
+
+/* Stock badge */
+const getStock = (qty) => {
+  const n = parseInt(qty, 10);
+  if (isNaN(n) || n === 0) return { label: "Out of Stock", bg: "#fee2e2", color: "#b91c1c" };
+  if (n <= 10)              return { label: `Only ${n} left`, bg: "#fef3c7", color: "#92400e" };
+  return                           { label: `${n} in stock`, bg: "#dcfce7", color: "#15803d" };
+};
+
+/* ════════════════════════════════════════════
+   CART DRAWER
+════════════════════════════════════════════ */
+const CartDrawer = ({ cart, onClose, onUpdateQty, onRemove }) => {
+  const totalItems = cart.reduce((s, c) => s + c.cartQty, 0);
+  const total      = cart.reduce((s, c) => s + parseFloat(c.price || 0) * c.cartQty, 0);
+
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-40"
+        style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(3px)" }}
       />
-    ))}
-  </div>
-);
 
-// ── Product Card ───────────────────────────────────────────────────────────
-const ProductCard = ({ product, wished, onWish }) => {
-  const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+      {/* Panel */}
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", damping: 28, stiffness: 260 }}
+        className="fixed right-0 top-0 h-full z-50 flex flex-col bg-white"
+        style={{ width: "min(420px, 100vw)", boxShadow: "-8px 0 48px rgba(0,0,0,0.18)" }}
+      >
+
+        {/* ── Drawer Header ── */}
+        <div
+          className="shrink-0 flex items-center justify-between px-5 py-4"
+          style={{ background: "linear-gradient(135deg, #14532d 0%, #16a34a 100%)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
+              <ShoppingCart size={19} className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-bold text-base leading-tight tracking-tight">
+                Mera Cart
+              </h2>
+              <p className="text-green-200 text-xs mt-0.5">
+                {totalItems} item{totalItems !== 1 ? "s" : ""} added
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center transition-colors"
+          >
+            <X size={17} className="text-white" />
+          </button>
+        </div>
+
+        {/* ── Items ── */}
+        <div className="flex-1 overflow-y-auto" style={{ background: "#f4f7f4" }}>
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full gap-4 px-8 text-center">
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center"
+                style={{ background: "#e8f5e9" }}
+              >
+                <ShoppingCart size={40} style={{ color: "#a5d6a7" }} />
+              </div>
+              <div>
+                <p className="text-gray-800 font-bold text-lg">Cart Khaali Hai</p>
+                <p className="text-gray-400 text-sm mt-1 leading-relaxed">
+                  Apne pasandida products add karein aur order karein
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="mt-1 px-7 py-2.5 rounded-2xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, #15803d, #16a34a)" }}
+              >
+                Shopping Karein
+              </button>
+            </div>
+          ) : (
+            <div className="p-3 flex flex-col gap-2.5">
+              {cart.map((item) => {
+                const imgSrc =
+                  item.imageUrl && item.imageUrl !== "NA" && item.imageUrl !== "imageUrl"
+                    ? item.imageUrl
+                    : FALLBACK_IMG;
+                const subtotal = (parseFloat(item.price || 0) * item.cartQty).toFixed(0);
+
+                return (
+                  <div
+                    key={item.itemId}
+                    className="bg-white rounded-2xl overflow-hidden"
+                    style={{ boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}
+                  >
+                    <div className="flex items-start gap-3 p-3.5">
+                      {/* Image */}
+                      <div
+                        className="shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
+                        style={{ width: 68, height: 68, background: "#f8faf8" }}
+                      >
+                        <img
+                          src={imgSrc}
+                          alt={item.itemName}
+                          onError={(e) => { e.target.src = FALLBACK_IMG; }}
+                          className="w-full h-full object-contain p-1.5"
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        <p className="text-sm font-bold text-gray-900 line-clamp-1 leading-tight">
+                          {item.itemName}
+                        </p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <MapPin size={10} style={{ color: "#60a5fa", flexShrink: 0 }} />
+                          <span className="text-xs truncate" style={{ color: "#3b82f6" }}>
+                            {item.unitCode}
+                          </span>
+                        </div>
+                        <p className="text-sm font-extrabold mt-1.5" style={{ color: "#15803d" }}>
+                          ₹{item.price}
+                        </p>
+                      </div>
+
+                      {/* Right: qty + delete */}
+                      <div className="flex flex-col items-end gap-2.5 shrink-0 pt-0.5">
+                        {/* Qty pill */}
+                        <div
+                          className="flex items-center rounded-full overflow-hidden border"
+                          style={{ borderColor: "#e5e7eb", height: 34 }}
+                        >
+                          <button
+                            onClick={() => onUpdateQty(item.itemId, item.cartQty - 1)}
+                            className="w-9 h-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span
+                            className="w-8 text-center text-sm font-extrabold"
+                            style={{ color: "#111827" }}
+                          >
+                            {item.cartQty}
+                          </span>
+                          <button
+                            onClick={() => onUpdateQty(item.itemId, item.cartQty + 1)}
+                            className="w-9 h-full flex items-center justify-center text-gray-400 hover:bg-green-50 hover:text-green-600 transition-colors"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+
+                        {/* Subtotal */}
+                        <span className="text-sm font-bold" style={{ color: "#374151" }}>
+                          ₹{subtotal}
+                        </span>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => onRemove(item.itemId)}
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* ── Sticky Footer ── */}
+        {cart.length > 0 && (
+          <div
+            className="shrink-0 px-5 pt-4 pb-5 bg-white"
+            style={{ boxShadow: "0 -6px 24px rgba(0,0,0,0.09)" }}
+          >
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-sm text-gray-400">
+                Subtotal ({totalItems} items)
+              </span>
+              <span className="text-sm font-semibold text-gray-700">₹{total.toFixed(0)}</span>
+            </div>
+            <div className="flex justify-between items-center pb-3.5 border-b border-dashed border-gray-200 mb-3.5">
+              <span className="text-sm text-gray-400">Delivery Charges</span>
+              <span className="text-sm font-bold text-green-600">FREE</span>
+            </div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-base font-bold text-gray-900">Total Amount</span>
+              <span className="text-2xl font-extrabold" style={{ color: "#15803d" }}>
+                ₹{total.toFixed(0)}
+              </span>
+            </div>
+            <button
+              className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-bold text-sm tracking-wide transition-all active:scale-[0.98] hover:opacity-95"
+              style={{
+                background: "linear-gradient(135deg, #14532d 0%, #16a34a 100%)",
+                boxShadow: "0 4px 16px rgba(22,163,74,0.35)",
+              }}
+            >
+              <ShoppingCart size={16} />
+              Order Place Karein →
+            </button>
+          </div>
+        )}
+      </motion.div>
+    </>
+  );
+};
+
+/* ════════════════════════════════════════════
+   PRODUCT CARD
+════════════════════════════════════════════ */
+const ProductCard = ({ item, cartQty, onAddToCart, onUpdateQty }) => {
+  const [imgErr, setImgErr] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const src =
+    !imgErr && item.imageUrl && item.imageUrl !== "imageUrl" && item.imageUrl !== "NA"
+      ? item.imageUrl
+      : FALLBACK_IMG;
+
+  const cat    = item.categoryD1 && item.categoryD1 !== "NA" ? item.categoryD1 : null;
+  const badge  = getBadge(cat || "");
+  const stock  = getStock(item.stockQuantity);
+
+  const qty =
+    item.quantity && item.quantity !== "NA" && item.quantityUnit && item.quantityUnit !== "NA"
+      ? `${item.quantity} ${item.quantityUnit}`
+      : item.quantityUnit && item.quantityUnit !== "NA"
+      ? item.quantityUnit
+      : null;
+
   return (
     <motion.div
-      variants={scaleIn}
-      whileHover={{ y: -7, transition: { duration: 0.22 } }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-shadow overflow-hidden group cursor-pointer"
+      variants={cardAnim}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      animate={{ y: hovered ? -5 : 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="bg-white rounded-2xl overflow-hidden flex flex-col cursor-pointer"
+      style={{
+        boxShadow: hovered
+          ? "0 14px 36px rgba(0,0,0,0.13), 0 0 0 1.5px rgba(22,163,74,0.2)"
+          : "0 2px 10px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04)",
+        transition: "box-shadow 0.22s ease",
+      }}
     >
-      {/* Image */}
-      <div className="relative h-44 overflow-hidden bg-gray-50">
+      {/* ── Image ── */}
+      <div
+        className="relative overflow-hidden"
+        style={{ height: 168, background: "linear-gradient(145deg, #f8faf8 0%, #f0f4f0 100%)" }}
+      >
         <img
-          src={product.img}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          src={src}
+          alt={item.itemName}
+          onError={() => setImgErr(true)}
+          className="w-full h-full object-contain p-4 transition-transform duration-500 ease-out"
+          style={{ transform: hovered ? "scale(1.07)" : "scale(1)" }}
         />
-        {product.tag && (
-          <span className="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2.5 py-1 rounded-full z-10">
-            {product.tag}
+
+        {/* Category badge — top left */}
+        {cat && (
+          <span
+            className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full leading-snug"
+            style={{ background: badge.bg, color: badge.color }}
+          >
+            {cat}
           </span>
         )}
-        <span className="absolute top-3 right-10 bg-red-50 text-red-500 text-xs font-bold px-2 py-0.5 rounded-full z-10">
-          -{discount}%
-        </span>
-        <button
-          onClick={() => onWish(product.id)}
-          className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+
+        {/* Stock badge — top right */}
+        <span
+          className="absolute top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-snug"
+          style={{ background: stock.bg, color: stock.color }}
         >
-          <Heart size={14} className={wished ? "fill-red-500 text-red-500" : "text-gray-400"} />
-        </button>
+          {stock.label}
+        </span>
+
+        {/* In-cart qty bubble */}
+        <AnimatePresence>
+          {cartQty > 0 && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-extrabold"
+              style={{
+                background: "#16a34a",
+                boxShadow: "0 2px 8px rgba(22,163,74,0.5)",
+              }}
+            >
+              {cartQty}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Info */}
-      <div className="p-4">
-        <p className="text-xs text-green-600 font-semibold mb-1">{product.category}</p>
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug mb-2 line-clamp-2 min-h-[2.4rem]">
-          {product.name}
+      {/* ── Body ── */}
+      <div className="flex flex-col flex-1 px-3 pt-2.5 pb-3 gap-1.5">
+
+        {/* Product name */}
+        <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 tracking-tight">
+          {item.itemName}
         </h3>
-        <StarRating rating={product.rating} />
-        <p className="text-xs text-gray-400 mt-0.5">({product.reviews} reviews)</p>
-        <div className="flex items-baseline gap-2 mt-2">
-          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
-          <span className="text-xs text-gray-400 line-through">₹{product.mrp}</span>
+
+        {/* Description */}
+        {item.description && item.description !== "NA" && item.description.trim() !== "" && (
+          <p className="text-xs line-clamp-1 leading-relaxed" style={{ color: "#9ca3af" }}>
+            {item.description}
+          </p>
+        )}
+
+        {/* Seller / Unit code */}
+        <div className="flex items-center gap-1">
+          <MapPin size={10} style={{ color: "#60a5fa", flexShrink: 0 }} />
+          <span
+            className="text-xs font-medium truncate"
+            style={{ color: "#3b82f6" }}
+            title={item.unitCode}
+          >
+            {item.unitCode}
+          </span>
         </div>
-        <button className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-          <ShoppingCart size={14} />
-          Add to Cart
-        </button>
+
+        {/* Price row */}
+        <div
+          className="flex items-end justify-between mt-auto pt-2.5"
+          style={{ borderTop: "1px solid #f3f4f6" }}
+        >
+          <div>
+            <p className="text-[17px] font-extrabold leading-none" style={{ color: "#15803d" }}>
+              ₹{item.price}
+            </p>
+            {qty && (
+              <p className="text-[11px] mt-0.5 leading-none" style={{ color: "#9ca3af" }}>
+                per {qty}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Add to Cart / Qty controls */}
+        <div className="mt-1.5">
+          <AnimatePresence mode="wait" initial={false}>
+            {cartQty > 0 ? (
+              <motion.div
+                key="qty-ctrl"
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.14 }}
+                className="flex items-center justify-between rounded-xl px-2 py-1.5"
+                style={{
+                  background: "#f0fdf4",
+                  border: "1.5px solid #bbf7d0",
+                }}
+              >
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpdateQty(item.itemId, cartQty - 1); }}
+                  className="w-7 h-7 rounded-lg bg-white border flex items-center justify-center text-gray-500 hover:border-red-300 hover:text-red-500 transition-colors"
+                  style={{ borderColor: "#e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}
+                >
+                  <Minus size={12} />
+                </button>
+                <span className="text-sm font-extrabold" style={{ color: "#15803d", minWidth: 24, textAlign: "center" }}>
+                  {cartQty}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpdateQty(item.itemId, cartQty + 1); }}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-white hover:opacity-85 transition-opacity"
+                  style={{ background: "#16a34a", boxShadow: "0 1px 3px rgba(22,163,74,0.35)" }}
+                >
+                  <Plus size={12} />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.button
+                key="add-btn"
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ duration: 0.14 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={(e) => { e.stopPropagation(); onAddToCart(item); }}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-white text-xs font-bold tracking-wide hover:opacity-90 transition-opacity"
+                style={{
+                  background: "linear-gradient(135deg, #15803d 0%, #16a34a 70%)",
+                  boxShadow: "0 2px 10px rgba(22,163,74,0.3)",
+                }}
+              >
+                <ShoppingCart size={12} />
+                Cart Mein Add Karein
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   );
 };
 
-// ── Countdown Timer Block ──────────────────────────────────────────────────
-const TimerBlock = ({ val, label }) => (
-  <div className="flex flex-col items-center">
-    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
-      <span className="text-white text-2xl font-extrabold tabular-nums">{val}</span>
-    </div>
-    <span className="text-white/70 text-xs mt-1.5 font-semibold tracking-wide">{label}</span>
-  </div>
-);
+const HIDDEN_CATEGORIES = ["Bike"];
 
-// ── Main Component ─────────────────────────────────────────────────────────
+/* ════════════════════════════════════════════
+   MAIN PAGE
+════════════════════════════════════════════ */
 const K2Store = () => {
-  const [search, setSearch]     = useState("");
-  const [wished, setWished]     = useState({});
-  const [slide, setSlide]       = useState(0);
-  const [timeLeft, setTimeLeft] = useState({ h: 5, m: 47, s: 32 });
-  const slideTimer              = useRef(null);
+  const [products, setProducts]             = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState(null);
+  const [search, setSearch]                 = useState("");
+  const [filterOpen, setFilterOpen]         = useState(false);
+  const [selectedUnit, setSelectedUnit]     = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [cart, setCart]                     = useState([]);
+  const [cartOpen, setCartOpen]             = useState(false);
+  const filterRef = useRef(null);
 
-  // Countdown
-  useEffect(() => {
-    const t = setInterval(() => {
-      setTimeLeft((prev) => {
-        const { h, m, s } = prev;
-        if (s > 0) return { h, m, s: s - 1 };
-        if (m > 0) return { h, m: m - 1, s: 59 };
-        if (h > 0) return { h: h - 1, m: 59, s: 59 };
-        return { h: 0, m: 0, s: 0 };
-      });
-    }, 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  // Auto-slide
-  useEffect(() => {
-    slideTimer.current = setInterval(() => {
-      setSlide((p) => (p + 1) % HERO_SLIDES.length);
-    }, 4500);
-    return () => clearInterval(slideTimer.current);
-  }, []);
-
-  const goSlide = (idx) => {
-    clearInterval(slideTimer.current);
-    setSlide(idx);
-    slideTimer.current = setInterval(() => {
-      setSlide((p) => (p + 1) % HERO_SLIDES.length);
-    }, 4500);
+  /* Load */
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    const res = await apiPost(ENDPOINTS.BUY_SELL, "getUnitItems", { unitCode: "NA" });
+    if (res.success && res.data?.userList) setProducts(res.data.userList);
+    else setError(res.error || "Products load nahi hue, dobara try karein");
+    setLoading(false);
   };
+  useEffect(() => { load(); }, []);
 
-  const pad         = (n) => String(n).padStart(2, "0");
-  const toggleWish  = (id) => setWished((p) => ({ ...p, [id]: !p[id] }));
-  const cur         = HERO_SLIDES[slide];
+  /* Close filter on outside click */
+  useEffect(() => {
+    const h = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) setFilterOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
+
+  /* Cart helpers */
+  const addToCart = (item) =>
+    setCart((prev) => {
+      const ex = prev.find((c) => c.itemId === item.itemId);
+      return ex
+        ? prev.map((c) => c.itemId === item.itemId ? { ...c, cartQty: c.cartQty + 1 } : c)
+        : [...prev, { ...item, cartQty: 1 }];
+    });
+
+  const updateQty = (itemId, qty) =>
+    qty <= 0
+      ? setCart((p) => p.filter((c) => c.itemId !== itemId))
+      : setCart((p) => p.map((c) => c.itemId === itemId ? { ...c, cartQty: qty } : c));
+
+  const removeFromCart = (itemId) =>
+    setCart((p) => p.filter((c) => c.itemId !== itemId));
+
+  const cartCount = cart.reduce((s, c) => s + c.cartQty, 0);
+  const getCartQty = (id) => cart.find((c) => c.itemId === id)?.cartQty || 0;
+
+  /* Derived */
+  const unitCodes = useMemo(() => {
+    return [...new Set(products.map((p) => p.unitCode).filter((c) => c && c !== "NA"))].sort();
+  }, [products]);
+
+  const categories = useMemo(() => {
+    const cats = [...new Set(products.map((p) => p.categoryD2).filter((c) => c && c !== "NA" && !HIDDEN_CATEGORIES.includes(c)))].sort();
+    return ["All", ...cats];
+  }, [products]);
+
+  const filtered = products.filter((p) => {
+    if (HIDDEN_CATEGORIES.includes(p.categoryD2)) return false;
+    const q = search.toLowerCase().trim();
+    const matchSearch =
+      !q ||
+      p.itemName?.toLowerCase().includes(q) ||
+      p.categoryD1?.toLowerCase().includes(q) ||
+      p.categoryD2?.toLowerCase().includes(q) ||
+      p.unitCode?.toLowerCase().includes(q) ||
+      p.description?.toLowerCase().includes(q);
+    return (
+      matchSearch &&
+      (!selectedUnit || p.unitCode === selectedUnit) &&
+      (activeCategory === "All" || p.categoryD2 === activeCategory)
+    );
+  });
+
+  const hasFilters = selectedUnit || activeCategory !== "All";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen"
+      style={{ background: "#f4f7f4", fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}
+    >
       <Header />
 
-      {/* ── HERO CAROUSEL ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden h-120 md:h-130">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={cur.id}
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-            className="absolute inset-0"
-          >
-            <img
-              src={cur.img}
-              alt={cur.title}
-              className="w-full h-full object-cover"
-            />
-            {/* overlay */}
+      {/* ════ Sticky Toolbar ════ */}
+      <div
+        className="bg-white sticky top-0 z-30"
+        style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}
+      >
+        <div className="px-3 sm:px-5 pt-3 pb-3">
+
+          {/* Row 1: Search + Filter + Cart */}
+          <div className="flex items-center gap-2">
+
+            {/* Search bar */}
             <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(90deg, ${cur.from}ee 0%, ${cur.to}99 50%, transparent 100%)`,
-              }}
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Content */}
-        <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 max-w-3xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={cur.id + "-text"}
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ duration: 0.55 }}
+              className="flex-1 flex items-center rounded-2xl border transition-all duration-200 overflow-hidden"
+              style={{ background: "#f9fafb", borderColor: "#e5e7eb" }}
+              onFocus={(e) => e.currentTarget.style.borderColor = "#16a34a"}
+              onBlur={(e) => e.currentTarget.style.borderColor = "#e5e7eb"}
             >
-              <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">
-                <Zap size={12} className="text-yellow-300" />
-                K2 Exclusive Agricultural Store
-              </span>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4">
-                {cur.title}
-              </h1>
-              <p className="text-white/85 text-base md:text-lg mb-7 max-w-md leading-relaxed">
-                {cur.sub}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <button className="bg-white text-green-800 font-extrabold px-7 py-3 rounded-2xl hover:bg-green-50 transition-colors shadow-lg text-sm flex items-center gap-2">
-                  {cur.cta} <ArrowRight size={15} />
-                </button>
-                <button className="border border-white/60 text-white font-semibold px-7 py-3 rounded-2xl hover:bg-white/10 transition-colors text-sm">
-                  Browse All
-                </button>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Dots */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {HERO_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goSlide(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === slide ? "w-8 bg-white" : "w-2 bg-white/50"
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Arrows */}
-        <button
-          onClick={() => goSlide((slide - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white rounded-full flex items-center justify-center transition-colors"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button
-          onClick={() => goSlide((slide + 1) % HERO_SLIDES.length)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white rounded-full flex items-center justify-center transition-colors"
-        >
-          <ChevronRight size={20} />
-        </button>
-
-        {/* Stats overlay bottom-right */}
-        <div className="absolute bottom-6 right-8 z-20 hidden md:flex gap-6 text-white">
-          {[
-            { num: "500+", label: "Products" },
-            { num: "10K+", label: "Farmers" },
-            { num: "100%", label: "Quality" },
-          ].map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="text-xl font-extrabold">{s.num}</p>
-              <p className="text-white/70 text-xs">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── SEARCH BAR ──────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-gray-100 shadow-sm py-4 px-6">
-        <div className="max-w-2xl mx-auto flex items-center bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <Search size={18} className="ml-4 text-gray-400 shrink-0" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search seeds, fertilizers, tools, irrigation..."
-            className="flex-1 px-3 py-3.5 text-gray-700 outline-none text-sm bg-transparent"
-          />
-          <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3.5 font-semibold text-sm transition-colors whitespace-nowrap">
-            Search
-          </button>
-        </div>
-      </section>
-
-      {/* ── TRUST STRIP ─────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex flex-wrap justify-center gap-x-10 gap-y-2">
-          {[
-            { icon: Truck,        text: "Free Delivery above ₹999" },
-            { icon: Shield,       text: "100% Genuine Products"     },
-            { icon: CheckCircle2, text: "Certified Quality"         },
-            { icon: Headphones,   text: "Kisan Support 24/7"        },
-          ].map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-              <div className="w-7 h-7 bg-green-50 rounded-full flex items-center justify-center">
-                <Icon size={14} className="text-green-600" />
-              </div>
-              {text}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CATEGORIES ──────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="flex items-center justify-between mb-8"
-        >
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Shop by Category</h2>
-            <p className="text-gray-500 text-sm mt-1">Explore our wide range of agricultural products</p>
-          </div>
-          <button className="hidden md:flex items-center gap-1 text-green-600 font-semibold text-sm hover:gap-2 transition-all">
-            All Categories <ChevronRight size={16} />
-          </button>
-        </motion.div>
-
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} variants={stagger}
-          className="grid grid-cols-4 md:grid-cols-8 gap-3 md:gap-5"
-        >
-          {CATEGORIES.map((cat) => (
-            <motion.div
-              key={cat.name}
-              variants={scaleIn}
-              whileHover={{ scale: 1.08, transition: { duration: 0.2 } }}
-              className="cursor-pointer group text-center"
-            >
-              <div className="w-full aspect-square rounded-2xl overflow-hidden mb-2.5 shadow-sm group-hover:shadow-lg transition-shadow border-2 border-transparent group-hover:border-green-400">
-                <img
-                  src={cat.img}
-                  alt={cat.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-400"
-                />
-              </div>
-              <p className="text-xs font-semibold text-gray-700 leading-tight">{cat.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{cat.count} items</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ── PROMO BANNER ROW ────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-12">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
-          {[
-            {
-              title: "Seeds Utsav",
-              sub: "Up to 30% off on hybrid seeds",
-              img: unsplash("1574943320219-cfe792d3a119", 600, 220),
-            },
-            {
-              title: "Tool Mela",
-              sub: "Farm tools at unbeatable prices",
-              img: unsplash("1592838064575-70ed626d3a0e", 600, 220),
-            },
-            {
-              title: "Organic Week",
-              sub: "Go green with certified organic range",
-              img: unsplash("1471193945509-9ad0617afabf", 600, 220),
-            },
-          ].map((banner) => (
-            <motion.div
-              key={banner.title}
-              variants={fadeUp}
-              whileHover={{ scale: 1.025, transition: { duration: 0.2 } }}
-              className="rounded-2xl overflow-hidden cursor-pointer relative h-44 shadow-md"
-            >
-              <img
-                src={banner.img}
-                alt={banner.title}
-                className="w-full h-full object-cover"
+              <Search size={16} className="ml-4 shrink-0" style={{ color: "#9ca3af" }} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Product, category ya unit se search karein..."
+                className="flex-1 px-3 py-3 text-sm bg-transparent outline-none placeholder-gray-400"
+                style={{ color: "#111827" }}
               />
-              <div className="absolute inset-0 bg-linear-to-r from-black/65 via-black/30 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end p-5">
-                <h3 className="text-xl font-extrabold text-white">{banner.title}</h3>
-                <p className="text-sm text-white/80 mb-2">{banner.sub}</p>
-                <span className="inline-flex items-center gap-1 text-xs font-bold bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-full w-fit transition-colors">
-                  Shop Now <ArrowRight size={12} />
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+              <AnimatePresence>
+                {search && (
+                  <motion.button
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    onClick={() => setSearch("")}
+                    className="mr-3 w-5 h-5 rounded-full flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity"
+                    style={{ background: "#9ca3af" }}
+                  >
+                    <X size={10} className="text-white" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
 
-      {/* ── FEATURED PRODUCTS ───────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-4 pb-14">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="flex items-center justify-between mb-8"
-        >
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Products</h2>
-            <p className="text-gray-500 text-sm mt-1">Handpicked for Indian farmers</p>
-          </div>
-          <button className="hidden md:flex items-center gap-1 text-green-600 font-semibold text-sm hover:gap-2 transition-all">
-            View All <ChevronRight size={16} />
-          </button>
-        </motion.div>
-
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.08 }} variants={stagger}
-          className="grid grid-cols-2 md:grid-cols-4 gap-5"
-        >
-          {PRODUCTS.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              wished={!!wished[product.id]}
-              onWish={toggleWish}
-            />
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ── DEAL OF THE DAY ─────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="bg-linear-to-r from-green-800 via-green-700 to-emerald-600 rounded-3xl overflow-hidden shadow-xl"
-        >
-          <div className="flex flex-col md:flex-row items-stretch">
-            {/* Left text */}
-            <div className="flex-1 p-8 md:p-12 text-white flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-3">
-                <Flame size={18} className="text-yellow-300" />
-                <span className="text-yellow-300 font-extrabold text-xs tracking-widest uppercase">
-                  Deal of the Day
-                </span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-4 leading-snug">
-                {DEAL_PRODUCT.name}
-              </h2>
-              <div className="flex flex-wrap items-baseline gap-3 mb-5">
-                <span className="text-4xl font-extrabold">₹{DEAL_PRODUCT.price.toLocaleString()}</span>
-                <span className="text-white/50 line-through text-lg">₹{DEAL_PRODUCT.mrp.toLocaleString()}</span>
-                <span className="bg-yellow-400 text-yellow-900 text-sm font-bold px-3 py-0.5 rounded-full">
-                  {Math.round(((DEAL_PRODUCT.mrp - DEAL_PRODUCT.price) / DEAL_PRODUCT.mrp) * 100)}% OFF
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2 mb-7">
-                {DEAL_PRODUCT.features.map((f) => (
-                  <span key={f} className="inline-flex items-center gap-1 text-xs bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <CheckCircle2 size={12} className="text-yellow-300" /> {f}
-                  </span>
-                ))}
-              </div>
-              {/* Countdown */}
-              <div className="mb-7">
-                <p className="text-white/70 text-xs mb-3 font-semibold uppercase tracking-wider">
-                  Offer Ends In
-                </p>
-                <div className="flex gap-3">
-                  <TimerBlock val={pad(timeLeft.h)} label="HRS" />
-                  <div className="text-white text-2xl font-bold self-start mt-3">:</div>
-                  <TimerBlock val={pad(timeLeft.m)} label="MIN" />
-                  <div className="text-white text-2xl font-bold self-start mt-3">:</div>
-                  <TimerBlock val={pad(timeLeft.s)} label="SEC" />
-                </div>
-              </div>
-              <button className="inline-flex items-center gap-2 bg-white text-green-800 font-extrabold px-8 py-3.5 rounded-2xl hover:bg-green-50 transition-colors shadow-lg w-fit">
-                <ShoppingCart size={17} /> Grab this Deal
+            {/* Filter button */}
+            <div className="relative shrink-0" ref={filterRef}>
+              <button
+                onClick={() => setFilterOpen((o) => !o)}
+                className="flex items-center gap-1.5 px-3 py-3 rounded-2xl border text-xs font-semibold transition-all"
+                style={
+                  selectedUnit
+                    ? { background: "#16a34a", color: "#fff", borderColor: "#16a34a" }
+                    : { background: "#f9fafb", color: "#4b5563", borderColor: "#e5e7eb" }
+                }
+              >
+                <SlidersHorizontal size={15} />
+                <span className="hidden sm:inline">{selectedUnit || "Filter"}</span>
               </button>
+
+              <AnimatePresence>
+                {filterOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                    transition={{ duration: 0.14 }}
+                    className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl p-3.5 z-50"
+                    style={{ boxShadow: "0 10px 36px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3 pb-3" style={{ borderBottom: "1px solid #f3f4f6" }}>
+                      <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: "#6b7280" }}>
+                        Unit Code
+                      </span>
+                      {selectedUnit && (
+                        <button
+                          onClick={() => { setSelectedUnit(""); setFilterOpen(false); }}
+                          className="text-xs font-semibold hover:underline"
+                          style={{ color: "#16a34a" }}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
+                      {unitCodes.length === 0 ? (
+                        <p className="text-xs text-gray-400 py-3 w-full text-center">
+                          Koi unit code nahi mila
+                        </p>
+                      ) : (
+                        unitCodes.map((code) => (
+                          <button
+                            key={code}
+                            onClick={() => { setSelectedUnit(selectedUnit === code ? "" : code); setFilterOpen(false); }}
+                            className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                            style={
+                              selectedUnit === code
+                                ? { background: "#16a34a", color: "#fff" }
+                                : { background: "#f3f4f6", color: "#374151" }
+                            }
+                          >
+                            {code}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Right image */}
-            <div className="md:w-80 lg:w-96 h-64 md:h-auto overflow-hidden">
-              <img
-                src={DEAL_PRODUCT.img}
-                alt={DEAL_PRODUCT.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ── NEW ARRIVALS ────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="flex items-center justify-between mb-8"
-        >
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-            <p className="text-gray-500 text-sm mt-1">Fresh stock, just added</p>
-          </div>
-          <button className="hidden md:flex items-center gap-1 text-green-600 font-semibold text-sm hover:gap-2 transition-all">
-            View All <ChevronRight size={16} />
-          </button>
-        </motion.div>
-
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={stagger}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4"
-        >
-          {NEW_ARRIVALS.map((item) => {
-            const disc = Math.round(((item.mrp - item.price) / item.mrp) * 100);
-            return (
-              <motion.div
-                key={item.id}
-                variants={scaleIn}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group"
-              >
-                <div className="relative h-28 overflow-hidden">
-                  <img
-                    src={item.img}
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-400"
-                  />
-                  <span className="absolute top-1.5 left-1.5 bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">
-                    New
-                  </span>
-                </div>
-                <div className="p-3 text-center">
-                  <p className="text-xs font-semibold text-gray-800 line-clamp-2 mb-1.5 leading-snug min-h-8">
-                    {item.name}
-                  </p>
-                  <StarRating rating={item.rating} size={10} />
-                  <div className="mt-1.5 flex items-center justify-center gap-1.5">
-                    <span className="text-sm font-bold text-gray-900">₹{item.price}</span>
-                    <span className="text-xs text-gray-400 line-through">₹{item.mrp}</span>
-                  </div>
-                  <span className="text-xs text-red-500 font-bold">-{disc}%</span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-      </section>
-
-      {/* ── FPO OFFER BANNER ────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl shadow-2xl h-72 md:h-64"
-        >
-          <img
-            src={unsplash("1625246333195-78d9c38ad449", 1200, 400)}
-            alt="FPO Offer"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-900/92 via-green-800/80 to-teal-700/50" />
-
-          <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 z-10">
-            <div className="text-white text-center md:text-left">
-              <span className="text-yellow-300 text-xs font-extrabold uppercase tracking-widest">
-                Special Offer for FPO Members
-              </span>
-              <h2 className="text-2xl md:text-4xl font-extrabold mt-2 mb-2 leading-tight">
-                FPO Members पाएं<br />Extra 10% Cashback
-              </h2>
-              <p className="text-green-200 text-sm max-w-sm leading-relaxed">
-                K2 verified FPO members को हर order पर extra savings — directly credited to your K2 wallet.
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                className="mt-5 inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-extrabold px-6 py-3 rounded-2xl transition-colors shadow-lg"
-              >
-                <Gift size={17} /> Claim Offer
-              </motion.button>
-            </div>
-
-            <div className="flex flex-col items-center gap-4">
-              <span className="text-7xl select-none drop-shadow-xl">🎁</span>
-              <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-8 py-4 text-white text-center border border-white/30">
-                <p className="text-xs font-semibold text-white/70 mb-1">Use Coupon Code</p>
-                <p className="text-2xl font-extrabold tracking-[0.2em]">K2FPO10</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ── WHY K2 STORE ────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-14">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="text-center mb-10"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Why K2 Store?</h2>
-          <p className="text-gray-500 mt-2 text-sm">Built exclusively for Indian farmers, by farmers</p>
-        </motion.div>
-
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} variants={stagger}
-          className="grid grid-cols-2 md:grid-cols-4 gap-5"
-        >
-          {[
-            { icon: BadgeCheck, title: "100% Verified Products",  desc: "Every product tested & certified by agriculture experts", color: "text-green-600",  bg: "bg-green-50"  },
-            { icon: Truck,      title: "Fast Rural Delivery",     desc: "Doorstep delivery even to remote village areas",          color: "text-blue-600",   bg: "bg-blue-50"   },
-            { icon: Tag,        title: "Farmer-First Pricing",    desc: "Direct from manufacturers — no middlemen margin",         color: "text-amber-600",  bg: "bg-amber-50"  },
-            { icon: Headphones, title: "Kisan Support",           desc: "Expert advice on product selection in your language",     color: "text-purple-600", bg: "bg-purple-50" },
-          ].map(({ icon: Icon, title, desc, color, bg }) => (
-            <motion.div
-              key={title}
-              variants={fadeUp}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center hover:shadow-lg transition-shadow"
+            {/* Cart button */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative shrink-0 flex items-center gap-1.5 px-3 py-3 rounded-2xl border text-xs font-semibold transition-all hover:border-green-400"
+              style={{ background: "#f9fafb", color: "#4b5563", borderColor: "#e5e7eb" }}
             >
-              <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center mx-auto mb-4`}>
-                <Icon size={22} className={color} />
-              </div>
-              <h3 className="font-bold text-gray-800 mb-2 text-sm leading-snug">{title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+              <ShoppingCart size={15} />
+              <span className="hidden sm:inline">Cart</span>
+              <AnimatePresence>
+                {cartCount > 0 && (
+                  <motion.span
+                    key={cartCount}
+                    initial={{ scale: 0.3, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.3, opacity: 0 }}
+                    className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full text-white text-[10px] font-extrabold flex items-center justify-center"
+                    style={{
+                      background: "#16a34a",
+                      boxShadow: "0 2px 8px rgba(22,163,74,0.5)",
+                    }}
+                  >
+                    {cartCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
 
-      {/* ── APP DOWNLOAD CTA ────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.65 }}
-          className="relative overflow-hidden rounded-3xl shadow-2xl h-auto"
-        >
-          <img
-            src={unsplash("1508193638397-1c4234db14d8", 1200, 400)}
-            alt="Download App"
-            className="w-full h-64 md:h-72 object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-r from-gray-900/95 via-gray-900/75 to-transparent" />
-
-          <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 z-10">
-            <div className="text-center md:text-left">
-              <span className="text-green-400 text-xs font-extrabold uppercase tracking-widest">
-                Download the App
-              </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-2 mb-2 leading-snug">
-                K2 App से Order करें<br />
-                <span className="text-green-400">और पाएं Extra Benefits!</span>
-              </h2>
-              <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
-                App-exclusive deals, instant notifications for flash sales, and seamless FPO order management.
-              </p>
-              <div className="flex gap-3 mt-5 justify-center md:justify-start">
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() =>
-                    window.open(
-                      "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
-                      "_blank",
-                      "noopener,noreferrer",
-                    )
+          {/* Row 2: Category chips */}
+          {categories.length > 1 && (
+            <div
+              className="mt-3 flex gap-2 overflow-x-auto"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none", paddingBottom: 1 }}
+            >
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all"
+                  style={
+                    activeCategory === cat
+                      ? {
+                          background: "#16a34a",
+                          color: "#fff",
+                          boxShadow: "0 2px 8px rgba(22,163,74,0.4)",
+                        }
+                      : { background: "#f3f4f6", color: "#4b5563" }
                   }
-                  className="flex items-center gap-3 bg-white text-gray-900 font-bold px-5 py-3 rounded-xl hover:bg-green-50 transition-colors shadow-lg"
                 >
-                  <span className="text-2xl">▶</span>
-                  <div className="text-left">
-                    <p className="text-xs text-gray-500 leading-none">Get it on</p>
-                    <p className="text-sm font-extrabold leading-tight">Google Play</p>
-                  </div>
-                </motion.button>
-              </div>
+                  {cat}
+                </button>
+              ))}
             </div>
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="text-8xl select-none"
-            >
-              📱
-            </motion.div>
+          )}
+        </div>
+
+        {/* Active filter pills + result count */}
+        {(hasFilters || (!loading && !error)) && (
+          <div
+            className="px-3 sm:px-5 pb-2.5 flex items-center gap-2 flex-wrap"
+            style={{ minHeight: 32 }}
+          >
+            {selectedUnit && (
+              <button
+                onClick={() => setSelectedUnit("")}
+                className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white transition-opacity hover:opacity-85"
+                style={{ background: "#16a34a" }}
+              >
+                {selectedUnit} <X size={9} />
+              </button>
+            )}
+            {activeCategory !== "All" && (
+              <button
+                onClick={() => setActiveCategory("All")}
+                className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white transition-opacity hover:opacity-85"
+                style={{ background: "#16a34a" }}
+              >
+                {activeCategory} <X size={9} />
+              </button>
+            )}
+            {!loading && !error && (
+              <span className="ml-auto text-xs font-medium" style={{ color: "#9ca3af" }}>
+                {filtered.length} product{filtered.length !== 1 ? "s" : ""} mila
+              </span>
+            )}
           </div>
-        </motion.div>
-      </section>
+        )}
+      </div>
+
+      {/* ════ Grid ════ */}
+      <div className="px-2 sm:px-3 pb-10 pt-3">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-44 gap-5">
+            <div
+              className="w-16 h-16 rounded-full border-4 animate-spin"
+              style={{ borderColor: "#dcfce7", borderTopColor: "#16a34a" }}
+            />
+            <p className="text-sm font-medium" style={{ color: "#6b7280" }}>
+              Products load ho rahe hain...
+            </p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-44 gap-4">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ background: "#fee2e2" }}
+            >
+              <Package size={28} style={{ color: "#fca5a5" }} />
+            </div>
+            <p className="text-gray-700 font-semibold text-center max-w-xs">{error}</p>
+            <button
+              onClick={load}
+              className="px-7 py-2.5 rounded-xl text-white text-sm font-bold transition-opacity hover:opacity-90"
+              style={{ background: "#16a34a" }}
+            >
+              Dobara Try Karein
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-44 gap-4 text-center">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ background: "#f3f4f6" }}
+            >
+              <ShoppingCart size={28} style={{ color: "#d1d5db" }} />
+            </div>
+            <div>
+              <p className="font-bold text-gray-800">Koi product nahi mila</p>
+              <p className="text-sm mt-1" style={{ color: "#9ca3af" }}>
+                {hasFilters || search ? "Filters change karein ya clear karein" : "Baad mein dobara dekhein"}
+              </p>
+            </div>
+            {(hasFilters || search) && (
+              <button
+                onClick={() => { setSearch(""); setSelectedUnit(""); setActiveCategory("All"); }}
+                className="px-6 py-2 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "#16a34a" }}
+              >
+                Sabhi Filters Clear Karein
+              </button>
+            )}
+          </div>
+        ) : (
+          <motion.div
+            key={`${search}-${selectedUnit}-${activeCategory}`}
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+          >
+            {filtered.map((item) => (
+              <ProductCard
+                key={item.itemId}
+                item={item}
+                cartQty={getCartQty(item.itemId)}
+                onAddToCart={addToCart}
+                onUpdateQty={updateQty}
+              />
+            ))}
+          </motion.div>
+        )}
+      </div>
 
       <Footer />
+
+      {/* ════ Cart Drawer ════ */}
+      <AnimatePresence>
+        {cartOpen && (
+          <CartDrawer
+            cart={cart}
+            onClose={() => setCartOpen(false)}
+            onUpdateQty={updateQty}
+            onRemove={removeFromCart}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

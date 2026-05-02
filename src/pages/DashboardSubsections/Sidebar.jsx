@@ -17,6 +17,7 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
       label: "Dashboard",
       id: "dashboard",
     },
+    { icon: BookOpen, label: "Business Plan", id: "businessplan" },
     {
       icon: Users2,
       label: "Members",
@@ -32,7 +33,6 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
       label: "Store",
       id: "store",
     },
-    { icon: BookOpen, label: "Business Plan", id: "businessplan" },
     {
       icon: Sprout,
       label: "Produce",

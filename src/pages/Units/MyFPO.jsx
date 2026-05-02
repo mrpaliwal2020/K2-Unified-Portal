@@ -39,7 +39,7 @@ const MyFPO = ({ onBack, fpoList = [] }) => {
     setSelectedUnit(unit);
     localStorage.removeItem("selectedUnit");
     localStorage.removeItem("selectedUnitCode");
-    navigate(`/dashboard/${unit.unitCode}`);
+    navigate(`/dashboard/${unit.unitCode.replace(/\s+/g, '')}`);
   };
 
   const DUMMY_FPO_IMAGE = (name = "FPO") =>

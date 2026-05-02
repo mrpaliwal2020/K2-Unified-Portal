@@ -144,9 +144,11 @@ const MainDashboard = () => {
     if (
       unitCode &&
       profile?.unitDetails &&
-      (!selectedUnit || selectedUnit.unitCode !== unitCode)
+      (!selectedUnit || selectedUnit.unitCode.replace(/\s+/g, "") !== unitCode)
     ) {
-      const match = profile.unitDetails.find((u) => u.unitCode === unitCode);
+      const match = profile.unitDetails.find(
+        (u) => u.unitCode.replace(/\s+/g, "") === unitCode,
+      );
       if (match) setSelectedUnit(match);
     }
   }, [unitCode, profile, selectedUnit, setSelectedUnit]);
