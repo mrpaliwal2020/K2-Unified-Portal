@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import { lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ROUTES } from "./routeConfig";
 import Units from "../pages/Units/Units";
@@ -21,10 +21,6 @@ const MainDashboard = lazy(() => import("../pages/Dashboard/MainDashboard"));
 const MemberProfile = lazy(
   () => import("../pages/DashboardSubsections/Member/MemberProfile"),
 );
-// ──  Produce  ──────────
-const Produce = lazy(
-  () => import("../pages/DashboardSubsections/Member/Produce"),
-);
 
 const Home = lazy(() => import("../StandardK2/Home"));
 const About = lazy(() => import("../StandardK2/About"));
@@ -41,6 +37,8 @@ const AppRoutes = () => {
       <Route path={ROUTES.OTP} element={<OTPValidation />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
       <Route path={ROUTES.UNITS} element={<Units />} />
+      <Route path={ROUTES.UNITS_MYFPO} element={<Navigate to={ROUTES.UNITS} replace state={{ typeFilter: "myfpo" }} />} />
+      <Route path={ROUTES.UNITS_ALLFPO} element={<Navigate to={ROUTES.UNITS} replace state={{ typeFilter: "allfpo" }} />} />
 
       <Route path={ROUTES.HOME} element={<Home />} />
       <Route path={ROUTES.ABOUT} element={<About />} />

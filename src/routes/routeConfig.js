@@ -5,6 +5,8 @@ export const ROUTES = {
   OTP: "/auth/otp",
   REGISTER: "/auth/register",
   UNITS: "/auth/units",
+  UNITS_MYFPO: "/auth/units/myfpo",
+  UNITS_ALLFPO: "/auth/units/allfpo",
   DASHBOARD: "/dashboard",
   DASHBOARD_UNIT: "/dashboard/:unitCode",
   MEMBER_PROFILE: "/dashboard/members/:id",
@@ -36,6 +38,8 @@ export const PUBLIC_ROUTES = [
   ROUTES.OTP,
   ROUTES.REGISTER,
   ROUTES.UNITS,
+  ROUTES.UNITS_MYFPO,
+  ROUTES.UNITS_ALLFPO,
 ];
 
 export default ROUTES;

@@ -89,20 +89,13 @@ export const getVillageList = async (state, district) => {
 };
 
 // ─── Get All FPO Nearby ───────────────────────────────────────────────────────
-export const getAllFPONearBy = async (filters = {}) => {
-  const payload = {
-    memberProfileId: filters.memberProfileId || "",
-    state: filters.state || "",
-    district: filters.district || "",
-    latitude: filters.latitude || "",
-    longitude: filters.longitude || "",
-  };
+export const getAllBusinessUnits = async (latitude = "", longitude = "") => {
   const result = await apiPost(
-    ENDPOINTS.GROUP_MANAGEMENT,
-    OPS.GET_GROUP_LIST,
-    payload,
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_ALL_BUSINESSUNITS,
+    { latitude, longitude, unitType: "NA" },
   );
-  return result.success ? result.data?.userList || [] : [];
+  return result.success ? result.data?.userlist || [] : [];
 };
 
 // ─── Get Unit Members ────────────────────────────────────────────────────────
@@ -210,7 +203,14 @@ export const getUnitSummary = async (unitCode, groupId, profileId) => {
 // ═══════════════════════════════════════════════════════════════════
 
 // ─── Add Stock Item ───────────────────────────────────────────────
-export const addStockItem = async (groupId, unitCode, productName, unit, qty, rate) => {
+export const addStockItem = async (
+  groupId,
+  unitCode,
+  productName,
+  unit,
+  qty,
+  rate,
+) => {
   const result = await apiPost(ENDPOINTS.MY_BUSINESS, OPS.ADD_STOCK_ITEM, {
     groupId,
     unitCode,
@@ -266,12 +266,26 @@ export const deleteStockItem = async (stockId) => {
 
 // ─── Add Collection ───────────────────────────────────────────────
 export const addCollection = async ({
-  groupId, unitCode, stockId, profileId,
-  productName, qty, unit, price, note,
+  groupId,
+  unitCode,
+  stockId,
+  profileId,
+  productName,
+  qty,
+  unit,
+  price,
+  note,
 }) => {
   const result = await apiPost(ENDPOINTS.MY_BUSINESS, OPS.ADD_COLLECTION, {
-    groupId, unitCode, stockId, profileId,
-    productName, qty, unit, price, note: note || "",
+    groupId,
+    unitCode,
+    stockId,
+    profileId,
+    productName,
+    qty,
+    unit,
+    price,
+    note: note || "",
   });
   if (result.success && result.data?.result?.toLowerCase() === "success") {
     return { success: true, collectionId: result.data.collectionId };
@@ -327,12 +341,26 @@ export const deleteCollection = async (collectionId) => {
 
 // ─── Add Distribution ─────────────────────────────────────────────
 export const addDistribution = async ({
-  groupId, unitCode, stockId, profileId,
-  productName, qty, unit, price, note,
+  groupId,
+  unitCode,
+  stockId,
+  profileId,
+  productName,
+  qty,
+  unit,
+  price,
+  note,
 }) => {
   const result = await apiPost(ENDPOINTS.MY_BUSINESS, OPS.ADD_DISTRIBUTION, {
-    groupId, unitCode, stockId, profileId,
-    productName, qty, unit, price, note: note || "",
+    groupId,
+    unitCode,
+    stockId,
+    profileId,
+    productName,
+    qty,
+    unit,
+    price,
+    note: note || "",
   });
   if (result.success && result.data?.result?.toLowerCase() === "success") {
     return { success: true, distributionId: result.data.distributionId };
@@ -365,11 +393,22 @@ export const getDistributions = async (groupId, unitCode) => {
 
 // ─── Edit Distribution ────────────────────────────────────────────
 export const editDistribution = async ({
-  distributionId, stockId, groupId, unitCode, qty, price, note,
+  distributionId,
+  stockId,
+  groupId,
+  unitCode,
+  qty,
+  price,
+  note,
 }) => {
   const result = await apiPost(ENDPOINTS.MY_BUSINESS, OPS.EDIT_DISTRIBUTION, {
-    distributionId, stockId, groupId, unitCode,
-    qty, price, note: note || "",
+    distributionId,
+    stockId,
+    groupId,
+    unitCode,
+    qty,
+    price,
+    note: note || "",
   });
   return result.success && result.data?.result?.toLowerCase() === "success";
 };
@@ -387,15 +426,22 @@ export const deleteDistribution = async (distributionId) => {
 // ═══════════════════════════════════════════════════════════════════
 
 // ─── Get Agri Business Plan ───────────────────────────────────────
-export const getAgriBusinessPlan = async (unitCode, unitProfileId, planVersion = "1.0") => {
-  const result = await apiPost(ENDPOINTS.CROP_DATA, OPS.GET_AGRI_BUSINESS_PLAN, {
-    unitCode,
-    unitProfileId,
-    planVersion,
-  });
+export const getAgriBusinessPlan = async (
+  unitCode,
+  unitProfileId,
+  planVersion = "1.0",
+) => {
+  const result = await apiPost(
+    ENDPOINTS.CROP_DATA,
+    OPS.GET_AGRI_BUSINESS_PLAN,
+    {
+      unitCode,
+      unitProfileId,
+      planVersion,
+    },
+  );
   if (result.success && result.data?.plans?.length > 0) {
     return result.data.plans[0];
   }
   return null;
 };
-

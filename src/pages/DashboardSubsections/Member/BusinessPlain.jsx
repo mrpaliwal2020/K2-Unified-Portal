@@ -30,16 +30,40 @@ const fmtNum = (v) => {
   return n >= 1_000 ? `${(n / 1_000).toFixed(1)}K` : String(n);
 };
 
-const capitalize = (s) =>
-  s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 // ── Sector visual config keyed by API sector name ──────────────────────────────
 const SECTOR_ICONS = {
-  Seed: { icon: Sprout, accent: "#16a34a", light: "#f0fdf4", badge: "bg-green-100 text-green-800" },
-  Fertilizer: { icon: Droplets, accent: "#2563eb", light: "#eff6ff", badge: "bg-blue-100 text-blue-800" },
-  Livestock: { icon: Package, accent: "#ea580c", light: "#fff7ed", badge: "bg-orange-100 text-orange-800" },
-  Fodder: { icon: Leaf, accent: "#d97706", light: "#fffbeb", badge: "bg-amber-100 text-amber-800" },
-  "Output Marketing": { icon: TrendingUp, accent: "#0d9488", light: "#f0fdfa", badge: "bg-teal-100 text-teal-800" },
+  Seed: {
+    icon: Sprout,
+    accent: "#16a34a",
+    light: "#f0fdf4",
+    badge: "bg-green-100 text-green-800",
+  },
+  Fertilizer: {
+    icon: Droplets,
+    accent: "#2563eb",
+    light: "#eff6ff",
+    badge: "bg-blue-100 text-blue-800",
+  },
+  Livestock: {
+    icon: Package,
+    accent: "#ea580c",
+    light: "#fff7ed",
+    badge: "bg-orange-100 text-orange-800",
+  },
+  Fodder: {
+    icon: Leaf,
+    accent: "#d97706",
+    light: "#fffbeb",
+    badge: "bg-amber-100 text-amber-800",
+  },
+  "Output Marketing": {
+    icon: TrendingUp,
+    accent: "#0d9488",
+    light: "#f0fdfa",
+    badge: "bg-teal-100 text-teal-800",
+  },
 };
 
 const SECTOR_LABEL = { "Output Marketing": "Output Mkt" };
@@ -111,7 +135,11 @@ const BusinessPlan = () => {
   }, [selectedUnit?.unitCode, selectedUnit?.unitProfileId]);
 
   const assumptions = useMemo(() => {
-    try { return JSON.parse(plan?.assumptions || "{}"); } catch { return {}; }
+    try {
+      return JSON.parse(plan?.assumptions || "{}");
+    } catch {
+      return {};
+    }
   }, [plan?.assumptions]);
 
   const DATA = useMemo(
@@ -159,7 +187,11 @@ const BusinessPlan = () => {
 
   const sectorRevenues = SECTORS.map((s) => {
     const rows = DATA.filter((r) => r.s === s.key);
-    return { ...s, total: rows.reduce((a, r) => a + r.revenue, 0), rows: rows.length };
+    return {
+      ...s,
+      total: rows.reduce((a, r) => a + r.revenue, 0),
+      rows: rows.length,
+    };
   });
   const maxSectorRev = Math.max(...sectorRevenues.map((s) => s.total), 1);
 
@@ -173,7 +205,9 @@ const BusinessPlan = () => {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
         <Loader2 size={36} className="text-emerald-600 animate-spin" />
-        <p className="text-slate-500 font-medium">Business plan load ho raha hai...</p>
+        <p className="text-slate-500 font-medium">
+          Business plan load ho raha hai...
+        </p>
       </div>
     );
   }
@@ -181,8 +215,12 @@ const BusinessPlan = () => {
   if (error || !plan) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-2">
-        <p className="text-lg font-bold text-slate-700">Business Plan Nahi Mila</p>
-        <p className="text-slate-500 text-sm">{error || "Koi plan available nahi hai."}</p>
+        <p className="text-lg font-bold text-slate-700">
+          Business Plan Nahi Mila
+        </p>
+        <p className="text-slate-500 text-sm">
+          {error || "Koi plan available nahi hai."}
+        </p>
       </div>
     );
   }
@@ -257,10 +295,13 @@ const BusinessPlan = () => {
         ].map((c) => {
           const Icon = c.icon;
           const colors = {
-            emerald: "from-emerald-50 to-emerald-100 text-emerald-700 border-emerald-200",
+            emerald:
+              "from-emerald-50 to-emerald-100 text-emerald-700 border-emerald-200",
             blue: "from-blue-50 to-blue-100 text-blue-700 border-blue-200",
-            purple: "from-purple-50 to-purple-100 text-purple-700 border-purple-200",
-            orange: "from-orange-50 to-orange-100 text-orange-700 border-orange-200",
+            purple:
+              "from-purple-50 to-purple-100 text-purple-700 border-purple-200",
+            orange:
+              "from-orange-50 to-orange-100 text-orange-700 border-orange-200",
           };
           return (
             <div
@@ -268,7 +309,9 @@ const BusinessPlan = () => {
               className={`bg-gradient-to-br ${colors[c.color]} border rounded-xl p-5 shadow-sm`}
             >
               <div className="flex justify-between items-start mb-3">
-                <p className="text-xs font-semibold text-slate-600">{c.label}</p>
+                <p className="text-xs font-semibold text-slate-600">
+                  {c.label}
+                </p>
                 <Icon size={18} className="opacity-60" />
               </div>
               <p className="text-2xl font-black text-slate-900">{c.value}</p>
@@ -334,15 +377,19 @@ const BusinessPlan = () => {
           <div className="flex gap-2 flex-wrap">
             {[
               { label: "All Years", y: 0 },
-              ...yearRevenues.map((r) => ({ label: `Year ${r.year}`, y: r.year })),
+              ...yearRevenues.map((r) => ({
+                label: `Year ${r.year}`,
+                y: r.year,
+              })),
             ].map((btn) => (
               <button
                 key={btn.y}
                 onClick={() => setActiveYear(btn.y)}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all
-                  ${activeYear === btn.y
-                    ? "bg-emerald-600 text-white shadow"
-                    : "bg-gray-100 text-slate-600 hover:bg-emerald-50"
+                  ${
+                    activeYear === btn.y
+                      ? "bg-emerald-600 text-white shadow"
+                      : "bg-gray-100 text-slate-600 hover:bg-emerald-50"
                   }`}
               >
                 {btn.label}
@@ -374,7 +421,10 @@ const BusinessPlan = () => {
 
         <div className="flex gap-3 mt-2">
           {yearRevenues.map((yr) => (
-            <div key={yr.year} className="flex-1 flex flex-col items-center gap-0.5">
+            <div
+              key={yr.year}
+              className="flex-1 flex flex-col items-center gap-0.5"
+            >
               <span className="text-xs font-semibold text-slate-500">
                 {fmt(yr.revenue)}
               </span>
@@ -400,7 +450,10 @@ const BusinessPlan = () => {
           </h2>
           {(activeSector !== "ALL" || activeYear !== 0) && (
             <button
-              onClick={() => { setActiveSector("ALL"); setActiveYear(0); }}
+              onClick={() => {
+                setActiveSector("ALL");
+                setActiveYear(0);
+              }}
               className="text-xs text-emerald-600 hover:underline font-semibold"
             >
               Clear filters
@@ -417,9 +470,13 @@ const BusinessPlan = () => {
                 <th className="px-4 py-3 text-left font-semibold">Season</th>
                 <th className="px-4 py-3 text-right font-semibold">Year</th>
                 <th className="px-4 py-3 text-right font-semibold">Members</th>
-                <th className="px-4 py-3 text-right font-semibold">Area (Ac)</th>
+                <th className="px-4 py-3 text-right font-semibold">
+                  Area (Ac)
+                </th>
                 <th className="px-4 py-3 text-right font-semibold">Qty</th>
-                <th className="px-4 py-3 text-right font-semibold">Price/Unit</th>
+                <th className="px-4 py-3 text-right font-semibold">
+                  Price/Unit
+                </th>
                 <th className="px-4 py-3 text-right font-semibold">Revenue</th>
                 <th className="px-4 py-3 text-right font-semibold">Opex</th>
                 <th className="px-4 py-3 text-right font-semibold">Margin</th>
