@@ -21,7 +21,7 @@ import { getUnitDetails } from "../services/api/authApi";
 const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
   { label: "About", path: ROUTES.ABOUT },
-  { label: "News", path: ROUTES.NEWS },
+  // { label: "News", path: ROUTES.NEWS },
   { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
   { label: "FPO", path: ROUTES.FPO },
@@ -31,7 +31,7 @@ const NAV_LINKS_PRE = [
 const NAV_LINKS_POST = [
   { label: "Home", path: ROUTES.HOME },
   { label: "About", path: ROUTES.ABOUT },
-  { label: "News", path: ROUTES.NEWS },
+  // { label: "News", path: ROUTES.NEWS },
   { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
   { label: "FPO", path: ROUTES.UNITS },
