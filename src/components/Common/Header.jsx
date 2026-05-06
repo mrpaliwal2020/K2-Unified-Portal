@@ -141,9 +141,9 @@ const Header = ({
   const hasSelectedUnit = !!selectedUnit;
 
   const navLinks = isLoggedIn ? NAV_LINKS_POST : NAV_LINKS_PRE;
-  const newsIndex = navLinks.findIndex((l) => l.label === "News");
-  const navLinksFirst = navLinks.slice(0, newsIndex + 1);
-  const navLinksRest = navLinks.slice(newsIndex + 1);
+  const storeIndex = navLinks.findIndex((l) => l.label === "Store");
+  const navLinksFirst = navLinks.slice(0, storeIndex + 1);
+  const navLinksRest = navLinks.slice(storeIndex + 1);
 
   const handleNavClick = (link) => {
     if (link.external) {
