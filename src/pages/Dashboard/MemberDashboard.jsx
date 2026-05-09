@@ -10,7 +10,7 @@ import IssueBoxPage from "../DashboardSubsections/Member/IssueBox";
 import ReportsPage from "../DashboardSubsections/Member/Reports";
 import Inventory from "../DashboardSubsections/Member/Inventory";
 import BusinessPlan from "../DashboardSubsections/Member/BusinessPlain";
-import Compliance from "../DashboardSubsections/Director/Compliance";
+// import Compliance from "../DashboardSubsections/Director/Compliance";
 
 const MemberDashboard = ({ onSwitchRole }) => {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -33,7 +33,7 @@ const MemberDashboard = ({ onSwitchRole }) => {
       {/* BUSINESS PLAN PAGE */}
       {currentPage === "businessplan" && <BusinessPlan />}
       {/* COMPLIANCE PAGE */}
-      {currentPage === "compliance" && <Compliance />}
+      {/* {currentPage === "compliance" && <Compliance />} */}
       {/* PRODUCE PAGE */}
       {currentPage === "produce" && <ProducePage />}
       {/* SERVICES PAGE */}

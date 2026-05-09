@@ -19,7 +19,7 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
       id: "dashboard",
     },
     { icon: BookOpen, label: "Business Plan", id: "businessplan" },
-    { icon: Landmark, label: "Compliance", id: "compliance" },
+    // { icon: Landmark, label: "Compliance", id: "compliance" },
     {
       icon: Users2,
       label: "Members",
