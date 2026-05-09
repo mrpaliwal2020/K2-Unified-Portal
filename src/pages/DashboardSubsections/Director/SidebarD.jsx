@@ -1,57 +1,25 @@
 import React from "react";
-import {
-  Home,
-  Users2,
-  Warehouse,
-  ShoppingCart,
-  Sprout,
-  Wrench,
-  Inbox,
-  FileText,
-  BookOpen,
-  Landmark,
-} from "lucide-react";
-const Sidebar = ({ currentPage, setCurrentPage }) => {
+import { Home, ShieldCheck, Gavel, BarChart3 } from "lucide-react";
+
+const SidebarD = ({ currentPage, setCurrentPage }) => {
   const navigationItems = [
     {
       icon: Home,
       label: "Dashboard",
       id: "dashboard",
     },
-    { icon: BookOpen, label: "Business Plan", id: "businessplan" },
-    { icon: Landmark, label: "Compliance", id: "compliance" },
     {
-      icon: Users2,
-      label: "Members",
-      id: "members",
+      icon: ShieldCheck,
+      label: "Compliance",
+      id: "compliance",
     },
     {
-      icon: Warehouse,
-      label: "Inventory",
-      id: "inventory",
+      icon: Gavel,
+      label: "Meetings",
+      id: "governance",
     },
     {
-      icon: ShoppingCart,
-      label: "Store",
-      id: "store",
-    },
-    {
-      icon: Sprout,
-      label: "Produce",
-      id: "produce",
-    },
-    {
-      icon: Wrench,
-      label: "Services",
-      id: "services",
-    },
-    {
-      icon: Inbox,
-      label: "Issue Box",
-      id: "issuebox",
-    },
-    {
-      icon: FileText,
+      icon: BarChart3,
       label: "Reports",
       id: "reports",
     },
@@ -88,4 +56,4 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
   );
 };
 
-export default Sidebar;
+export default SidebarD;

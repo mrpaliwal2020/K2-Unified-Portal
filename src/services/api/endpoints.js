@@ -26,6 +26,9 @@ const ENDPOINTS = {
   GET_NEWS: `/k2kapi/News/`,
   // ── myBusiness ───────────────────────────────────────────────────
   MY_BUSINESS: `/k2kapi/myBusiness/`,
+ 
+    // ── myGoverment ───────────────────────────────────────────────────
+  MY_GORERMENT: `/k2kapi/myGoverment/`,
 
 
 };
@@ -82,6 +85,30 @@ export const OPS = {
 
   // agriPlan
   GET_AGRI_BUSINESS_PLAN: "getAgriBusinessPlan",
+
+  // myGovernment — Programs
+  GET_PROGRAM: "getProgram",
+  GET_PROGRAM_ELIGIBILITY: "getProgramEligibility",
+  GET_GROUP_BY_PROGRAM: "getGroupByProgram",
+  GET_PROGRAM_DOCUMENT: "getProgramDocument",
+
+  // myGovernment — User Program Documents
+  CREATE_USER_PROGRAM_DOCUMENT: "createUserProgramDocument",
+  UPDATE_USER_PROGRAM_DOCUMENT: "updateUserProgramDocument",
+  GET_USER_PROGRAM_DOCUMENT: "getUserProgramDocument",
+
+  // myGovernment — Document Files
+  UPLOAD_PROGRAM_DOCUMENT_FILE: "uploadProgramDocumentFile",
+  LIST_PROGRAM_DOCUMENT_FILES: "listProgramDocumentFiles",
+  DELETE_PROGRAM_DOCUMENT_FILE: "deleteProgramDocumentFile",
+
+  // myGovernment — Notifications
+  GET_NOTIFICATIONS: "getNotifications",
+  MARK_NOTIFICATION_READ: "markNotificationRead",
+
+  // myGovernment — Calendar & Dashboard
+  GET_CALENDAR_TASKS: "getCalendarTasks",
+  GET_DASHBOARD_SUMMARY: "getDashboardSummary",
 };
 
 export default ENDPOINTS;
