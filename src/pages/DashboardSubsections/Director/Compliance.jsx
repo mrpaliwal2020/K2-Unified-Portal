@@ -757,6 +757,7 @@ const Compliance = () => {
   const selectedUnit = useAuthStore((state) => state.selectedUnit);
   const groupId = selectedUnit?.groupId || "";
   const unitCode = selectedUnit?.unitCode || "";
+  const unitProfileId = selectedUnit?.unitProfileId || profileId;
   const state = useAuthStore((state) => state.profile?.state) || "";
 
   const [summary, setSummary] = useState({
@@ -777,14 +778,14 @@ const Compliance = () => {
   useEffect(() => {
     if (!profileId || !unitCode) return;
     const fetchData = async () => {
-      const sum = await getDashboardSummary(profileId, groupId, unitCode);
+      const sum = await getDashboardSummary(unitProfileId, groupId, unitCode);
       if (sum) setSummary(sum);
 
       const progs = await getProgram(state, "en", "");
       if (progs) setPrograms(progs);
 
       const tasks = await getCalendarTasks(
-        profileId,
+        unitProfileId,
         groupId,
         unitCode,
         "",

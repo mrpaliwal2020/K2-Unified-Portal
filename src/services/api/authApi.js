@@ -14,10 +14,10 @@ export const getProfile = async (mobileNumber) => {
 };
 
 // ─── Get Unit Details ─────────────────────────────────────────────────────────
-export const getUnitDetails = async (profileId, unitCode) => {
+export const getUnitDetails = async (unitCode, groupId) => {
   const result = await apiPost(ENDPOINTS.PROFILE, OPS.UNIT_DETAILS, {
-    profileId,
     unitCode,
+    groupId,
   });
   if (result.success && result.data?.userList?.length > 0) {
     return result.data.userList[0];
@@ -574,11 +574,7 @@ export const updateUserProgramDocument = async (documentData) => {
 };
 
 // ─── Get User Program Document ────────────────────────────────────
-export const getUserProgramDocument = async (
-  profileId,
-  groupId,
-  unitCode,
-) => {
+export const getUserProgramDocument = async (profileId, groupId, unitCode) => {
   const result = await apiPost(
     ENDPOINTS.MY_GORERMENT,
     OPS.GET_USER_PROGRAM_DOCUMENT,

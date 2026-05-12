@@ -14,6 +14,7 @@ import {
   Droplets,
 } from "lucide-react";
 import {
+  getUnitDetails,
   getUnitItems,
   getUnitMembers,
   getFarmerLandInfo,
@@ -70,6 +71,7 @@ const Dashboard = () => {
   const unitCode = selectedUnit?.unitCode || "";
   const groupId = selectedUnit?.groupId || "";
 
+  const [unitDetails, setUnitDetails] = useState(null);
   const [currentCropIndex, setCurrentCropIndex] = useState(0);
   const [updateIndex, setUpdateIndex] = useState(0);
   const [totalMembers, setTotalMembers] = useState(0);
@@ -95,15 +97,24 @@ const Dashboard = () => {
     if (!unitCode || !groupId) return;
 
     const fetchAllData = async () => {
-      const [members, items, cropStats, issues, demandAvailList, activities] =
-        await Promise.all([
-          getUnitMembers(groupId, unitCode),
-          getUnitItems(unitCode),
-          getUnitSownAreaPerCropPerMember(unitCode),
-          getUnitIssues(unitCode),
-          getGroupDemandAvailability(groupId),
-          getGroupActivities(groupId),
-        ]);
+      const [
+        unitInfo,
+        members,
+        items,
+        cropStats,
+        issues,
+        demandAvailList,
+        activities,
+      ] = await Promise.all([
+        getUnitDetails(unitCode, groupId),
+        getUnitMembers(groupId, unitCode),
+        getUnitItems(unitCode),
+        getUnitSownAreaPerCropPerMember(unitCode),
+        getUnitIssues(unitCode),
+        getGroupDemandAvailability(groupId),
+        getGroupActivities(groupId),
+      ]);
+      if (unitInfo) setUnitDetails(unitInfo);
 
       setTotalMembers(members.length);
       setTotalProducts(items.length);
@@ -309,6 +320,114 @@ const Dashboard = () => {
 
   return (
     <>
+      {unitDetails && (
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-slate-200">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            {/* Icon */}
+            <div className="flex-shrink-0">
+              {unitDetails.unitDetails?.[0]?.iconLink ? (
+                <img
+                  src={unitDetails.unitDetails[0].iconLink}
+                  alt="FPO Logo"
+                  className="w-20 h-20 rounded-xl object-cover border border-slate-200"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <Users size={32} className="text-emerald-600" />
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {unitDetails.unitName}
+                  </h2>
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    {unitDetails.unitAddress}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold">
+                    {unitDetails.unitType}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      unitDetails.isActive
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {unitDetails.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Mobile */}
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-400 font-semibold uppercase">
+                    Contact
+                  </p>
+                  <p className="text-sm font-medium text-slate-800 mt-0.5">
+                    {unitDetails.mobileNumber}
+                  </p>
+                </div>
+
+                {/* Schemes */}
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-400 font-semibold uppercase">
+                    Schemes
+                  </p>
+                  <p className="text-sm font-medium text-slate-800 mt-0.5">
+                    {unitDetails.unitTags?.["FPO-schemes"]?.join(", ") || "—"}
+                  </p>
+                </div>
+
+                {/* Businesses */}
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-400 font-semibold uppercase">
+                    Business
+                  </p>
+                  <p className="text-sm font-medium text-slate-800 mt-0.5">
+                    {unitDetails.unitTags?.["FPO-businesses"]?.join(", ") ||
+                      "—"}
+                  </p>
+                </div>
+
+                {/* Registrations */}
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <p className="text-xs text-slate-400 font-semibold uppercase">
+                    Registrations
+                  </p>
+                  <p className="text-sm font-medium text-slate-800 mt-0.5">
+                    {unitDetails.unitTags?.["FPO-registrations"]?.join(", ") ||
+                      "—"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Photos */}
+            {unitDetails.unitDetails?.[0]?.photos?.length > 0 && (
+              <div className="flex gap-2 flex-shrink-0">
+                {unitDetails.unitDetails[0].photos
+                  .slice(0, 2)
+                  .map((photo, idx) => (
+                    <img
+                      key={idx}
+                      src={photo}
+                      alt={`FPO Photo ${idx + 1}`}
+                      className="w-24 h-24 rounded-xl object-cover border border-slate-200"
+                    />
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {summaryStats.map((stat, idx) => {
@@ -334,8 +453,6 @@ const Dashboard = () => {
           );
         })}
       </div>
-
- 
 
       {/* Statistics Grid - Row 1 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -389,7 +506,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-     {/* Animated Crop Slider */}
+      {/* Animated Crop Slider */}
       <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
         <h2 className="text-2xl font-bold text-slate-900 mb-6">
           Current Crops Overview
