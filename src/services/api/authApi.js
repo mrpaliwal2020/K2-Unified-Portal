@@ -88,6 +88,45 @@ export const getVillageList = async (state, district) => {
   }
 };
 
+// ─── Get FPO Directory ───────────────────────────────────────────────────────
+export const getFPODirectory = async ({ cin = "", companyName = "", state = "" }) => {
+  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FPO_DIRECTORY, {
+    cin,
+    companyName,
+    state,
+  });
+  if (result.success && result.data?.fpoList?.length > 0) {
+    return result.data.fpoList.map((f) => ({
+      cin: f.cin,
+      name: f.companyName,
+      state: f.state || "",
+      district: f.district || "",
+      status: f.companyStatus || "Unknown",
+      category: f.category || "",
+      crops: f.crops || "",
+      industry: f.industry || "",
+      authorizedCapital: parseFloat(f.authorizedCapital) || 0,
+      paidupCapital: parseFloat(f.paidupCapital) || 0,
+      registrationDate: f.registrationDate || "",
+      yearFounded: f.registrationDate
+        ? new Date(f.registrationDate).getFullYear()
+        : null,
+      roc: f.roc || "",
+      address: f.address || "",
+      pinCode: f.pinCode || "",
+      source: f.source || "",
+      phone: f.phone || "",
+      members: f.members || 0,
+      eligibleSchemesCount: f.eligibleSchemesCount || 0,
+      eligibleSchemes: f.eligibleSchemes || "",
+      complianceEventsCount: f.complianceEventsCount || 0,
+      nextCompliance: f.nextCompliance || "",
+      nextComplianceType: f.nextComplianceType || "",
+    }));
+  }
+  return [];
+};
+
 // ─── Get All FPO Nearby ───────────────────────────────────────────────────────
 export const getAllBusinessUnits = async (latitude = "", longitude = "") => {
   const result = await apiPost(

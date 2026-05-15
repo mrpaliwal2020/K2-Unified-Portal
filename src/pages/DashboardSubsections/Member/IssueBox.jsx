@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Inbox, Clock, MapPin, Users, Tag, Phone } from "lucide-react";
+import { Inbox, Clock, MapPin, Users, Tag, Phone, Loader } from "lucide-react";
 import { Input, Button } from "../../../components/ui";
 import { getUnitIssues, getUnitMembers } from "../../../services/api/authApi";
 import useAuthStore from "../../../store/authStore";
@@ -176,14 +176,9 @@ const IssueBox = () => {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-3">
-          <div
-            className="w-15 h-15 border-4 border-black-500 border-t-transparent
-                          rounded-full animate-spin"
-          />
-          <p className="text-xl text-gray-500 font-semibold">Loading...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-55">
+        <Loader size={36} className="text-emerald-600 animate-spin mb-4" />
+        <p className="text-slate-600 font-semibold">Loading...</p>
       </div>
     );
   }

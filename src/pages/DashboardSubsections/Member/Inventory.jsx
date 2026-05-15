@@ -1146,7 +1146,7 @@ const Inventory = () => {
   // ─── Loading ─────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-32">
+      <div className="flex flex-col items-center justify-center py-55">
         <Loader size={36} className="text-emerald-600 animate-spin mb-4" />
         <p className="text-slate-600 font-semibold">
           Loading inventory data...

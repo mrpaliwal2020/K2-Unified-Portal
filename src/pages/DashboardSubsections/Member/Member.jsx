@@ -29,13 +29,17 @@ const convertToAcre = (value, unit) => {
   const val = parseFloat(value);
   if (!val) return 0;
   switch (unit?.toLowerCase()) {
-    case "acre": return val;
-    case "hectare": return val * 2.47105;
+    case "acre":
+      return val;
+    case "hectare":
+      return val * 2.47105;
     case "square meter":
     case "sqm":
     case "sq.m":
-    case "sq meter": return val * 0.000247105;
-    default: return val;
+    case "sq meter":
+      return val * 0.000247105;
+    default:
+      return val;
   }
 };
 
@@ -59,32 +63,51 @@ const Member = () => {
 
   const memberTypeColors = {
     CEO: {
-      bg: "bg-amber-100", text: "text-amber-900", border: "border-amber-300",
-      badge: "bg-gradient-to-r from-amber-400 to-yellow-400", badgeText: "text-amber-900",
+      bg: "bg-amber-100",
+      text: "text-amber-900",
+      border: "border-amber-300",
+      badge: "bg-gradient-to-r from-amber-400 to-yellow-400",
+      badgeText: "text-amber-900",
     },
     Director: {
-      bg: "bg-purple-100", text: "text-purple-900", border: "border-purple-300",
-      badge: "bg-gradient-to-r from-purple-400 to-indigo-400", badgeText: "text-white",
+      bg: "bg-purple-100",
+      text: "text-purple-900",
+      border: "border-purple-300",
+      badge: "bg-gradient-to-r from-purple-400 to-indigo-400",
+      badgeText: "text-white",
     },
     Accountant: {
-      bg: "bg-blue-100", text: "text-blue-900", border: "border-blue-300",
-      badge: "bg-gradient-to-r from-blue-400 to-cyan-400", badgeText: "text-white",
+      bg: "bg-blue-100",
+      text: "text-blue-900",
+      border: "border-blue-300",
+      badge: "bg-gradient-to-r from-blue-400 to-cyan-400",
+      badgeText: "text-white",
     },
     Promoter: {
-      bg: "bg-orange-100", text: "text-orange-900", border: "border-orange-300",
-      badge: "bg-gradient-to-r from-orange-400 to-red-400", badgeText: "text-white",
+      bg: "bg-orange-100",
+      text: "text-orange-900",
+      border: "border-orange-300",
+      badge: "bg-gradient-to-r from-orange-400 to-red-400",
+      badgeText: "text-white",
     },
     "K2 Support": {
-      bg: "bg-emerald-100", text: "text-emerald-900", border: "border-emerald-300",
-      badge: "bg-gradient-to-r from-emerald-400 to-teal-400", badgeText: "text-white",
+      bg: "bg-emerald-100",
+      text: "text-emerald-900",
+      border: "border-emerald-300",
+      badge: "bg-gradient-to-r from-emerald-400 to-teal-400",
+      badgeText: "text-white",
     },
     Default: {
-      bg: "bg-slate-100", text: "text-slate-900", border: "border-slate-300",
-      badge: "bg-gradient-to-r from-slate-400 to-gray-400", badgeText: "text-white",
+      bg: "bg-slate-100",
+      text: "text-slate-900",
+      border: "border-slate-300",
+      badge: "bg-gradient-to-r from-slate-400 to-gray-400",
+      badgeText: "text-white",
     },
   };
 
-  const getTypeColor = (type) => memberTypeColors[type] || memberTypeColors.Default;
+  const getTypeColor = (type) =>
+    memberTypeColors[type] || memberTypeColors.Default;
 
   const maskPhoneNumber = (phone) => {
     if (!phone) return "N/A";
@@ -96,7 +119,8 @@ const Member = () => {
   const cardGradients = {
     Admin: "from-pink-50 to-rose-50 hover:from-pink-100 hover:to-rose-100",
     Farmer: "from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100",
-    Member: "from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100",
+    Member:
+      "from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100",
   };
 
   const borderColors = {
@@ -115,7 +139,10 @@ const Member = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getUnitMembers(selectedUnit.groupId, selectedUnit.unitCode);
+        const data = await getUnitMembers(
+          selectedUnit.groupId,
+          selectedUnit.unitCode,
+        );
 
         const transformedData = data.map((member) => ({
           id: `#M${member.memberId}`,
@@ -123,16 +150,25 @@ const Member = () => {
           name: `${member.memberFirstName} ${member.memberLastName}`,
           phone: member.memberMobile,
           area: 0,
-          crop: member.scheduledCropsName ? member.scheduledCropsName.split(",") : ["NA"],
+          crop: member.scheduledCropsName
+            ? member.scheduledCropsName.split(",")
+            : ["NA"],
           status: member.memberStatus,
-          joinDate: new Date(member.lastUpdateDate).toLocaleDateString("en-GB", {
-            day: "2-digit", month: "short", year: "numeric",
-          }),
+          joinDate: new Date(member.lastUpdateDate).toLocaleDateString(
+            "en-GB",
+            {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            },
+          ),
           type: member.memberTypePrimary || "Member",
           typeSecondary: member.memberTypeSecondary || "Farmer",
           village: member.village || "Unknown",
           managedBy: member.managedBy || "Unassigned",
-          image: member.memberImageUrl || DUMMY_AVATAR(`${member.memberFirstName} ${member.memberLastName}`),
+          image:
+            member.memberImageUrl ||
+            DUMMY_AVATAR(`${member.memberFirstName} ${member.memberLastName}`),
         }));
 
         setMembersData(transformedData);
@@ -208,7 +244,10 @@ const Member = () => {
   }, []);
 
   const villages = ["all", ...new Set(membersData.map((m) => m.village))];
-  const managedByOptions = ["all", ...new Set(membersData.map((m) => m.managedBy))];
+  const managedByOptions = [
+    "all",
+    ...new Set(membersData.map((m) => m.managedBy)),
+  ];
   const types = ["all", ...new Set(membersData.map((m) => m.type))];
 
   const filteredMembers = useMemo(() => {
@@ -217,13 +256,29 @@ const Member = () => {
         member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         member.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         member.phone.includes(searchTerm);
-      const matchesStatus = statusFilter === "all" || member.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || member.status === statusFilter;
       const matchesType = typeFilter === "all" || member.type === typeFilter;
-      const matchesVillage = villageFilter === "all" || member.village === villageFilter;
-      const matchesManagedBy = managedByFilter === "all" || member.managedBy === managedByFilter;
-      return matchesSearch && matchesStatus && matchesType && matchesVillage && matchesManagedBy;
+      const matchesVillage =
+        villageFilter === "all" || member.village === villageFilter;
+      const matchesManagedBy =
+        managedByFilter === "all" || member.managedBy === managedByFilter;
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesType &&
+        matchesVillage &&
+        matchesManagedBy
+      );
     });
-  }, [searchTerm, statusFilter, typeFilter, villageFilter, managedByFilter, membersData]);
+  }, [
+    searchTerm,
+    statusFilter,
+    typeFilter,
+    villageFilter,
+    managedByFilter,
+    membersData,
+  ]);
 
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -234,7 +289,9 @@ const Member = () => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, typeFilter, villageFilter, managedByFilter]);
 
-  const handleCall = (phoneNumber) => { window.location.href = `tel:${phoneNumber}`; };
+  const handleCall = (phoneNumber) => {
+    window.location.href = `tel:${phoneNumber}`;
+  };
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -253,12 +310,14 @@ const Member = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br">
-
       {/* Search + Filters */}
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-4 top-3.5 text-slate-400" size={20} />
+            <Search
+              className="absolute left-4 top-3.5 text-slate-400"
+              size={20}
+            />
             <input
               type="text"
               placeholder="Search by name, ID, or phone..."
@@ -282,7 +341,10 @@ const Member = () => {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-3.5 text-slate-400 pointer-events-none" size={18} />
+            <ChevronDown
+              className="absolute right-3 top-3.5 text-slate-400 pointer-events-none"
+              size={18}
+            />
           </div>
 
           <div className="relative">
@@ -297,7 +359,10 @@ const Member = () => {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-3.5 text-slate-400 pointer-events-none" size={18} />
+            <ChevronDown
+              className="absolute right-3 top-3.5 text-slate-400 pointer-events-none"
+              size={18}
+            />
           </div>
 
           <div className="relative">
@@ -312,7 +377,10 @@ const Member = () => {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-3.5 text-slate-400 pointer-events-none" size={18} />
+            <ChevronDown
+              className="absolute right-3 top-3.5 text-slate-400 pointer-events-none"
+              size={18}
+            />
           </div>
         </div>
       </div>
@@ -325,14 +393,21 @@ const Member = () => {
             <span className="font-semibold text-emerald-600">
               {startIndex + 1}-{Math.min(endIndex, filteredMembers.length)}
             </span>{" "}
-            of <span className="font-semibold">{filteredMembers.length}</span> members
+            of <span className="font-semibold">{filteredMembers.length}</span>{" "}
+            members
           </p>
           <div className="flex gap-4 text-sm">
             <span className="text-slate-600">
-              Active: <span className="font-semibold text-green-700">{membersData.filter((m) => m.status === "Active").length}</span>
+              Active:{" "}
+              <span className="font-semibold text-green-700">
+                {membersData.filter((m) => m.status === "Active").length}
+              </span>
             </span>
             <span className="text-slate-600">
-              Inactive: <span className="font-semibold text-gray-700">{membersData.filter((m) => m.status === "Inactive").length}</span>
+              Inactive:{" "}
+              <span className="font-semibold text-gray-700">
+                {membersData.filter((m) => m.status === "Inactive").length}
+              </span>
             </span>
           </div>
         </div>
@@ -340,7 +415,7 @@ const Member = () => {
 
       {/* Loading State */}
       {(loading || landLoading) && (
-        <div className="flex flex-col items-center justify-center py-24">
+        <div className="flex flex-col items-center justify-center py-55">
           <div className="flex items-center gap-3">
             <Loader size={32} className="text-emerald-600 animate-spin" />
             <span className="text-slate-600 font-semibold">
@@ -354,7 +429,9 @@ const Member = () => {
       {error && !loading && (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="text-center">
-            <p className="text-xl font-bold text-slate-900 mb-2">Unable to load members</p>
+            <p className="text-xl font-bold text-slate-900 mb-2">
+              Unable to load members
+            </p>
             <p className="text-slate-600">{error}</p>
           </div>
         </div>
@@ -385,26 +462,47 @@ const Member = () => {
                         </span>
                         <div className="relative">
                           <button
-                            onClick={(e) => { e.stopPropagation(); setOpenMenu(openMenu === member.id ? null : member.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenu(
+                                openMenu === member.id ? null : member.id,
+                              );
+                            }}
                             className="p-1.5 hover:bg-white/60 rounded-full transition opacity-0 group-hover:opacity-100"
                           >
-                            <MoreVertical size={16} className="text-slate-600" />
+                            <MoreVertical
+                              size={16}
+                              className="text-slate-600"
+                            />
                           </button>
                           {openMenu === member.id && (
-                            <div ref={menuRef} className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-200 z-50 overflow-hidden animate-fade-in">
+                            <div
+                              ref={menuRef}
+                              className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-200 z-50 overflow-hidden animate-fade-in"
+                            >
                               <button
-                                onClick={(e) => { e.stopPropagation(); setOpenMenu(null); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenu(null);
+                                }}
                                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 text-slate-700 hover:text-blue-700 transition-colors border-b border-slate-100"
                               >
                                 <Crown size={16} />
-                                <span className="text-sm font-medium">Make Admin</span>
+                                <span className="text-sm font-medium">
+                                  Make Admin
+                                </span>
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); setOpenMenu(null); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenu(null);
+                                }}
                                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-slate-700 hover:text-red-700 transition-colors"
                               >
                                 <Trash2 size={16} />
-                                <span className="text-sm font-medium">Delete</span>
+                                <span className="text-sm font-medium">
+                                  Delete
+                                </span>
                               </button>
                             </div>
                           )}
@@ -420,7 +518,9 @@ const Member = () => {
                           alt={member.name}
                           className="w-full h-full rounded-full border-2 border-white shadow-md object-cover"
                         />
-                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center ${member.status === "Active" ? "bg-green-500" : "bg-gray-400"}`}>
+                        <div
+                          className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center ${member.status === "Active" ? "bg-green-500" : "bg-gray-400"}`}
+                        >
                           <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
                       </div>
@@ -428,17 +528,24 @@ const Member = () => {
 
                     {/* Content */}
                     <div className="px-3.5 pb-3.5">
-                      <h3 className="text-lg font-bold text-slate-900 mb-1 text-center">{member.name}</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mb-1 text-center">
+                        {member.name}
+                      </h3>
 
                       <div className="flex justify-center mb-3">
-                        <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${getTypeColor(member.typeSecondary).badge} ${getTypeColor(member.typeSecondary).badgeText}`}>
+                        <span
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-md ${getTypeColor(member.typeSecondary).badge} ${getTypeColor(member.typeSecondary).badgeText}`}
+                        >
                           {member.typeSecondary}
                         </span>
                       </div>
 
                       <div className="mb-3 p-2.5 bg-white/60 backdrop-blur-sm rounded-lg border border-white/40">
                         <button
-                          onClick={(e) => { e.stopPropagation(); handleCall(member.phone); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCall(member.phone);
+                          }}
                           className="w-full flex items-center justify-center gap-2 text-slate-700 hover:text-slate-900 font-semibold transition-colors text-sm"
                         >
                           <Phone size={15} />
@@ -449,14 +556,20 @@ const Member = () => {
                       {landDataMap[member.id]?.length > 0 ? (
                         (() => {
                           const totalAreaAcre = landDataMap[member.id].reduce(
-                            (sum, land) => sum + convertToAcre(land.landSize, land.sizeUnit), 0,
+                            (sum, land) =>
+                              sum + convertToAcre(land.landSize, land.sizeUnit),
+                            0,
                           );
                           return (
                             <div className="mb-3 flex items-center gap-2 text-slate-700 text-sm">
                               <MapPin size={15} className="text-slate-400" />
-                              <span className="font-semibold">{totalAreaAcre.toFixed(2)} Acre</span>
+                              <span className="font-semibold">
+                                {totalAreaAcre.toFixed(2)} Acre
+                              </span>
                               <span className="text-slate-400">•</span>
-                              <span className="text-slate-600">{member.village}</span>
+                              <span className="text-slate-600">
+                                {member.village}
+                              </span>
                             </div>
                           );
                         })()
@@ -465,18 +578,25 @@ const Member = () => {
                           <MapPin size={15} className="text-slate-400" />
                           <span className="text-slate-500">No land data</span>
                           <span className="text-slate-400">•</span>
-                          <span className="text-slate-600">{member.village}</span>
+                          <span className="text-slate-600">
+                            {member.village}
+                          </span>
                         </div>
                       )}
 
                       <div className="mb-3">
                         <div className="flex items-center gap-2 mb-2">
                           <Crop size={15} className="text-slate-700" />
-                          <p className="text-sm font-semibold text-slate-900">Current Crops</p>
+                          <p className="text-sm font-semibold text-slate-900">
+                            Current Crops
+                          </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {member.crop.map((c, idx) => (
-                            <span key={idx} className="px-2 py-1 bg-white/70 text-slate-700 text-xs rounded-full font-medium">
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-white/70 text-slate-700 text-xs rounded-full font-medium"
+                            >
                               {c}
                             </span>
                           ))}
@@ -486,7 +606,9 @@ const Member = () => {
                       <div className="pt-2 border-t border-white/40 text-xs text-slate-600">
                         <div className="flex items-center gap-2">
                           <User size={13} />
-                          <span>Managed by: <strong>{member.managedBy}</strong></span>
+                          <span>
+                            Managed by: <strong>{member.managedBy}</strong>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -498,8 +620,11 @@ const Member = () => {
               {totalPages > 1 && (
                 <div className="flex flex-col items-center gap-6 py-8">
                   <p className="text-slate-600 font-medium">
-                    Page <span className="text-emerald-600 font-bold">{currentPage}</span> of{" "}
-                    <span className="font-bold">{totalPages}</span>
+                    Page{" "}
+                    <span className="text-emerald-600 font-bold">
+                      {currentPage}
+                    </span>{" "}
+                    of <span className="font-bold">{totalPages}</span>
                   </p>
                   <div className="flex items-center gap-2">
                     <button
@@ -516,26 +641,47 @@ const Member = () => {
                     </button>
 
                     <div className="flex gap-2">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        const isVisible = page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
-                        if (!isVisible && page !== 2 && page !== totalPages - 1) return null;
-                        if ((page === 2 && currentPage > 3) || (page === totalPages - 1 && currentPage < totalPages - 2)) {
-                          return <span key={`ellipsis-${page}`} className="text-slate-400 px-2">...</span>;
-                        }
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageClick(page)}
-                            className={`w-10 h-10 rounded-lg font-medium transition-all ${
-                              currentPage === page
-                                ? "bg-emerald-600 text-white shadow-md"
-                                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      })}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => {
+                          const isVisible =
+                            page === 1 ||
+                            page === totalPages ||
+                            Math.abs(page - currentPage) <= 1;
+                          if (
+                            !isVisible &&
+                            page !== 2 &&
+                            page !== totalPages - 1
+                          )
+                            return null;
+                          if (
+                            (page === 2 && currentPage > 3) ||
+                            (page === totalPages - 1 &&
+                              currentPage < totalPages - 2)
+                          ) {
+                            return (
+                              <span
+                                key={`ellipsis-${page}`}
+                                className="text-slate-400 px-2"
+                              >
+                                ...
+                              </span>
+                            );
+                          }
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageClick(page)}
+                              className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                                currentPage === page
+                                  ? "bg-emerald-600 text-white shadow-md"
+                                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          );
+                        },
+                      )}
                     </div>
 
                     <button
@@ -556,9 +702,16 @@ const Member = () => {
             </>
           ) : (
             <div className="text-center py-16">
-              <User size={64} className="mx-auto text-slate-300 mb-4 opacity-50" />
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">No members found</h3>
-              <p className="text-slate-600">Try adjusting your filters or search criteria</p>
+              <User
+                size={64}
+                className="mx-auto text-slate-300 mb-4 opacity-50"
+              />
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                No members found
+              </h3>
+              <p className="text-slate-600">
+                Try adjusting your filters or search criteria
+              </p>
             </div>
           )}
         </>

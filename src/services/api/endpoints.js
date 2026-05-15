@@ -12,6 +12,7 @@ const ENDPOINTS = {
   // ── businessUnit ───────────────────────────────────────────────────
   BUSINESS_UNIT: `/k2kapi/businessUnit/`,
   
+  
 
   // ── k2BuySell ───────────────────────────────────────────────────
   BUY_SELL: `/k2kapi/k2BuySell/`,
@@ -29,6 +30,8 @@ const ENDPOINTS = {
  
     // ── myGoverment ───────────────────────────────────────────────────
   MY_GORERMENT: `/k2kapi/myGoverment/`,
+
+  
 
 
 };
@@ -56,6 +59,7 @@ export const OPS = {
   GET_LAND_INFO: "getFarmerLandInfo",
   GET_UNIT_SUMMARY: "getUnitSummary",
   GET_ALL_BUSINESSUNITS: "getAllBusinessUnits",
+  GET_FPO_DIRECTORY: "getFPODirectory",
 
   // k2BuySell
   GET_PRODUCT: "getUnitItems",

@@ -5,6 +5,7 @@ import DashboardPage from "../DashboardSubsections/Director/Dashboard";
 import CompliancePage from "../DashboardSubsections/Director/Compliance";
 import GovernancePage from "../DashboardSubsections/Director/Governance";
 import ReportsPage from "../DashboardSubsections/Director/Reports";
+import Eligibility from "../DashboardSubsections/Director/Eligibility";
 
 const DirectorDashboard = ({ onSwitchRole }) => {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -22,6 +23,8 @@ const DirectorDashboard = ({ onSwitchRole }) => {
       {currentPage === "compliance" && <CompliancePage />}
       {/* GOVERNANCE PAGE */}
       {currentPage === "governance" && <GovernancePage />}
+      {/* GOVERNANCE PAGE */}
+      {currentPage === "eligibility" && <Eligibility />}
       {/* REPORTS PAGE */}
       {currentPage === "reports" && <ReportsPage />}
     </DashboardLayout>

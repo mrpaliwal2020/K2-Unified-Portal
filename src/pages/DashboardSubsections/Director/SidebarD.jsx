@@ -18,6 +18,11 @@ const SidebarD = ({ currentPage, setCurrentPage }) => {
       label: "Meetings",
       id: "governance",
     },
+      {
+      icon: ShieldCheck,
+      label: "Eligibility",
+      id: "eligibility",
+    },
     {
       icon: BarChart3,
       label: "Reports",

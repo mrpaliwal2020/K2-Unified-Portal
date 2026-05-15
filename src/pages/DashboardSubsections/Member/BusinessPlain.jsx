@@ -11,7 +11,7 @@ import {
   Calendar,
   IndianRupee,
   Filter,
-  Loader2,
+  Loader,
 } from "lucide-react";
 import useAuthStore from "../../../store/authStore";
 import { getAgriBusinessPlan } from "../../../services/api/authApi";
@@ -128,7 +128,7 @@ const BusinessPlan = () => {
       if (data) {
         setPlan(data);
       } else {
-        setError("Is unit ke liye koi business plan nahi mila.");
+        setError("");
       }
       setLoading(false);
     });
@@ -203,24 +203,20 @@ const BusinessPlan = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-3">
-        <Loader2 size={36} className="text-emerald-600 animate-spin" />
-        <p className="text-slate-500 font-medium">
-          Business plan load ho raha hai...
-        </p>
+      <div className="flex flex-col items-center justify-center py-55">
+        <Loader size={36} className="text-emerald-600 animate-spin mb-4" />
+        <p className="text-slate-600 font-semibold">Loading...</p>
       </div>
     );
   }
 
   if (error || !plan) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-2">
+      <div className="flex flex-col items-center justify-center py-55 gap-2">
         <p className="text-lg font-bold text-slate-700">
-          Business Plan Nahi Mila
+          Business Plan Not Found
         </p>
-        <p className="text-slate-500 text-sm">
-          {error || "Koi plan available nahi hai."}
-        </p>
+        <p className="text-slate-500 text-sm">{error || ""}</p>
       </div>
     );
   }
