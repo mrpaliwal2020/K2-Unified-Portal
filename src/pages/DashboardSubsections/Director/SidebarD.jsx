@@ -1,33 +1,13 @@
-import React from "react";
-import { Home, ShieldCheck, Gavel, BarChart3 } from "lucide-react";
+import { Home, ShieldCheck, Gavel, BarChart3, ClipboardList } from "lucide-react";
 
 const SidebarD = ({ currentPage, setCurrentPage }) => {
   const navigationItems = [
-    {
-      icon: Home,
-      label: "Dashboard",
-      id: "dashboard",
-    },
-    {
-      icon: ShieldCheck,
-      label: "Compliance",
-      id: "compliance",
-    },
-    {
-      icon: Gavel,
-      label: "Meetings",
-      id: "governance",
-    },
-      {
-      icon: ShieldCheck,
-      label: "Eligibility",
-      id: "eligibility",
-    },
-    {
-      icon: BarChart3,
-      label: "Reports",
-      id: "reports",
-    },
+    { icon: Home,          label: "Dashboard",   id: "dashboard"   },
+    { icon: ShieldCheck,   label: "Compliance",  id: "compliance"  },
+    { icon: Gavel,         label: "Meetings",    id: "governance"  },
+    { icon: ShieldCheck,   label: "Eligibility", id: "eligibility" },
+    { icon: ClipboardList, label: "Survey",      id: "survey"      },
+    { icon: BarChart3,     label: "Reports",     id: "reports"     },
   ];
 
   return (

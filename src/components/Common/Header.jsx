@@ -82,6 +82,7 @@ const Header = ({
   const [resourcesOpen, setResourcesOpen] = React.useState(false);
   const [appDropOpen, setAppDropOpen] = React.useState(false);
   const [unitData, setUnitData] = React.useState(null);
+  const [unitLoading, setUnitLoading] = React.useState(false);
   const dropRef = React.useRef(null);
   const resourcesRef = React.useRef(null);
   const appDropRef = React.useRef(null);
@@ -121,14 +122,20 @@ const Header = ({
 
   React.useEffect(() => {
     const fetchUnitDetails = async () => {
-      if (isLoggedIn && profile?.profileId && selectedUnit?.unitCode) {
+      if (isLoggedIn && selectedUnit?.unitCode) {
+        setUnitLoading(true);
         try {
-          const res = await getUnitDetails(profile.profileId, selectedUnit.unitCode);
+          const res = await getUnitDetails(
+            selectedUnit.unitCode,
+            selectedUnit.groupId,
+          );
           if (res) {
             setUnitData(res);
           }
         } catch (error) {
           console.error("Failed to fetch unit details", error);
+        } finally {
+          setUnitLoading(false);
         }
       }
     };
@@ -173,18 +180,32 @@ const Header = ({
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigate(ROUTES.HOME)}
           >
-            <img
-              src={
-                isLoggedIn && selectedUnit
-                  ? unitData?.unitDetails?.[0]?.iconLink || selectedUnit.imageUrl || "https://media.licdn.com/dms/image/v2/D4D22AQF10FJ5HpESzg/feedshare-shrink_800/feedshare-shrink_800/0/1682150238013?e=2147483647&v=beta&t=NXxWtzVmkHYdQfVk_KbDWwk73X2vcMlhG26ULb8LG1E"
-                  : "\\Images\\Krishi-Kutumb.jpeg"
-              }
-              alt={isLoggedIn && selectedUnit ? (unitData?.unitName || selectedUnit.unitName) : "Krishi Kutumb Logo"}
-              className={`h-14 sm:h-16 ${isLoggedIn && selectedUnit ? "w-14 sm:w-16 rounded-full object-cover" : "w-auto object-contain"}`}
-            />
+            {isLoggedIn && selectedUnit && unitLoading ? (
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-gray-200 animate-pulse shrink-0" />
+            ) : (
+              <img
+                src={
+                  isLoggedIn && selectedUnit
+                    ? unitData?.unitDetails?.[0]?.iconLink ||
+                      selectedUnit.imageUrl ||
+                      "https://static.thenounproject.com/png/2687761-200.png"
+                    : "\\Images\\Krishi-Kutumb.jpeg"
+                }
+                alt={
+                  isLoggedIn && selectedUnit
+                    ? unitData?.unitName || selectedUnit.unitName
+                    : "Krishi Kutumb Logo"
+                }
+                className={`h-14 sm:h-16 ${isLoggedIn && selectedUnit ? "w-14 sm:w-16 rounded-full object-cover" : "w-auto object-contain"}`}
+              />
+            )}
             <div>
-              <h1 className={`font-semibold text-green-700 ${isLoggedIn && selectedUnit ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}>
-                {isLoggedIn && selectedUnit ? (unitData?.unitName || selectedUnit.unitName) : "Krishi Kutumb"}
+              <h1
+                className={`font-semibold text-green-700 ${isLoggedIn && selectedUnit ? "text-xl sm:text-2xl" : "text-2xl sm:text-3xl"}`}
+              >
+                {isLoggedIn && selectedUnit
+                  ? unitData?.unitName || selectedUnit.unitName
+                  : "Krishi Kutumb"}
               </h1>
               {selectedUnit?.unitCode && (
                 <p className="text-xs sm:text-sm text-gray-500 font-medium">
@@ -266,21 +287,37 @@ const Header = ({
                       whileTap={{ scale: 0.97 }}
                     >
                       Get App
-                      <ChevronDown className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
+                      />
                     </motion.button>
                     {appDropOpen && (
                       <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
                         <button
-                          onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                          onClick={() => {
+                            window.open(
+                              "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                            setAppDropOpen(false);
+                          }}
                           className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
                         >
-                          Android 
+                          Android
                         </button>
                         <button
-                          onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                          onClick={() => {
+                            window.open(
+                              "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                            setAppDropOpen(false);
+                          }}
                           className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
                         >
-                          iOS 
+                          iOS
                         </button>
                       </div>
                     )}
@@ -319,18 +356,34 @@ const Header = ({
                   whileTap={{ scale: 0.97 }}
                 >
                   Get Started
-                  <ChevronDown className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
+                  />
                 </motion.button>
                 {appDropOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
                     <button
-                      onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                      onClick={() => {
+                        window.open(
+                          "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+                          "_blank",
+                          "noopener,noreferrer",
+                        );
+                        setAppDropOpen(false);
+                      }}
                       className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
                     >
                       Android (Google Play)
                     </button>
                     <button
-                      onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank", "noopener,noreferrer"); setAppDropOpen(false); }}
+                      onClick={() => {
+                        window.open(
+                          "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
+                          "_blank",
+                          "noopener,noreferrer",
+                        );
+                        setAppDropOpen(false);
+                      }}
                       className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
                     >
                       iOS (App Store)

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Search,
-  Building2,
   MapPin,
   Filter,
   Users,
@@ -46,8 +45,8 @@ const Units = () => {
     syncProfile().finally(() => {
       setSyncing(false);
       const p = useAuthStore.getState().profile;
-      getAllBusinessUnits(p?.latitude || "", p?.longitude || "").then(
-        (data) => setAllFPOs(Array.isArray(data) ? data : []),
+      getAllBusinessUnits(p?.latitude || "", p?.longitude || "").then((data) =>
+        setAllFPOs(Array.isArray(data) ? data : []),
       );
     });
 
@@ -101,7 +100,7 @@ const Units = () => {
     if (statusFilter === "myfpo") {
       list = list.filter(isMyFPOUnit);
     } else if (statusFilter === "trending") {
-      list = [...list]
+      list = [...others]
         .filter((f) => f.distanceKm != null)
         .sort((a, b) => a.distanceKm - b.distanceKm)
         .slice(0, 20);
@@ -187,7 +186,14 @@ const Units = () => {
                         : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
-                    <Icon size={13} className={statusFilter === value ? "text-green-600" : "text-gray-400"} />
+                    <Icon
+                      size={13}
+                      className={
+                        statusFilter === value
+                          ? "text-green-600"
+                          : "text-gray-400"
+                      }
+                    />
                     {label}
                   </button>
                 ))}
@@ -211,22 +217,6 @@ const Units = () => {
           {/* Stats + Search Bar */}
           <div className="px-5 py-3 bg-white border-b border-gray-200 shrink-0">
             <div className="flex items-center gap-3">
-              {/* Count */}
-              <p className="text-sm text-gray-600 shrink-0">
-                <span className="font-bold text-gray-900">
-                  {filteredList.length}
-                </span>{" "}
-                FPOs
-                {hiddenCount > 0 && (
-                  <>
-                    {" · "}
-                    <span className="text-orange-500 font-medium">
-                      {hiddenCount.toLocaleString()} hidden
-                    </span>
-                  </>
-                )}
-              </p>
-
               {/* Always-visible search */}
               <div className="flex-1 relative">
                 <Search
@@ -277,7 +267,10 @@ const Units = () => {
                   No FPO matches your current filters.
                 </p>
                 <button
-                  onClick={() => { setStatusFilter("all"); setSearchQuery(""); }}
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setSearchQuery("");
+                  }}
                   className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95"
                 >
                   Clear Filters
@@ -289,7 +282,10 @@ const Units = () => {
                   const mine = isMyFPOUnit(unit);
                   const iconUrl = unit.unitDetails?.[0]?.iconLink;
                   const key =
-                    unit.unitId || unit.groupId || unit.unitCode || Math.random();
+                    unit.unitId ||
+                    unit.groupId ||
+                    unit.unitCode ||
+                    Math.random();
 
                   return (
                     <div
@@ -304,20 +300,17 @@ const Units = () => {
                       <div className="flex items-start gap-3 p-5">
                         {/* Avatar */}
                         <div className="w-12 h-12 bg-green-50 border border-green-100 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
-                          {iconUrl ? (
-                            <img
-                              src={iconUrl}
-                              alt={unit.unitName}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                                e.target.nextSibling.style.display = "block";
-                              }}
-                            />
-                          ) : null}
-                          <Building2
-                            className="w-6 h-6 text-green-500"
-                            style={{ display: iconUrl ? "none" : "block" }}
+                          <img
+                            src={
+                              iconUrl ||
+                              "https://static.thenounproject.com/png/2687761-200.png"
+                            }
+                            alt={unit.unitName}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://static.thenounproject.com/png/2687761-200.png";
+                            }}
                           />
                         </div>
 
@@ -342,7 +335,10 @@ const Units = () => {
                           {/* Address */}
                           {unit.unitAddress && (
                             <div className="flex items-center gap-1 mb-2">
-                              <MapPin size={10} className="text-green-500 shrink-0" />
+                              <MapPin
+                                size={10}
+                                className="text-green-500 shrink-0"
+                              />
                               <span className="text-[11px] text-gray-500 truncate">
                                 {unit.unitAddress}
                               </span>
@@ -360,7 +356,8 @@ const Units = () => {
                               <div className="flex items-center gap-1">
                                 <Users size={10} className="text-gray-400" />
                                 <span className="text-[11px] text-gray-400">
-                                  {Number(unit.memberCount).toLocaleString()} members
+                                  {Number(unit.memberCount).toLocaleString()}{" "}
+                                  members
                                 </span>
                               </div>
                             )}
