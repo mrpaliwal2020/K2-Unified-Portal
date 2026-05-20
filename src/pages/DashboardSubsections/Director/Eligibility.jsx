@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { cn } from "../../../utils/cn";
 import {
   Search,
@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Calendar,
   Briefcase,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import useAuthStore from "../../../store/authStore";
@@ -374,10 +375,26 @@ const SchemeCard = ({ name, index }) => (
   </div>
 );
 
+// ─── Highlight matched text ─────────────────────────────────────────────────
+const HighlightText = ({ text, query }) => {
+  if (!query || !text) return <>{text || ""}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-100 text-yellow-900 rounded-sm not-italic font-semibold px-0.5">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // FPO RESULT CARD
 // ═══════════════════════════════════════════════════════════════════════════
-const FpoResultCard = ({ fpo, onSave, isSaved, onReport }) => {
+const FpoResultCard = ({ fpo, onSave, isSaved, onReport, query = "" }) => {
   const [expanded, setExpanded] = useState(false);
 
   const schemes = fpo.eligibleSchemes
@@ -401,10 +418,12 @@ const FpoResultCard = ({ fpo, onSave, isSaved, onReport }) => {
             </div>
             <div>
               <h3 className="font-bold text-slate-900 text-lg leading-snug mb-1">
-                {fpo.name}
+                <HighlightText text={fpo.name} query={query} />
               </h3>
               <p className="text-sm text-slate-500 flex items-center gap-1">
-                <MapPin size={13} /> {fpo.district}, {fpo.state}
+                <MapPin size={13} />
+                <HighlightText text={fpo.district} query={query} />,{" "}
+                <HighlightText text={fpo.state} query={query} />
               </p>
             </div>
           </div>
@@ -437,7 +456,7 @@ const FpoResultCard = ({ fpo, onSave, isSaved, onReport }) => {
         {/* Row 1 */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           {[
-            { l: "CIN", v: fpo.cin },
+            { l: "CIN", v: fpo.cin, highlight: true },
             { l: "Category", v: fpo.category || "—" },
             { l: "Registered", v: fpo.registrationDate || "—" },
             { l: "ROC", v: fpo.roc || "—" },
@@ -447,7 +466,7 @@ const FpoResultCard = ({ fpo, onSave, isSaved, onReport }) => {
                 {f.l}
               </p>
               <p className="text-sm font-medium text-slate-800 mt-0.5 truncate">
-                {f.v}
+                {f.highlight ? <HighlightText text={f.v} query={query} /> : f.v}
               </p>
             </div>
           ))}
@@ -549,13 +568,10 @@ const FpoResultCard = ({ fpo, onSave, isSaved, onReport }) => {
 // ═══════════════════════════════════════════════════════════════════════════
 // CHECK ELIGIBILITY TAB
 // ═══════════════════════════════════════════════════════════════════════════
-const ITEMS_PER_PAGE = 15;
 
-const CheckTab = ({ savedFpos, onSave }) => {
-  const [mode, setMode] = useState("cin");
-  const [cinInput, setCinInput] = useState("");
-  const [nameInput, setNameInput] = useState("");
-  const [stateInput, setStateInput] = useState("");
+const ITEMS_PER_PAGE = 10;
+
+const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -563,219 +579,332 @@ const CheckTab = ({ savedFpos, onSave }) => {
   const [reportFpo, setReportFpo] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedResults = results.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  // Sidebar data & filters
+  const [allFpos, setAllFpos] = useState([]);
+  const [initLoading, setInitLoading] = useState(true);
+  const [filterType, setFilterType] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterState, setFilterState] = useState("");
+  const [filterAgencies, setFilterAgencies] = useState([]);
+  const [sidebarSearch, setSidebarSearch] = useState("");
+  const [openSecs, setOpenSecs] = useState({
+    type: true,
+    status: true,
+    states: true,
+    agencies: true,
+  });
 
-  const runSearch = async () => {
-    setError("");
-    setResults([]);
-    setCurrentPage(1);
+  // ── All categories fetched once from API (for Type filter sidebar) ─────────
+  const [allCategories, setAllCategories] = useState([]); // [{ type, count }]
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-    if (mode === "cin") {
-      if (!cinInput.trim()) {
-        setError("Please enter a CIN number.");
-        return;
-      }
-    } else if (mode === "name") {
-      if (nameInput.trim().length < 3) {
-        setError("Enter at least 3 characters.");
-        return;
-      }
-    } else {
-      if (stateInput.trim().length < 3) {
-        setError("Enter at least 3 characters of the state name.");
-        return;
-      }
-    }
+  // Ref to hold current known state names (lowercase) for debounced search
+  const statesSetRef = useRef(new Set());
 
-    setLoading(true);
-    setSearched(true);
+  const toggleSec = (k) => setOpenSecs((p) => ({ ...p, [k]: !p[k] }));
 
-    const found = await getFPODirectory({
-      cin: mode === "cin" ? cinInput.trim() : "",
-      companyName: mode === "name" ? nameInput.trim() : "",
-      state: mode === "state" ? stateInput.trim() : "",
+  // ── Fetch all FPOs once on mount — build categories, states, statuses, agencies + 10 random initial results ──
+  useEffect(() => {
+    setCategoriesLoading(true);
+    setInitLoading(true);
+    getFPODirectory({}).then((data) => {
+      // Store full dataset for sidebar options
+      setAllFpos(data);
+
+      // Build categories
+      const countMap = {};
+      data.forEach((f) => {
+        if (f.category) countMap[f.category] = (countMap[f.category] || 0) + 1;
+      });
+      const sorted = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .map(([type, count]) => ({ type, count }));
+      setAllCategories(sorted);
+      setCategoriesLoading(false);
+
+      // Show 10 random FPOs as initial results
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      setResults(shuffled.slice(0, 10));
+      setSearched(true);
+      setInitLoading(false);
     });
+  }, []);
 
-    setResults(found);
-    setLoading(false);
+  // ── States: built from full initial API data, sorted by count desc ─────────
+  const stateOpts = useMemo(() => {
+    const countMap = {};
+    allFpos.forEach((f) => {
+      if (f.state) countMap[f.state] = (countMap[f.state] || 0) + 1;
+    });
+    return Object.entries(countMap)
+      .sort((a, b) => b[1] - a[1])
+      .map(([state, count]) => ({ state, count }));
+  }, [allFpos]);
 
-    if (!found.length) {
-      if (mode === "cin")
-        setError("No FPO found with this CIN. Please verify and try again.");
-      else if (mode === "name")
-        setError("No FPOs found. Try a shorter or different search term.");
-      else setError(`No FPOs found in ${stateInput}.`);
+  // Keep statesSetRef in sync for debounced search state matching
+  useEffect(() => {
+    statesSetRef.current = new Set(
+      stateOpts.map(({ state }) => state.toLowerCase()),
+    );
+  }, [stateOpts]);
+
+  // ── Type options: "All" + API-fetched categories ──────────────────────────
+  const typeOpts = useMemo(
+    () => [{ type: "All", count: null }, ...allCategories],
+    [allCategories],
+  );
+
+  // ── Status options: derived from full API data ─────────────────────────────
+  const statusOpts = useMemo(() => {
+    const found = new Set();
+    allFpos.forEach((f) => {
+      if (f.status) found.add(f.status);
+    });
+    return ["All", ...Array.from(found).sort()];
+  }, [allFpos]);
+
+  // ── Agency options: derived from full API data (source field) ──────────────
+  const agencyOpts = useMemo(() => {
+    const found = new Set();
+    allFpos.forEach((f) => {
+      if (f.source) found.add(f.source);
+    });
+    return Array.from(found).sort();
+  }, [allFpos]);
+
+  // ── Unified API call with combined filter params ───────────────────────────
+  const fetchWithFilters = useCallback(
+    async (type, status, state) => {
+      setCurrentPage(1);
+      setError("");
+      setSearched(true);
+
+      // If all filters are default, show 10 random from full data
+      if (type === "All" && status === "All" && !state) {
+        const shuffled = [...allFpos].sort(() => Math.random() - 0.5);
+        setResults(shuffled.slice(0, 10));
+        return;
+      }
+
+      // Build API params from all active filters
+      const params = {};
+      if (type !== "All") params.category = type;
+      if (status !== "All") params.companyStatus = status;
+      if (state) params.state = state;
+
+      setLoading(true);
+      const data = await getFPODirectory(params);
+      setResults(data);
+      setLoading(false);
+
+      if (!data.length) {
+        const parts = [];
+        if (type !== "All") parts.push(`category "${type}"`);
+        if (status !== "All") parts.push(`status "${status}"`);
+        if (state) parts.push(`state "${state}"`);
+        setError(`No FPOs found for ${parts.join(", ")}.`);
+      }
+    },
+    [allFpos],
+  );
+
+  // Debounced API search triggered by sidebar search bar
+  useEffect(() => {
+    const q = sidebarSearch.trim();
+    if (q.length === 0) {
+      if (!filterState && filterType === "All" && filterStatus === "All") {
+        setError("");
+        const shuffled = [...allFpos].sort(() => Math.random() - 0.5);
+        setResults(shuffled.slice(0, 10));
+      }
+      return;
     }
+    if (q.length < 3) return;
+
+    const timer = setTimeout(async () => {
+      setError("");
+      setCurrentPage(1);
+      setFilterState("");
+      setFilterType("All");
+      setFilterStatus("All");
+      setLoading(true);
+      setSearched(true);
+
+      const isCIN = /^[A-Z][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/i.test(q);
+      const matchedState = statesSetRef.current.has(q.toLowerCase())
+        ? stateOpts.find(({ state }) => state.toLowerCase() === q.toLowerCase())
+            ?.state
+        : null;
+
+      let found = [];
+      if (isCIN) {
+        found = await getFPODirectory({ cin: q });
+      } else if (matchedState) {
+        found = await getFPODirectory({ state: matchedState });
+      } else {
+        found = await getFPODirectory({ companyName: q });
+        if (found.length === 0) {
+          found = await getFPODirectory({ state: q });
+        }
+      }
+
+      setResults(found);
+      setLoading(false);
+      if (!found.length) setError(`No FPOs found for "${q}".`);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [
+    sidebarSearch,
+    filterState,
+    filterType,
+    filterStatus,
+    allFpos,
+    stateOpts,
+  ]);
+
+  // ── Type select: call API with combined filters ───────────────────────────
+  const handleTypeSelect = async (type) => {
+    const next = filterType === type ? "All" : type;
+    setFilterType(next);
+    setSidebarSearch("");
+    await fetchWithFilters(next, filterStatus, filterState);
   };
 
-  const handleKey = (e) => {
-    if (e.key === "Enter") runSearch();
+  // ── Status select: call API with combined filters ─────────────────────────
+  const handleStatusSelect = async (status) => {
+    const next = filterStatus === status ? "All" : status;
+    setFilterStatus(next);
+    setSidebarSearch("");
+    await fetchWithFilters(filterType, next, filterState);
   };
+
+  // Apply agency filter client-side on top of API results
+  const displayedResults = useMemo(() => {
+    let arr = [...results];
+    if (filterAgencies.length > 0) {
+      arr = arr.filter((f) =>
+        filterAgencies.some(
+          (a) => f.source === a || (f.eligibleSchemes || "").includes(a),
+        ),
+      );
+    }
+    return arr;
+  }, [results, filterAgencies]);
+
+  const totalPages = Math.ceil(displayedResults.length / ITEMS_PER_PAGE);
+  const paginatedResults = displayedResults.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  const handleStateSelect = async (state) => {
+    const next = filterState === state ? "" : state;
+    setFilterState(next);
+    setSidebarSearch("");
+    await fetchWithFilters(filterType, filterStatus, next);
+  };
+
+  const toggleAgency = (a) => {
+    setFilterAgencies((p) =>
+      p.includes(a) ? p.filter((x) => x !== a) : [...p, a],
+    );
+    setCurrentPage(1);
+  };
+
+  const hasFilters =
+    filterType !== "All" ||
+    filterStatus !== "All" ||
+    filterState !== "" ||
+    filterAgencies.length > 0 ||
+    sidebarSearch.trim() !== "";
+
+  const clearFilters = async () => {
+    setFilterType("All");
+    setFilterStatus("All");
+    setFilterState("");
+    setFilterAgencies([]);
+    setSidebarSearch("");
+    setCurrentPage(1);
+    setError("");
+    // Show 10 random from full data
+    const shuffled = [...allFpos].sort(() => Math.random() - 0.5);
+    setResults(shuffled.slice(0, 10));
+  };
+
   const isSaved = (fpo) => savedFpos.some((s) => s.cin === fpo.cin);
-  const handleReport = (fpo) => setReportFpo(fpo);
-
-  const modeTabs = [
-    { id: "cin", label: "CIN Number" },
-    { id: "name", label: "FPO Name" },
-    { id: "state", label: "By State" },
-  ];
 
   return (
     <>
       {reportFpo && (
         <ReportModal fpo={reportFpo} onClose={() => setReportFpo(null)} />
       )}
-      <div>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">
-            Check FPO Eligibility
-          </h2>
-          <p className="text-slate-500">
-            Search your FPO to see all eligible government schemes
-          </p>
-        </div>
 
-        {/* Search card */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-          {/* Mode toggle */}
-          <div className="flex gap-1 p-1 bg-slate-100 rounded-xl mb-5 w-fit">
-            {modeTabs.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => {
-                  setMode(t.id);
-                  setResults([]);
-                  setSearched(false);
-                  setError("");
-                  setCurrentPage(1);
-                }}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-semibold transition",
-                  mode === t.id
-                    ? "bg-white text-emerald-700 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700",
-                )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {mode === "cin" && (
-            <>
-              <div className="flex gap-3">
-                <input
-                  value={cinInput}
-                  onChange={(e) => setCinInput(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="e.g. U01120UP2022PTC170146"
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-emerald-400 transition min-w-0"
-                />
-                <button
-                  onClick={runSearch}
-                  className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition whitespace-nowrap"
-                >
-                  <Search size={15} /> Search
-                </button>
-              </div>
-              <p className="mt-2 text-xs text-slate-400">
-                Your CIN is on your MCA registration certificate.
-              </p>
-            </>
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* ── Main content ── */}
+        <div className="flex-1 min-w-0">
+          {/* Loading */}
+          {(loading || initLoading) && (
+            <div className="flex items-center justify-center py-12 text-slate-400">
+              <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-500 mr-3" />
+              {initLoading ? "Loading FPO directory..." : "Searching..."}
+            </div>
           )}
 
-          {mode === "name" && (
-            <>
-              <div className="flex gap-3">
-                <input
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="e.g. Anantapur Rural Farmers..."
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-400 transition min-w-0"
-                />
-                <button
-                  onClick={runSearch}
-                  className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition whitespace-nowrap"
-                >
-                  <Search size={15} /> Search
-                </button>
-              </div>
-              <p className="mt-2 text-xs text-slate-400">
-                Type at least 3 characters of your FPO name.
-              </p>
-            </>
+          {/* Error */}
+          {!loading && !initLoading && error && (
+            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-5 text-red-700 text-sm">
+              <AlertCircle size={18} className="shrink-0" /> {error}
+            </div>
           )}
 
-          {mode === "state" && (
-            <>
-              <div className="flex gap-3">
-                <input
-                  value={stateInput}
-                  onChange={(e) => setStateInput(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="e.g. Kerala, Maharashtra..."
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-400 transition min-w-0"
-                />
+          {/* Filter mismatch notice */}
+          {!loading &&
+            !initLoading &&
+            searched &&
+            !error &&
+            displayedResults.length === 0 &&
+            results.length > 0 && (
+              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-5 text-amber-700 text-sm">
+                <AlertCircle size={18} className="shrink-0" />
+                No FPOs match the active filters.{" "}
                 <button
-                  onClick={runSearch}
-                  className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition whitespace-nowrap"
+                  onClick={clearFilters}
+                  className="underline font-semibold ml-1"
                 >
-                  <Search size={15} /> Browse
+                  Clear filters
                 </button>
               </div>
-              <p className="mt-2 text-xs text-slate-400">
-                Type the full state name as registered with MCA.
+            )}
+
+          {/* Results */}
+          {!loading && !initLoading && displayedResults.length > 0 && (
+            <div>
+              <p className="text-sm font-semibold text-slate-500 mb-4">
+                {displayedResults.length} FPO
+                {displayedResults.length > 1 ? "s" : ""} found
+                {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
               </p>
-            </>
-          )}
-        </div>
+              {paginatedResults.map((fpo) => (
+                <FpoResultCard
+                  key={fpo.cin}
+                  fpo={fpo}
+                  onSave={onSave}
+                  isSaved={isSaved(fpo)}
+                  onReport={(f) => setReportFpo(f)}
+                />
+              ))}
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-12 text-slate-400">
-            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-500 mr-3" />
-            Searching...
-          </div>
-        )}
-
-        {/* Error */}
-        {!loading && searched && error && (
-          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-5 text-red-700 text-sm">
-            <AlertCircle size={18} className="shrink-0" /> {error}
-          </div>
-        )}
-
-        {/* Results */}
-        {!loading && results.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold text-slate-500 mb-4">
-              {results.length} FPO{results.length > 1 ? "s" : ""} found
-              {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
-            </p>
-            {paginatedResults.map((fpo) => (
-              <FpoResultCard
-                key={fpo.cin}
-                fpo={fpo}
-                onSave={onSave}
-                isSaved={isSaved(fpo)}
-                onReport={handleReport}
-              />
-            ))}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex flex-col items-center gap-4 py-6">
-                <div className="flex items-center gap-2">
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 py-6">
                   <button
                     onClick={() => {
                       setCurrentPage((p) => Math.max(p - 1, 1));
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     disabled={currentPage === 1}
-                    className={`flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    className={`flex items-center gap-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                       currentPage === 1
                         ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                         : "bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -786,23 +915,22 @@ const CheckTab = ({ savedFpos, onSave }) => {
 
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                     (page) => {
-                      const isVisible =
+                      const show =
                         page === 1 ||
                         page === totalPages ||
                         Math.abs(page - currentPage) <= 1;
-                      if (!isVisible && page !== 2 && page !== totalPages - 1)
+                      if (!show && page !== 2 && page !== totalPages - 1)
                         return null;
                       if (
                         (page === 2 && currentPage > 3) ||
                         (page === totalPages - 1 &&
                           currentPage < totalPages - 2)
-                      ) {
+                      )
                         return (
                           <span key={page} className="text-slate-400 px-1">
                             …
                           </span>
                         );
-                      }
                       return (
                         <button
                           key={page}
@@ -810,7 +938,7 @@ const CheckTab = ({ savedFpos, onSave }) => {
                             setCurrentPage(page);
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
-                          className={`w-10 h-10 rounded-lg font-medium transition-all text-sm ${
+                          className={`w-10 h-10 rounded-lg font-medium text-sm transition-all ${
                             currentPage === page
                               ? "bg-emerald-600 text-white shadow-md"
                               : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -828,7 +956,7 @@ const CheckTab = ({ savedFpos, onSave }) => {
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     disabled={currentPage === totalPages}
-                    className={`flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    className={`flex items-center gap-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                       currentPage === totalPages
                         ? "bg-slate-100 text-slate-400 cursor-not-allowed"
                         : "bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -837,10 +965,257 @@ const CheckTab = ({ savedFpos, onSave }) => {
                     Next <ChevronRight size={15} />
                   </button>
                 </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── RIGHT SIDEBAR ── */}
+        <div className="w-full lg:w-72 lg:shrink-0 lg:sticky lg:top-4">
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={14} className="text-slate-500" />
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
+                  Filters
+                </span>
               </div>
-            )}
+              {hasFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-emerald-600 font-semibold hover:underline"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {/* Search */}
+              <div className="px-4 py-3">
+                <div className="relative">
+                  <Search
+                    size={13}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+                  <input
+                    value={sidebarSearch}
+                    onChange={(e) => {
+                      setSidebarSearch(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder="Search FPO name, CIN, district"
+                    className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-xs bg-slate-50 focus:outline-none focus:border-emerald-400 transition"
+                  />
+                </div>
+              </div>
+
+              {/* Type — fully API-driven categories with real counts */}
+              <div className="px-4 py-3">
+                <button
+                  onClick={() => toggleSec("type")}
+                  className="flex items-center justify-between w-full mb-2"
+                >
+                  <span className="text-sm font-semibold text-slate-800">
+                    Type
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={cn(
+                      "text-slate-400 transition-transform",
+                      openSecs.type && "rotate-180",
+                    )}
+                  />
+                </button>
+                {openSecs.type && (
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {categoriesLoading ? (
+                      <p className="text-xs text-slate-400 text-center py-3">
+                        Loading...
+                      </p>
+                    ) : (
+                      typeOpts.map(({ type, count }) => (
+                        <button
+                          key={type}
+                          onClick={() => handleTypeSelect(type)}
+                          className="flex items-center justify-between w-full text-left"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={cn(
+                                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition shrink-0",
+                                filterType === type
+                                  ? "border-emerald-600"
+                                  : "border-slate-300",
+                              )}
+                            >
+                              {filterType === type && (
+                                <div className="w-2 h-2 rounded-full bg-emerald-600" />
+                              )}
+                            </div>
+                            <span className="text-sm text-slate-700">
+                              {type}
+                            </span>
+                          </div>
+                          {count !== null && (
+                            <span className="text-xs text-slate-400 ml-2">
+                              {count.toLocaleString()}
+                            </span>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Status — API-driven values */}
+              <div className="px-4 py-3">
+                <button
+                  onClick={() => toggleSec("status")}
+                  className="flex items-center justify-between w-full mb-2"
+                >
+                  <span className="text-sm font-semibold text-slate-800">
+                    Status
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={cn(
+                      "text-slate-400 transition-transform",
+                      openSecs.status && "rotate-180",
+                    )}
+                  />
+                </button>
+                {openSecs.status && (
+                  <div className="flex gap-1.5 flex-wrap">
+                    {statusOpts.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => handleStatusSelect(s)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-full text-xs font-semibold border transition",
+                          filterStatus === s
+                            ? "bg-emerald-600 text-white border-emerald-600"
+                            : "bg-white text-slate-600 border-slate-300 hover:border-emerald-400",
+                        )}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* States and UTs — API-driven, sorted by count */}
+              <div className="px-4 py-3">
+                <button
+                  onClick={() => toggleSec("states")}
+                  className="flex items-center justify-between w-full mb-2"
+                >
+                  <span className="text-sm font-semibold text-slate-800">
+                    States and UTs
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={cn(
+                      "text-slate-400 transition-transform",
+                      openSecs.states && "rotate-180",
+                    )}
+                  />
+                </button>
+                {openSecs.states && (
+                  <div className="max-h-48 overflow-y-auto space-y-0.5 pr-1">
+                    {initLoading ? (
+                      <p className="text-xs text-slate-400 text-center py-3">
+                        Loading...
+                      </p>
+                    ) : stateOpts.length === 0 ? (
+                      <p className="text-xs text-slate-400 text-center py-3">
+                        No data
+                      </p>
+                    ) : (
+                      stateOpts.map(({ state, count }) => (
+                        <button
+                          key={state}
+                          onClick={() => handleStateSelect(state)}
+                          className={cn(
+                            "flex items-center justify-between w-full px-2 py-1.5 rounded-lg text-sm transition",
+                            filterState === state
+                              ? "bg-emerald-50 text-emerald-700 font-semibold"
+                              : "text-slate-700 hover:bg-slate-50",
+                          )}
+                        >
+                          <span>{state}</span>
+                          <span className="text-xs text-slate-400 ml-2">
+                            {count.toLocaleString()}
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Implementing Agencies */}
+              <div className="px-4 py-3">
+                <button
+                  onClick={() => toggleSec("agencies")}
+                  className="flex items-center justify-between w-full mb-2"
+                >
+                  <span className="text-sm font-semibold text-slate-800">
+                    Implementing Agencies
+                  </span>
+                  <ChevronDown
+                    size={13}
+                    className={cn(
+                      "text-slate-400 transition-transform",
+                      openSecs.agencies && "rotate-180",
+                    )}
+                  />
+                </button>
+                {openSecs.agencies && (
+                  <div className="space-y-2">
+                    {agencyOpts.map((agency) => (
+                      <button
+                        key={agency}
+                        onClick={() => toggleAgency(agency)}
+                        className="flex items-center gap-2 w-full text-left"
+                      >
+                        <div
+                          className={cn(
+                            "w-4 h-4 rounded border-2 flex items-center justify-center transition shrink-0",
+                            filterAgencies.includes(agency)
+                              ? "border-emerald-600 bg-emerald-600"
+                              : "border-slate-300 bg-white",
+                          )}
+                        >
+                          {filterAgencies.includes(agency) && (
+                            <svg
+                              width="8"
+                              height="6"
+                              viewBox="0 0 8 6"
+                              fill="none"
+                            >
+                              <path
+                                d="M1 3L3 5L7 1"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-sm text-slate-700">{agency}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </>
   );
@@ -1201,7 +1576,13 @@ const Eligibility = () => {
           />
         );
       case "check":
-        return <CheckTab savedFpos={savedFpos} onSave={handleSave} />;
+        return (
+          <CheckTab
+            savedFpos={savedFpos}
+            onSave={handleSave}
+            userState={state}
+          />
+        );
       case "schemes":
         return (
           <SchemesTab

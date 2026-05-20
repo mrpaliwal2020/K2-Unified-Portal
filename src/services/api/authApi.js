@@ -89,11 +89,19 @@ export const getVillageList = async (state, district) => {
 };
 
 // ─── Get FPO Directory ───────────────────────────────────────────────────────
-export const getFPODirectory = async ({ cin = "", companyName = "", state = "" }) => {
+export const getFPODirectory = async ({
+  cin = "",
+  companyName = "",
+  state = "",
+  category = "",
+  companyStatus = "",
+}) => {
   const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FPO_DIRECTORY, {
     cin,
     companyName,
     state,
+    category,
+    companyStatus,
   });
   if (result.success && result.data?.fpoList?.length > 0) {
     return result.data.fpoList.map((f) => ({
@@ -174,9 +182,13 @@ export const getFarmerAssets = async (profileId) => {
 
 // ─── Get Farmer Livestock ─────────────────────────────────────────────────────
 export const getFarmerLivestock = async (profileId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FARMER_LIVESTOCK, {
-    profileid: profileId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_FARMER_LIVESTOCK,
+    {
+      profileid: profileId,
+    },
+  );
   if (result.success && result.data?.userlist?.length > 0)
     return result.data.userlist;
   return [];
@@ -184,9 +196,13 @@ export const getFarmerLivestock = async (profileId) => {
 
 // ─── Get Farmer Services ──────────────────────────────────────────────────────
 export const getFarmerServices = async (profileId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FARMER_SERVICES, {
-    profileid: profileId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_FARMER_SERVICES,
+    {
+      profileid: profileId,
+    },
+  );
   if (result.success && result.data?.userlist?.length > 0)
     return result.data.userlist;
   return [];
@@ -194,9 +210,13 @@ export const getFarmerServices = async (profileId) => {
 
 // ─── Get Farmer Business ──────────────────────────────────────────────────────
 export const getFarmerBusiness = async (profileId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FARMER_BUSINESS, {
-    profileid: profileId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_FARMER_BUSINESS,
+    {
+      profileid: profileId,
+    },
+  );
   if (result.success && result.data?.userlist?.length > 0)
     return result.data.userlist;
   return [];
@@ -204,57 +224,82 @@ export const getFarmerBusiness = async (profileId) => {
 
 // ─── Get Unit Livestock Summary ───────────────────────────────────────────────
 export const getUnitLivestockSummary = async (unitCode, groupId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_UNIT_LIVESTOCK_SUMMARY, {
-    user: { unitCode, groupId },
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_UNIT_LIVESTOCK_SUMMARY,
+    {
+      user: { unitCode, groupId },
+    },
+  );
   if (result.success) return result.data;
   return null;
 };
 
 // ─── Get Unit Soil Report ─────────────────────────────────────────────────────
 export const getUnitSoilReport = async (unitCode, groupId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_UNIT_SOIL_REPORT, {
-    unitCode,
-    groupId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_UNIT_SOIL_REPORT,
+    {
+      unitCode,
+      groupId,
+    },
+  );
   if (result.success) return result.data;
   return null;
 };
 
 // ─── Get Member Profile Report ────────────────────────────────────────────────
 export const getMemberProfileReport = async (profileId, unitCode, groupId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_MEMBER_PROFILE_REPORT, {
-    profileId,
-    unitCode,
-    groupId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_MEMBER_PROFILE_REPORT,
+    {
+      profileId,
+      unitCode,
+      groupId,
+    },
+  );
   if (result.success) return result.data;
   return null;
 };
 
 // ─── Get Unit Land Records Summary ───────────────────────────────────────────
 export const getUnitLandRecordsSummary = async (unitCode, groupId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_UNIT_LAND_RECORDS_SUMMARY, {
-    user: { unitCode, groupId },
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_UNIT_LAND_RECORDS_SUMMARY,
+    {
+      user: { unitCode, groupId },
+    },
+  );
   if (result.success) return result.data;
   return null;
 };
 
 // ─── Get Farmer Details ───────────────────────────────────────────────────────
 export const getFarmerDetails = async (profileId, unitCode, groupId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_FARMER_DETAILS, {
-    profileId,
-    unitCode,
-    groupId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_FARMER_DETAILS,
+    {
+      profileId,
+      unitCode,
+      groupId,
+    },
+  );
   if (result.success && result.data?.userlist?.length > 0)
     return result.data.userlist;
   return [];
 };
 
 // ─── Get Crops In Farm ────────────────────────────────────────────────────────
-export const getCropsInFarm = async (profileId, unitCode, groupId, farmId = null) => {
+export const getCropsInFarm = async (
+  profileId,
+  unitCode,
+  groupId,
+  farmId = null,
+) => {
   const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_CROPS_IN_FARM, {
     profileId,
     unitCode,
@@ -268,9 +313,13 @@ export const getCropsInFarm = async (profileId, unitCode, groupId, farmId = null
 
 // ─── Get All Business Units Of User ──────────────────────────────────────────
 export const getAllBusinessUnitsOfUser = async (profileId) => {
-  const result = await apiPost(ENDPOINTS.BUSINESS_UNIT, OPS.GET_ALL_BUSINESS_UNITS_OF_USER, {
-    profileId,
-  });
+  const result = await apiPost(
+    ENDPOINTS.BUSINESS_UNIT,
+    OPS.GET_ALL_BUSINESS_UNITS_OF_USER,
+    {
+      profileId,
+    },
+  );
   if (result.success && result.data?.userlist?.length > 0)
     return result.data.userlist;
   return [];
