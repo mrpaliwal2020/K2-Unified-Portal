@@ -578,6 +578,7 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
   const [error, setError] = useState("");
   const [reportFpo, setReportFpo] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [initError, setInitError] = useState(false);
 
   // Sidebar data & filters
   const [allFpos, setAllFpos] = useState([]);
@@ -604,31 +605,43 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
   const toggleSec = (k) => setOpenSecs((p) => ({ ...p, [k]: !p[k] }));
 
   // ── Fetch all FPOs once on mount — build categories, states, statuses, agencies + 10 random initial results ──
-  useEffect(() => {
+  const fetchInitialData = useCallback(() => {
     setCategoriesLoading(true);
     setInitLoading(true);
-    getFPODirectory({}).then((data) => {
-      // Store full dataset for sidebar options
-      setAllFpos(data);
+    setInitError(false);
+    getFPODirectory({})
+      .then((data) => {
+        // Store full dataset for sidebar options
+        setAllFpos(data);
 
-      // Build categories
-      const countMap = {};
-      data.forEach((f) => {
-        if (f.category) countMap[f.category] = (countMap[f.category] || 0) + 1;
+        // Build categories
+        const countMap = {};
+        data.forEach((f) => {
+          if (f.category)
+            countMap[f.category] = (countMap[f.category] || 0) + 1;
+        });
+        const sorted = Object.entries(countMap)
+          .sort((a, b) => b[1] - a[1])
+          .map(([type, count]) => ({ type, count }));
+        setAllCategories(sorted);
+        setCategoriesLoading(false);
+
+        // Show 10 random FPOs as initial results
+        const shuffled = [...data].sort(() => Math.random() - 0.5);
+        setResults(shuffled.slice(0, 10));
+        setSearched(true);
+        setInitLoading(false);
+      })
+      .catch(() => {
+        setCategoriesLoading(false);
+        setInitLoading(false);
+        setInitError(true);
       });
-      const sorted = Object.entries(countMap)
-        .sort((a, b) => b[1] - a[1])
-        .map(([type, count]) => ({ type, count }));
-      setAllCategories(sorted);
-      setCategoriesLoading(false);
-
-      // Show 10 random FPOs as initial results
-      const shuffled = [...data].sort(() => Math.random() - 0.5);
-      setResults(shuffled.slice(0, 10));
-      setSearched(true);
-      setInitLoading(false);
-    });
   }, []);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
 
   // ── States: built from full initial API data, sorted by count desc ─────────
   const stateOpts = useMemo(() => {
@@ -843,8 +856,27 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* ── Main content ── */}
         <div className="flex-1 min-w-0">
+          {/* Init Error - Retry */}
+          {initError && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <AlertCircle size={40} className="text-red-300 mb-3" />
+              <p className="text-slate-700 font-semibold mb-1">
+                FPO Directory load nahi hua
+              </p>
+              <p className="text-slate-500 text-sm mb-4">
+                Network ya server error ho sakta hai. Retry karein.
+              </p>
+              <button
+                onClick={fetchInitialData}
+                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition"
+              >
+                🔄 Retry
+              </button>
+            </div>
+          )}
+
           {/* Loading */}
-          {(loading || initLoading) && (
+          {!initError && (loading || initLoading) && (
             <div className="flex items-center justify-center py-12 text-slate-400">
               <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-500 mr-3" />
               {initLoading ? "Loading FPO directory..." : "Searching..."}
@@ -873,6 +905,31 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
                   className="underline font-semibold ml-1"
                 >
                   Clear filters
+                </button>
+              </div>
+            )}
+
+          {/* No results at all */}
+          {!loading &&
+            !initLoading &&
+            !initError &&
+            searched &&
+            !error &&
+            results.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Search size={40} className="text-slate-300 mb-3" />
+                <p className="text-slate-700 font-semibold mb-1">
+                  Koi FPO nahi mila
+                </p>
+                <p className="text-slate-500 text-sm mb-4">
+                  FPO directory se koi data nahi aaya. Retry karein ya filter
+                  change karein.
+                </p>
+                <button
+                  onClick={fetchInitialData}
+                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition"
+                >
+                  🔄 Retry
                 </button>
               </div>
             )}
@@ -1528,16 +1585,18 @@ const Eligibility = () => {
 
   useEffect(() => {
     setStatsLoading(true);
-    Promise.all([getFPODirectory({}), getProgram(state, "en", "")]).then(
-      ([fpoList, programList]) => {
+    Promise.all([getFPODirectory({}), getProgram(state, "en", "")])
+      .then(([fpoList, programList]) => {
         setTotalFpos(fpoList.length);
         setTotalStates(
           new Set(fpoList.map((f) => f.state).filter(Boolean)).size,
         );
         setPrograms(programList || []);
         setStatsLoading(false);
-      },
-    );
+      })
+      .catch(() => {
+        setStatsLoading(false);
+      });
   }, [state]);
 
   useEffect(() => {
