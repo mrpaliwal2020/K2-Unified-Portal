@@ -9,6 +9,7 @@ export const ROUTES = {
   UNITS_ALLFPO: "/auth/units/allfpo",
   DASHBOARD: "/dashboard",
   DASHBOARD_UNIT: "/dashboard/:unitCode",
+  DASHBOARD_UNIT_ROLE: "/dashboard/:unitCode/:role",
   MEMBER_PROFILE: "/dashboard/members/:id",
 
   // ── Dashboard Subsections ─────────────────────────────────────────────────

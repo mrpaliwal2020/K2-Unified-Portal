@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../../components/ui/Layouts/DashboardLayout";
 import { Button, Card, Input } from "../../components/ui";
 import { cn } from "../../utils/cn";
@@ -707,7 +707,13 @@ const TrainingView = () => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const PromoterDashboard = ({ onSwitchRole }) => {
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState(() => {
+    return localStorage.getItem("activeTab_promoter") || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("activeTab_promoter", activePage);
+  }, [activePage]);
 
   const navItems = [
     { id: "dashboard", icon: Home,     label: "Dashboard" },

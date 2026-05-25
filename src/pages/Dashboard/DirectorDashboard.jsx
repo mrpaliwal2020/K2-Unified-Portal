@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../../components/ui/Layouts/DashboardLayout";
 import SidebarD from "../DashboardSubsections/Director/SidebarD";
 import DashboardPage from "../DashboardSubsections/Director/Dashboard";
@@ -9,7 +9,13 @@ import Eligibility from "../DashboardSubsections/Director/Eligibility";
 import Survey from "../DashboardSubsections/Director/Survey";
 
 const DirectorDashboard = ({ onSwitchRole }) => {
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem("activeTab_director") || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("activeTab_director", currentPage);
+  }, [currentPage]);
 
   return (
     <DashboardLayout

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Header from "../../components/Common/Header";
 import CEODashboard from "../../pages/Dashboard/CEODashboard";
@@ -134,10 +134,12 @@ const ROLES_CONFIG = [
 ];
 
 const MainDashboard = () => {
-  const [selectedRole, setSelectedRole] = useState(null);
-  const { unitCode } = useParams();
+  const navigate = useNavigate();
+  const { unitCode, role } = useParams();
   const { userType, _hasHydrated, profile, selectedUnit, setSelectedUnit } =
     useAuthStore();
+
+  const activeRole = role?.toLowerCase() || null;
 
   // Restore selectedUnit from URL if store lost it (e.g. page refresh)
   useEffect(() => {
@@ -153,20 +155,31 @@ const MainDashboard = () => {
     }
   }, [unitCode, profile, selectedUnit, setSelectedUnit]);
 
-  if (!_hasHydrated) return <FullScreenLoader />;
-
   const isMember = userType?.toLowerCase() === ROLES.MEMBER.toLowerCase();
 
-  if (selectedRole === "ceo")
-    return <CEODashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "director")
-    return <DirectorDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "accountant")
-    return <AccountantDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "promoter")
-    return <PromoterDashboard onSwitchRole={() => setSelectedRole(null)} />;
-  if (selectedRole === "member")
-    return <MemberDashboard onSwitchRole={() => setSelectedRole(null)} />;
+  // Redirect member role automatically if they are a member and role is not yet set
+  useEffect(() => {
+    if (isMember && !activeRole && unitCode) {
+      navigate(`/dashboard/${unitCode}/member`, { replace: true });
+    }
+  }, [isMember, activeRole, unitCode, navigate]);
+
+  if (!_hasHydrated) return <FullScreenLoader />;
+
+  const handleSwitchRole = () => {
+    navigate(`/dashboard/${unitCode}`);
+  };
+
+  if (activeRole === "ceo")
+    return <CEODashboard onSwitchRole={handleSwitchRole} />;
+  if (activeRole === "director")
+    return <DirectorDashboard onSwitchRole={handleSwitchRole} />;
+  if (activeRole === "accountant")
+    return <AccountantDashboard onSwitchRole={handleSwitchRole} />;
+  if (activeRole === "promoter")
+    return <PromoterDashboard onSwitchRole={handleSwitchRole} />;
+  if (activeRole === "member")
+    return <MemberDashboard onSwitchRole={handleSwitchRole} />;
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -203,7 +216,7 @@ const MainDashboard = () => {
                   borderColor={role.borderColor}
                   locked={isMember}
                   // locked={false}
-                  onClick={() => setSelectedRole(role.key)}
+                  onClick={() => navigate(`/dashboard/${unitCode}/${role.key}`)}
                 />
               ))}
             </div>

@@ -72,6 +72,14 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path={ROUTES.DASHBOARD_UNIT_ROLE}
+        element={
+          <ProtectedRoute>
+            <MainDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="/" element={<Navigate to={ROUTES.ENTRY} replace />} />
       <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />

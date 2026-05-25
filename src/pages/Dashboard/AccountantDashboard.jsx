@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../../components/ui/Layouts/DashboardLayout";
 import { Button, Card } from "../../components/ui";
 import { cn } from "../../utils/cn";
@@ -583,7 +583,13 @@ const ReportsView = () => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const AccountantDashboard = ({ onSwitchRole }) => {
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState(() => {
+    return localStorage.getItem("activeTab_accountant") || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("activeTab_accountant", activePage);
+  }, [activePage]);
 
   const navItems = [
     { id: "dashboard",    icon: Home,       label: "Dashboard"    },

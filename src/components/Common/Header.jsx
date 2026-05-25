@@ -452,7 +452,7 @@ const Header = ({
                         </button>
                       )}
 
-                      {!onSwitchRole && hasSelectedUnit && (
+                      {hasSelectedUnit && (
                         <button
                           onClick={() => {
                             setSelectedUnit(null);

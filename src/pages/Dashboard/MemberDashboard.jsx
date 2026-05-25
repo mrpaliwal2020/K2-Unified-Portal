@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "../../components/ui/Layouts/DashboardLayout";
 import Sidebar from "../DashboardSubsections/Sidebar";
 import DashboardPage from "../DashboardSubsections/Member/Dashboard";
@@ -13,7 +13,13 @@ import BusinessPlan from "../DashboardSubsections/Member/BusinessPlain";
 // import Compliance from "../DashboardSubsections/Director/Compliance";
 
 const MemberDashboard = ({ onSwitchRole }) => {
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem("activeTab_member") || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("activeTab_member", currentPage);
+  }, [currentPage]);
 
   return (
     <DashboardLayout
