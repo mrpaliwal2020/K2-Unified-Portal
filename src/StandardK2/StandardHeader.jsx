@@ -27,7 +27,7 @@ const NAV_LINKS_PRE = [
   { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
 
-  { label: "Login", path: ROUTES.LOGIN },
+  { label: "FPO Login", path: ROUTES.LOGIN },
 ];
 
 const NAV_LINKS_POST = [
@@ -276,7 +276,18 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                 </motion.div>
 
                 {navLinksRest.map((link) =>
-                  link.label === "Get App" ? (
+                  link.label === "FPO Login" ? (
+                    <motion.button
+                      key={link.label}
+                      variants={navItemVariants}
+                      onClick={() => handleNavClick(link)}
+                      className="border-2 border-green-700 text-green-700 px-4 py-1.5 rounded-xl hover:bg-green-700 hover:text-white transition-colors text-base lg:text-lg font-semibold whitespace-nowrap"
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      {link.label}
+                    </motion.button>
+                  ) : link.label === "Get App" ? (
                     <motion.div
                       key={link.label}
                       variants={navItemVariants}
