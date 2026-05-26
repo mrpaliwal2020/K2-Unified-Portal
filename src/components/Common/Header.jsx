@@ -20,21 +20,25 @@ import { getUnitDetails } from "../../services/api/authApi";
 
 const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
+  { label: "FPO Directory", path: ROUTES.FPO },
+  { label: "FPO Compliance", path: ROUTES.FPO_COMPLIANCE },
   { label: "About", path: ROUTES.ABOUT },
   // { label: "News", path: ROUTES.NEWS },
   { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
-  { label: "FPO", path: ROUTES.FPO },
+
   { label: "Login", path: ROUTES.LOGIN },
 ];
 
 const NAV_LINKS_POST = [
   { label: "Home", path: ROUTES.HOME },
+  { label: "FPO Directory", path: ROUTES.UNITS },
+  { label: "FPO Compliance", path: ROUTES.FPO_COMPLIANCE },
   { label: "About", path: ROUTES.ABOUT },
   // { label: "News", path: ROUTES.NEWS },
   { label: "Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
-  { label: "FPO", path: ROUTES.UNITS },
+
   {
     label: "Get App",
     path: "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
@@ -220,291 +224,295 @@ const Header = ({
             </div>
           </motion.div>
 
-          {/* ── Center — Nav Links: staggered fade from top ── */}
-          <nav className="hidden md:flex items-center gap-4 lg:gap-8">
-            <motion.div
-              className="flex items-center gap-4 lg:gap-8"
-              variants={navContainerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {navLinksFirst.map((link) => (
-                <motion.button
-                  key={link.label}
-                  variants={navItemVariants}
-                  onClick={() => handleNavClick(link)}
-                  className={`text-base lg:text-lg font-medium transition-colors ${
-                    !link.external && location.pathname === link.path
-                      ? "text-green-600"
-                      : "text-gray-700 hover:text-green-600"
-                  }`}
-                >
-                  {link.label}
-                </motion.button>
-              ))}
-
-              {/* Resources Dropdown */}
+          <div className="flex items-center gap-4 lg:gap-8">
+            {/* ── Center — Nav Links: staggered fade from top ── */}
+            <nav className="hidden md:flex items-center gap-4 lg:gap-8">
               <motion.div
-                variants={navItemVariants}
-                className="relative"
-                ref={resourcesRef}
+                className="flex items-center gap-4 lg:gap-8"
+                variants={navContainerVariants}
+                initial="hidden"
+                animate="visible"
               >
-                <button
-                  onClick={() => setResourcesOpen(!resourcesOpen)}
-                  className="flex items-center gap-1 text-base lg:text-lg font-medium text-gray-700 hover:text-green-600 transition-colors"
-                >
-                  Resources
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${resourcesOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {resourcesOpen && (
-                  <div className="absolute left-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-                    {RESOURCES_ITEMS.map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => {
-                          handleNavClick(item);
-                          setResourcesOpen(false);
-                        }}
-                        className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg last:rounded-b-lg transition-colors"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-
-              {navLinksRest.map((link) =>
-                link.label === "Get App" ? (
-                  <motion.div
-                    key={link.label}
-                    variants={navItemVariants}
-                    className="relative"
-                    ref={appDropRef}
-                  >
-                    <motion.button
-                      onClick={() => setAppDropOpen(!appDropOpen)}
-                      className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      Get App
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
-                      />
-                    </motion.button>
-                    {appDropOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-                        <button
-                          onClick={() => {
-                            window.open(
-                              "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
-                              "_blank",
-                              "noopener,noreferrer",
-                            );
-                            setAppDropOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
-                        >
-                          Android
-                        </button>
-                        <button
-                          onClick={() => {
-                            window.open(
-                              "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
-                              "_blank",
-                              "noopener,noreferrer",
-                            );
-                            setAppDropOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
-                        >
-                          iOS
-                        </button>
-                      </div>
-                    )}
-                  </motion.div>
-                ) : (
+                {navLinksFirst.map((link) => (
                   <motion.button
                     key={link.label}
                     variants={navItemVariants}
                     onClick={() => handleNavClick(link)}
                     className={`text-base lg:text-lg font-medium transition-colors ${
-                      !link.external &&
-                      (link.label === "FPO"
-                        ? isFpoActive
-                        : location.pathname === link.path)
+                      !link.external && location.pathname === link.path
                         ? "text-green-600"
                         : "text-gray-700 hover:text-green-600"
                     }`}
                   >
                     {link.label}
                   </motion.button>
-                ),
-              )}
-            </motion.div>
-          </nav>
+                ))}
 
-          {/* ── Right — CTA: fade in with scale pop ── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
-            className="flex items-center gap-3"
-          >
-            {!isLoggedIn ? (
-              <div className="hidden md:block relative" ref={appDropRef}>
-                <motion.button
-                  onClick={() => setAppDropOpen(!appDropOpen)}
-                  className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
+                {/* Resources Dropdown */}
+                <motion.div
+                  variants={navItemVariants}
+                  className="relative"
+                  ref={resourcesRef}
                 >
-                  Get Started
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
-                  />
-                </motion.button>
-                {appDropOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-                    <button
-                      onClick={() => {
-                        window.open(
-                          "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
-                          "_blank",
-                          "noopener,noreferrer",
-                        );
-                        setAppDropOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
-                    >
-                      Android (Google Play)
-                    </button>
-                    <button
-                      onClick={() => {
-                        window.open(
-                          "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
-                          "_blank",
-                          "noopener,noreferrer",
-                        );
-                        setAppDropOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
-                    >
-                      iOS (App Store)
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <button className="relative hover:bg-gray-100 p-2 rounded-lg transition-all">
-                  <Bell className="w-6 h-6 text-gray-700" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full" />
-                </button>
-
-                <div className="relative" ref={dropRef}>
                   <button
-                    onClick={() => setDropOpen(!dropOpen)}
-                    className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition-all"
+                    onClick={() => setResourcesOpen(!resourcesOpen)}
+                    className="flex items-center gap-1 text-base lg:text-lg font-medium text-gray-700 hover:text-green-600 transition-colors"
                   >
-                    <div className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
-                      {profile?.profileImage ? (
-                        <img
-                          src={profile.profileImage}
-                          alt={fullName}
-                          className="w-full h-full object-cover object-center scale-105"
-                        />
-                      ) : (
-                        <span className="text-white text-sm font-semibold">
-                          {initials}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-left hidden sm:block">
-                      <p className="text-base font-semibold text-gray-900">
-                        {profile?.firstName || "User"}
-                      </p>
-                    </div>
+                    Resources
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-700 transition-transform ${dropOpen ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 transition-transform ${resourcesOpen ? "rotate-180" : ""}`}
                     />
                   </button>
 
-                  {dropOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-xl shadow-xl py-2 z-50 border border-gray-200">
+                  {resourcesOpen && (
+                    <div className="absolute left-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+                      {RESOURCES_ITEMS.map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={() => {
+                            handleNavClick(item);
+                            setResourcesOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg last:rounded-b-lg transition-colors"
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+
+                {navLinksRest.map((link) =>
+                  link.label === "Get App" ? (
+                    <motion.div
+                      key={link.label}
+                      variants={navItemVariants}
+                      className="relative"
+                      ref={appDropRef}
+                    >
+                      <motion.button
+                        onClick={() => setAppDropOpen(!appDropOpen)}
+                        className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        Get App
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
+                        />
+                      </motion.button>
+                      {appDropOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
+                          <button
+                            onClick={() => {
+                              window.open(
+                                "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+                                "_blank",
+                                "noopener,noreferrer",
+                              );
+                              setAppDropOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
+                          >
+                            Android
+                          </button>
+                          <button
+                            onClick={() => {
+                              window.open(
+                                "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
+                                "_blank",
+                                "noopener,noreferrer",
+                              );
+                              setAppDropOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
+                          >
+                            iOS
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <motion.button
+                      key={link.label}
+                      variants={navItemVariants}
+                      onClick={() => handleNavClick(link)}
+                      className={`text-base lg:text-lg font-medium transition-colors ${
+                        !link.external &&
+                        (link.label === "FPO"
+                          ? isFpoActive
+                          : location.pathname === link.path)
+                          ? "text-green-600"
+                          : "text-gray-700 hover:text-green-600"
+                      }`}
+                    >
+                      {link.label}
+                    </motion.button>
+                  ),
+                )}
+              </motion.div>
+            </nav>
+
+            {/* ── Right — CTA: fade in with scale pop ── */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+              className="flex items-center gap-3"
+            >
+              {!isLoggedIn ? (
+                <div className="hidden md:block relative" ref={appDropRef}>
+                  <motion.button
+                    onClick={() => setAppDropOpen(!appDropOpen)}
+                    className="flex items-center gap-1 bg-green-700 text-white px-5 py-2 rounded-xl hover:bg-green-800 transition text-base font-semibold whitespace-nowrap"
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    Get Started
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${appDropOpen ? "rotate-180" : ""}`}
+                    />
+                  </motion.button>
+                  {appDropOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-50">
                       <button
                         onClick={() => {
-                          navigate(ROUTES.PROFILE);
-                          setDropOpen(false);
+                          window.open(
+                            "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                          setAppDropOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
+                        className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 first:rounded-t-lg transition-colors"
                       >
-                        <User className="w-5 h-5 text-green-500" />
-                        <p className="text-sm font-semibold">Profile</p>
+                        Android (Google Play)
                       </button>
-
-                      {onSwitchRole && (
-                        <button
-                          onClick={() => {
-                            onSwitchRole();
-                            setDropOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
-                        >
-                          <Repeat2 className="w-5 h-5 text-green-500" />
-                          <p className="text-sm font-semibold">Switch Role</p>
-                        </button>
-                      )}
-
-                      {hasSelectedUnit && (
-                        <button
-                          onClick={() => {
-                            setSelectedUnit(null);
-                            navigate(ROUTES.UNITS);
-                            setDropOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
-                        >
-                          <Leaf className="w-5 h-5 text-green-500" />
-                          <p className="text-sm font-semibold">Switch FPO</p>
-                        </button>
-                      )}
-
-                      <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
-                        <Share2 className="w-5 h-5 text-green-500" />
-                        <p className="text-sm font-semibold">Share K2</p>
-                      </button>
-
-                      <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
-                        <HelpCircle className="w-5 h-5 text-green-500" />
-                        <p className="text-sm font-semibold">Help & Support</p>
-                      </button>
-
-                      <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
-                        <Settings className="w-5 h-5 text-green-500" />
-                        <p className="text-sm font-semibold">Settings</p>
-                      </button>
-
                       <button
                         onClick={() => {
-                          logout();
-                          setDropOpen(false);
+                          window.open(
+                            "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                          setAppDropOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                        className="w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-green-100 last:rounded-b-lg transition-colors"
                       >
-                        <LogOut className="w-5 h-5" />
-                        <p className="text-sm font-semibold">Logout</p>
+                        iOS (App Store)
                       </button>
                     </div>
                   )}
                 </div>
-              </>
-            )}
-          </motion.div>
+              ) : (
+                <>
+                  <button className="relative hover:bg-gray-100 p-2 rounded-lg transition-all">
+                    <Bell className="w-6 h-6 text-gray-700" />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full" />
+                  </button>
+
+                  <div className="relative" ref={dropRef}>
+                    <button
+                      onClick={() => setDropOpen(!dropOpen)}
+                      className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition-all"
+                    >
+                      <div className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                        {profile?.profileImage ? (
+                          <img
+                            src={profile.profileImage}
+                            alt={fullName}
+                            className="w-full h-full object-cover object-center scale-105"
+                          />
+                        ) : (
+                          <span className="text-white text-sm font-semibold">
+                            {initials}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-left hidden sm:block">
+                        <p className="text-base font-semibold text-gray-900">
+                          {profile?.firstName || "User"}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        className={`w-4 h-4 text-gray-700 transition-transform ${dropOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {dropOpen && (
+                      <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-xl shadow-xl py-2 z-50 border border-gray-200">
+                        <button
+                          onClick={() => {
+                            navigate(ROUTES.PROFILE);
+                            setDropOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
+                        >
+                          <User className="w-5 h-5 text-green-500" />
+                          <p className="text-sm font-semibold">Profile</p>
+                        </button>
+
+                        {onSwitchRole && (
+                          <button
+                            onClick={() => {
+                              onSwitchRole();
+                              setDropOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
+                          >
+                            <Repeat2 className="w-5 h-5 text-green-500" />
+                            <p className="text-sm font-semibold">Switch Role</p>
+                          </button>
+                        )}
+
+                        {hasSelectedUnit && (
+                          <button
+                            onClick={() => {
+                              setSelectedUnit(null);
+                              navigate(ROUTES.UNITS);
+                              setDropOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
+                          >
+                            <Leaf className="w-5 h-5 text-green-500" />
+                            <p className="text-sm font-semibold">Switch FPO</p>
+                          </button>
+                        )}
+
+                        <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
+                          <Share2 className="w-5 h-5 text-green-500" />
+                          <p className="text-sm font-semibold">Share K2</p>
+                        </button>
+
+                        <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
+                          <HelpCircle className="w-5 h-5 text-green-500" />
+                          <p className="text-sm font-semibold">
+                            Help & Support
+                          </p>
+                        </button>
+
+                        <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
+                          <Settings className="w-5 h-5 text-green-500" />
+                          <p className="text-sm font-semibold">Settings</p>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            logout();
+                            setDropOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                        >
+                          <LogOut className="w-5 h-5" />
+                          <p className="text-sm font-semibold">Logout</p>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.header>

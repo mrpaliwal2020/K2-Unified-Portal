@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sprout } from "lucide-react";
 import useAuthStore from "../../../store/authStore";
 import { ROUTES } from "../../../routes/routeConfig";
 
@@ -72,7 +71,7 @@ const EntryLoader = () => {
       <div className="relative z-10 flex flex-col items-center">
         {/* Icon */}
         <div
-          className="mb-8 w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl"
+          className="mb-8 w-24 h-24 rounded-2xl flex items-center justify-center shadow-2xl overflow-hidden"
           style={{
             background: "rgba(255,255,255,0.12)",
             backdropFilter: "blur(12px)",
@@ -85,7 +84,11 @@ const EntryLoader = () => {
             transition: "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          <Sprout size={44} className="text-green-200" strokeWidth={1.5} />
+          <img
+            src="/Images/Krishi-Kutumb - logo.jpeg"
+            alt="Krishi Kutumb"
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* App name */}

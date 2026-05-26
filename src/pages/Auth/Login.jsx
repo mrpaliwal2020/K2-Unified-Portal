@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
-import { Leaf, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import { ROUTES } from "../../routes/routeConfig";
 import useAuthStore from "../../store/authStore";
@@ -50,10 +50,18 @@ const Login = () => {
     if (e.key === "Enter") handleSubmit();
   };
 
+  const LogoIcon = () => (
+    <img
+      src="/Images/Krishi-Kutumb - logo.jpeg"
+      alt="Krishi Kutumb"
+      className="w-full h-full object-cover rounded-full"
+    />
+  );
+
   return (
     <AuthLayout>
       <AuthHeader
-        icon={Leaf}
+        icon={LogoIcon}
         title={CONTENT.auth.login.title}
         subtitle={CONTENT.auth.login.subtitle}
       />
@@ -61,7 +69,7 @@ const Login = () => {
       <Card className="w-full max-w-md p-8 border-none shadow-lg">
         <PhoneInputGroup countryCode={CONTENT.auth.login.countryCode} error={mobileErr || error}>
           <Input
-            type="tel"
+            type="tel"a
             value={mobile}
             onChange={handleChange}
             onKeyDown={handleKeyDown}

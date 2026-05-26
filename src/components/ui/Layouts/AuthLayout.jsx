@@ -17,8 +17,8 @@ export const AuthHeader = ({ title, subtitle, icon: Icon, className }) => {
   return (
     <div className={cn("flex flex-col items-center mb-10", className)}>
       {Icon && (
-        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 shadow-md bg-green-500">
-          <Icon size={36} className="text-white" />
+        <div className="w-32 h-32  rounded-full flex items-center justify-center mb-4 shadow-md bg-green-500">
+          <Icon size={56} className="text-white" />
         </div>
       )}
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 text-center font-serif">{title}</h1>

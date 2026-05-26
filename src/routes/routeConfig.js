@@ -21,6 +21,7 @@ export const ROUTES = {
   SERVICES: "/services",
   GETINTOUCH: "/getInTouch",
   FPO: "/fpo",
+  FPO_COMPLIANCE: "/fpo-compliance",
   TERMS: "/terms",
   CANCELLATION: "/cancellation",
   STORE: "/store",
