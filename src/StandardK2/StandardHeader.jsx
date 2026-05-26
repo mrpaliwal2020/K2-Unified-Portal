@@ -147,6 +147,11 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
   const navLinksFirst = navLinks.slice(0, storeIndex + 1);
   const navLinksRest = navLinks.slice(storeIndex + 1);
 
+  const isFpoActive =
+    location.pathname === ROUTES.FPO ||
+    location.pathname.startsWith("/auth/units") ||
+    location.pathname.startsWith("/dashboard/");
+
   const handleNavClick = (link) => {
     if (link.label === "FPO" && isLoggedIn) {
       navigate(fpoPath);
@@ -324,7 +329,7 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                     className={`text-base lg:text-lg font-medium transition-colors ${
                       !link.external &&
                       (link.label === "FPO"
-                        ? location.pathname.startsWith("/dashboard/")
+                        ? isFpoActive
                         : location.pathname === link.path)
                         ? "text-green-600"
                         : "text-gray-700 hover:text-green-600"

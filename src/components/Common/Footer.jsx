@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const [visitorCount, setVisitorCount] = useState(null);
+
+  useEffect(() => {
+    const WORKSPACE = "krishikutumb";
+    const COUNTER = "site-visits";
+    const VISITED_KEY = "kk-site-visited";
+
+    const trackVisit = async () => {
+      try {
+        const alreadyVisited = localStorage.getItem(VISITED_KEY);
+        const url = alreadyVisited
+          ? `https://api.counterapi.dev/v1/${WORKSPACE}/${COUNTER}`
+          : `https://api.counterapi.dev/v1/${WORKSPACE}/${COUNTER}/up`;
+
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (typeof data?.count === "number") {
+          setVisitorCount(data.count);
+          if (!alreadyVisited) {
+            localStorage.setItem(VISITED_KEY, Date.now().toString());
+          }
+        }
+      } catch {
+        // fail silently — counter is non-critical
+      }
+    };
+
+    trackVisit();
+  }, []);
+
   return (
     <footer>
       <section
@@ -137,6 +169,16 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center w-full text-xs font-medium gap-3 text-gray-700 pt-4">
           <p className="text-lg">©2025 Krishi Kutumb. All rights reserved</p>
+
+          {/* Visitor Counter */}
+          <div className="flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm text-base text-gray-700">
+            <i className="fas fa-eye text-green-600"></i>
+            <span>Total Visitors:</span>
+            <span className="font-semibold text-black tabular-nums">
+              {visitorCount !== null ? visitorCount.toLocaleString() : "…"}
+            </span>
+          </div>
+
           <div className="flex gap-4">
             <Link
               to="/cancellation"

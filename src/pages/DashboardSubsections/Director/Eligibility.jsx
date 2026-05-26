@@ -30,6 +30,30 @@ import {
   getFPODirectory,
 } from "../../../services/api/authApi";
 
+// ─── LocalStorage cache (instant render on revisit; background refresh) ────
+const CACHE = {
+  FPO: "kk_elig_fpo_v1",
+  PROGRAMS: (state) => `kk_elig_programs_${state || "all"}_v1`,
+  ELIGIBILITY: "kk_elig_eligibility_v1",
+};
+
+const readCache = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeCache = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch {
+    /* quota / unavailable - ignore */
+  }
+};
+
 // ─── Tabs ─────────────────────────────────────────────────────────────────
 const TABS = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -605,37 +629,57 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
   const toggleSec = (k) => setOpenSecs((p) => ({ ...p, [k]: !p[k] }));
 
   // ── Fetch all FPOs once on mount — build categories, states, statuses, agencies + 10 random initial results ──
+  // Reads localStorage cache first for instant render, then refreshes in background.
   const fetchInitialData = useCallback(() => {
-    setCategoriesLoading(true);
-    setInitLoading(true);
     setInitError(false);
-    getFPODirectory({})
-      .then((data) => {
-        // Store full dataset for sidebar options
-        setAllFpos(data);
 
-        // Build categories
-        const countMap = {};
-        data.forEach((f) => {
-          if (f.category)
-            countMap[f.category] = (countMap[f.category] || 0) + 1;
-        });
-        const sorted = Object.entries(countMap)
-          .sort((a, b) => b[1] - a[1])
-          .map(([type, count]) => ({ type, count }));
-        setAllCategories(sorted);
-        setCategoriesLoading(false);
+    const cached = readCache(CACHE.FPO);
+    const hasCache = Array.isArray(cached) && cached.length > 0;
 
-        // Show 10 random FPOs as initial results
+    const applyData = (data, isInitial) => {
+      setAllFpos(data);
+      const countMap = {};
+      data.forEach((f) => {
+        if (f.category) countMap[f.category] = (countMap[f.category] || 0) + 1;
+      });
+      const sorted = Object.entries(countMap)
+        .sort((a, b) => b[1] - a[1])
+        .map(([type, count]) => ({ type, count }));
+      setAllCategories(sorted);
+      // Only seed random results on initial load to avoid disrupting the user view on background refresh
+      if (isInitial) {
         const shuffled = [...data].sort(() => Math.random() - 0.5);
         setResults(shuffled.slice(0, 10));
         setSearched(true);
-        setInitLoading(false);
-      })
-      .catch(() => {
+      }
+    };
+
+    if (hasCache) {
+      applyData(cached, true);
+      setCategoriesLoading(false);
+      setInitLoading(false);
+    } else {
+      setCategoriesLoading(true);
+      setInitLoading(true);
+    }
+
+    // Background refresh — picks up newly added data without blocking UI
+    getFPODirectory({})
+      .then((data) => {
+        const arr = Array.isArray(data) ? data : [];
+        // Only cache non-empty data so a transient empty response doesn't wipe a good cache
+        if (arr.length > 0) writeCache(CACHE.FPO, arr);
+        // Always apply fresh API data (even empty) so UI reflects reality.
+        // isInitial=!hasCache → results seeded only on first load (no cache).
+        applyData(arr, !hasCache);
         setCategoriesLoading(false);
         setInitLoading(false);
-        setInitError(true);
+      })
+      .catch((err) => {
+        console.error("[Eligibility] getFPODirectory failed:", err);
+        setCategoriesLoading(false);
+        setInitLoading(false);
+        if (!hasCache) setInitError(true);
       });
   }, []);
 
@@ -919,17 +963,13 @@ const CheckTab = ({ savedFpos, onSave, userState = "" }) => {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <Search size={40} className="text-slate-300 mb-3" />
                 <p className="text-slate-700 font-semibold mb-1">
-                  Koi FPO nahi mila
-                </p>
-                <p className="text-slate-500 text-sm mb-4">
-                  FPO directory se koi data nahi aaya. Retry karein ya filter
-                  change karein.
+                  No Data FOund
                 </p>
                 <button
                   onClick={fetchInitialData}
-                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition"
+                  className="px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition"
                 >
-                  🔄 Retry
+                  Retry
                 </button>
               </div>
             )}
@@ -1584,17 +1624,49 @@ const Eligibility = () => {
   const state = useAuthStore((s) => s.profile?.state) || "";
 
   useEffect(() => {
-    setStatsLoading(true);
+    // Hydrate from localStorage cache for instant render on revisit
+    const cachedFpo = readCache(CACHE.FPO);
+    const cachedPrograms = readCache(CACHE.PROGRAMS(state));
+    const cachedElig = readCache(CACHE.ELIGIBILITY);
+
+    if (Array.isArray(cachedFpo) && cachedFpo.length > 0) {
+      setTotalFpos(cachedFpo.length);
+      setTotalStates(
+        new Set(cachedFpo.map((f) => f.state).filter(Boolean)).size,
+      );
+    }
+    if (Array.isArray(cachedPrograms) && cachedPrograms.length > 0) {
+      setPrograms(cachedPrograms);
+    }
+    if (cachedElig && typeof cachedElig === "object") {
+      setEligibilityData(cachedElig);
+    }
+
+    const hasCache =
+      Array.isArray(cachedFpo) &&
+      cachedFpo.length > 0 &&
+      Array.isArray(cachedPrograms) &&
+      cachedPrograms.length > 0;
+    setStatsLoading(!hasCache);
+
+    // Background refresh — keeps cache and stats in sync with API
     Promise.all([getFPODirectory({}), getProgram(state, "en", "")])
       .then(([fpoList, programList]) => {
-        setTotalFpos(fpoList.length);
-        setTotalStates(
-          new Set(fpoList.map((f) => f.state).filter(Boolean)).size,
-        );
-        setPrograms(programList || []);
+        if (Array.isArray(fpoList) && fpoList.length > 0) {
+          setTotalFpos(fpoList.length);
+          setTotalStates(
+            new Set(fpoList.map((f) => f.state).filter(Boolean)).size,
+          );
+          writeCache(CACHE.FPO, fpoList);
+        }
+        if (Array.isArray(programList) && programList.length > 0) {
+          setPrograms(programList);
+          writeCache(CACHE.PROGRAMS(state), programList);
+        }
         setStatsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[Eligibility] stats fetch failed:", err);
         setStatsLoading(false);
       });
   }, [state]);
@@ -1602,16 +1674,28 @@ const Eligibility = () => {
   useEffect(() => {
     if (activeTab !== "schemes" || programs.length > 0) return;
     setSchemesLoading(true);
-    getProgram(state, "en", "").then((data) => {
-      setPrograms(data || []);
-      setSchemesLoading(false);
-    });
+    getProgram(state, "en", "")
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setPrograms(data);
+          writeCache(CACHE.PROGRAMS(state), data);
+        }
+        setSchemesLoading(false);
+      })
+      .catch((err) => {
+        console.error("[Eligibility] getProgram failed:", err);
+        setSchemesLoading(false);
+      });
   }, [activeTab, state]);
 
   const fetchEligibility = async (programId) => {
     if (eligibilityData[programId] !== undefined) return;
     const elig = await getProgramEligibility(programId);
-    setEligibilityData((prev) => ({ ...prev, [programId]: elig || [] }));
+    setEligibilityData((prev) => {
+      const next = { ...prev, [programId]: elig || [] };
+      writeCache(CACHE.ELIGIBILITY, next);
+      return next;
+    });
   };
 
   const handleSave = (fpo) => {

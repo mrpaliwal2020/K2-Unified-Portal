@@ -29,7 +29,8 @@ const Home = () => {
     setTimeout(() => setSubscribed(false), 3000);
   };
 
-  const openApp = () => window.open(CONTENT.common.playStoreLink, "_blank", "noopener,noreferrer");
+  const openApp = () =>
+    window.open(CONTENT.common.playStoreLink, "_blank", "noopener,noreferrer");
 
   return (
     <motion.div
@@ -42,7 +43,10 @@ const Home = () => {
       {/* ── Hero Section ── */}
       <main
         className="flex flex-col md:flex-row items-center justify-between px-6 md:px-16 pt-32 pb-16 md:py-16 bg-cover bg-center relative"
-        style={{ backgroundImage: `url('${ASSETS.images.heroBg}')`, minHeight: "100vh" }}
+        style={{
+          backgroundImage: `url('${ASSETS.images.heroBg}')`,
+          minHeight: "100vh",
+        }}
       >
         {/* Hero background image zoom-in */}
         <motion.div
@@ -81,7 +85,9 @@ const Home = () => {
             variants={VARIANTS.heroItem}
             className="text-5xl font-semibold leading-tight font-serif"
           >
-            {CONTENT.hero.titleLine2.split('Innovation')[0]}<span className="text-green-600">Innovation</span>{CONTENT.hero.titleLine2.split('Innovation')[1]}
+            {CONTENT.hero.titleLine2.split("Innovation")[0]}
+            <span className="text-green-600">Innovation</span>
+            {CONTENT.hero.titleLine2.split("Innovation")[1]}
           </motion.h1>
 
           <motion.p variants={VARIANTS.heroItem} className="text-gray-700">
@@ -208,6 +214,157 @@ const Home = () => {
         >
           {CONTENT.services.buttonText}
         </Button>
+      </section>
+
+      {/* ── FPO Directory & ComplianceOS Section ── */}
+      <section className="py-16 px-4 bg-gray-50">
+        <motion.div
+          className="grid gap-8 md:grid-cols-2 max-w-6xl mx-auto"
+          variants={VARIANTS.cardContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={PRESETS.viewportSmall}
+        >
+          {/* FPO Directory Card */}
+          <motion.div
+            variants={VARIANTS.cardItem}
+            whileHover={PRESETS.hover.lift}
+            className="bg-white shadow-lg rounded-xl p-8 text-left transform transition-transform hover:scale-105 hover:shadow-2xl flex flex-col"
+          >
+            <p className="text-gray-500 text-sm font-medium uppercase mb-3">
+              <i className="fa-solid fa-folder-open text-green-600 mr-2"></i>
+              FPO Directory
+            </p>
+            <h2 className="text-3xl font-semibold text-black mb-3 font-serif leading-tight">
+              Find Any FPO. <br />
+              In Seconds.
+            </h2>
+            <p className="text-gray-600 mb-6">
+              India's growing network of Farmer Producer Organizations —
+              searchable by name, location, crop, and reference number. Built
+              for buyers, CBBOs, and promoter organizations.
+            </p>
+
+            <div className="flex flex-wrap gap-8 mb-6">
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  200+
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  FPOs Listed
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  12
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  States
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  Free
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  To Search
+                </p>
+              </div>
+            </div>
+
+            <ul className="space-y-2 mb-6">
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>Search by name, crop, district, or reference number</span>
+              </li>
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>Filter by state and CBBO promoter organization</span>
+              </li>
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>One-click enquiry and connection request</span>
+              </li>
+            </ul>
+
+            <button
+              onClick={openApp}
+              className="bg-green-600 text-white py-2 px-6 rounded-xl hover:bg-green-700 transition self-start mt-auto"
+            >
+              Explore Directory →
+            </button>
+          </motion.div>
+
+          {/* ComplianceOS Card */}
+          <motion.div
+            variants={VARIANTS.cardItem}
+            whileHover={PRESETS.hover.lift}
+            className="bg-white shadow-lg rounded-xl p-8 text-left transform transition-transform hover:scale-105 hover:shadow-2xl flex flex-col"
+          >
+            <p className="text-gray-500 text-sm font-medium uppercase mb-3">
+              <i className="fa-solid fa-shield-halved text-green-600 mr-2"></i>
+              ComplianceOS
+            </p>
+            <h2 className="text-3xl font-semibold text-black mb-3 font-serif leading-tight">
+              Stay Filed. <br />
+              Stay Funded.
+            </h2>
+            <p className="text-gray-600 mb-6">
+              We handle ROC filings, ITR, GST, audited balance sheets, and
+              government scheme eligibility — so your FPO stays audit-ready and
+              credit-ready, always.
+            </p>
+
+            <div className="flex flex-wrap gap-8 mb-6">
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  ₹15k
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Starts At /Yr
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  6+
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Schemes Tracked
+                </p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-black font-serif">
+                  4 Plans
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Available
+                </p>
+              </div>
+            </div>
+
+            <ul className="space-y-2 mb-6">
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>ITR, GSTR-3B, GSTR-1, AOC-4, MGT-7 managed</span>
+              </li>
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>Scheme eligibility — SFAC, NABARD, PM-FPO, KCC</span>
+              </li>
+              <li className="flex items-start gap-2 text-gray-700 text-sm">
+                <i className="fa-solid fa-circle-check text-green-600 mt-1"></i>
+                <span>WhatsApp deadline alerts, dedicated manager</span>
+              </li>
+            </ul>
+
+            <button
+              onClick={openApp}
+              className="bg-green-600 text-white py-2 px-6 rounded-xl hover:bg-green-700 transition self-start mt-auto"
+            >
+              See Compliance Plans →
+            </button>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── Features Section ── */}
