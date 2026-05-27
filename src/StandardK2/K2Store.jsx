@@ -547,7 +547,7 @@ const K2Store = () => {
 
       {/* ════ Sticky Toolbar ════ */}
       <div
-        className="bg-white sticky top-0 z-30"
+        className="bg-white sticky top-0 z-20"
         style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}
       >
         <div className="px-3 sm:px-5 pt-3 pb-3">

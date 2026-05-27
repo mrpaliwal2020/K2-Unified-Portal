@@ -112,21 +112,51 @@ const PLAN_PRICING = {
   },
   quarterly: {
     basic: { price: "₹4,750", sub: "Billed quarterly · ₹1,583/mo · save 10%" },
-    standard: { price: "₹6,750", sub: "Billed quarterly · ₹2,250/mo · save 10%" },
-    advanced: { price: "₹8,500", sub: "Billed quarterly · ₹2,833/mo · save 10%" },
-    premium: { price: "₹13,500", sub: "Billed quarterly · ₹4,500/mo · save 10%" },
+    standard: {
+      price: "₹6,750",
+      sub: "Billed quarterly · ₹2,250/mo · save 10%",
+    },
+    advanced: {
+      price: "₹8,500",
+      sub: "Billed quarterly · ₹2,833/mo · save 10%",
+    },
+    premium: {
+      price: "₹13,500",
+      sub: "Billed quarterly · ₹4,500/mo · save 10%",
+    },
   },
   half: {
-    basic: { price: "₹8,500", sub: "Billed half-yearly · ₹1,417/mo · save 20%" },
-    standard: { price: "₹12,500", sub: "Billed half-yearly · ₹2,083/mo · save 20%" },
-    advanced: { price: "₹16,000", sub: "Billed half-yearly · ₹2,667/mo · save 20%" },
-    premium: { price: "₹25,000", sub: "Billed half-yearly · ₹4,167/mo · save 20%" },
+    basic: {
+      price: "₹8,500",
+      sub: "Billed half-yearly · ₹1,417/mo · save 20%",
+    },
+    standard: {
+      price: "₹12,500",
+      sub: "Billed half-yearly · ₹2,083/mo · save 20%",
+    },
+    advanced: {
+      price: "₹16,000",
+      sub: "Billed half-yearly · ₹2,667/mo · save 20%",
+    },
+    premium: {
+      price: "₹25,000",
+      sub: "Billed half-yearly · ₹4,167/mo · save 20%",
+    },
   },
   annual: {
     basic: { price: "₹15,000", sub: "Billed annually · ₹1,250/mo · save 29%" },
-    standard: { price: "₹22,000", sub: "Billed annually · ₹1,833/mo · save 29%" },
-    advanced: { price: "₹28,000", sub: "Billed annually · ₹2,333/mo · save 29%" },
-    premium: { price: "₹44,000", sub: "Billed annually · ₹3,667/mo · save 29%" },
+    standard: {
+      price: "₹22,000",
+      sub: "Billed annually · ₹1,833/mo · save 29%",
+    },
+    advanced: {
+      price: "₹28,000",
+      sub: "Billed annually · ₹2,333/mo · save 29%",
+    },
+    premium: {
+      price: "₹44,000",
+      sub: "Billed annually · ₹3,667/mo · save 29%",
+    },
   },
 };
 
@@ -148,7 +178,11 @@ const SCHEMES = [
     icon: Banknote,
     title: "NABARD FPO Financing",
     desc: "Concessional credit facility for FPOs engaged in agri-input supply, post-harvest, and value-addition — up to ₹2 crore working capital.",
-    criteria: ["2+ years operational", "Audited accounts", "Positive net worth"],
+    criteria: [
+      "2+ years operational",
+      "Audited accounts",
+      "Positive net worth",
+    ],
   },
   {
     icon: HandCoins,
@@ -166,13 +200,21 @@ const SCHEMES = [
     icon: Warehouse,
     title: "AIF — Agri Infrastructure Fund",
     desc: "₹1 lakh crore fund for post-harvest management infrastructure — cold storage, warehouses, processing units — with 3% interest subvention.",
-    criteria: ["FPO / FPC registered", "Project DPR ready", "Bank account active"],
+    criteria: [
+      "FPO / FPC registered",
+      "Project DPR ready",
+      "Bank account active",
+    ],
   },
   {
     icon: Users,
     title: "PM-KISAN (Member Linkage)",
     desc: "Direct income support of ₹6,000/year to eligible farmer-members. K2 helps FPOs verify, link, and track PM-KISAN status for all members.",
-    criteria: ["Small/marginal farmer", "Land records clean", "Aadhaar seeded bank"],
+    criteria: [
+      "Small/marginal farmer",
+      "Land records clean",
+      "Aadhaar seeded bank",
+    ],
   },
 ];
 
@@ -202,7 +244,10 @@ const FPOComplience = () => {
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={VARIANTS.heroItem} className="flex justify-center">
+          <motion.div
+            variants={VARIANTS.heroItem}
+            className="flex justify-center"
+          >
             <span className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-5 py-1.5 rounded-full text-sm font-medium">
               <ShieldCheck className="w-4 h-4" />
               ComplianceOS for FPOs
@@ -341,8 +386,8 @@ const FPOComplience = () => {
             whileInView="visible"
             viewport={PRESETS.viewport}
           >
-            Pay only for what you need. All plans include K2 platform access
-            and expert support.
+            Pay only for what you need. All plans include K2 platform access and
+            expert support.
           </motion.p>
 
           {/* Billing toggle */}
@@ -489,8 +534,8 @@ const FPOComplience = () => {
             whileInView="visible"
             viewport={PRESETS.viewport}
           >
-            Our team maps your FPO profile to active government schemes — so
-            you never miss a grant, subsidy, or loan window.
+            Our team maps your FPO profile to active government schemes — so you
+            never miss a grant, subsidy, or loan window.
           </motion.p>
 
           <motion.div
@@ -546,14 +591,14 @@ const FPOComplience = () => {
             viewport={PRESETS.viewport}
           >
             <p className="text-gray-600 mb-4">
-              Not sure which schemes your FPO qualifies for? Our compliance
-              team will run a free eligibility check.
+              Not sure which schemes your FPO qualifies for? Our compliance team
+              will run a free eligibility check.
             </p>
             <Button
               asMotion
               whileHover={PRESETS.hover.scaleSlight}
               whileTap={PRESETS.tap.scaleDown}
-              onClick={() => (window.location.href = "/getInTouch")}
+              onClick={() => (window.location.href = "/fpo")}
             >
               Get Free Eligibility Check
             </Button>

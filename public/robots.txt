@@ -1,0 +1,69 @@
+# robots.txt for KrishiKutumb - FPO Management & Agricultural Platform
+# Website: https://krishikutumb.com
+
+# Allow all search engine bots to crawl public pages
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /about
+Allow: /news
+Allow: /store
+Allow: /fpo
+Allow: /fpo-compliance
+Allow: /getInTouch
+Allow: /terms
+Allow: /cancellation
+Allow: /blog
+Allow: /Images/
+
+# Disallow private/authenticated routes (no SEO value)
+Disallow: /auth/
+Disallow: /auth/login
+Disallow: /auth/otp
+Disallow: /auth/register
+Disallow: /auth/units
+Disallow: /auth/units/myfpo
+Disallow: /auth/units/allfpo
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /dashboard/*
+
+# Block bots that overload servers without SEO benefit
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Allow Google, Bing, Yahoo and other major search engines explicitly
+User-agent: Googlebot
+Allow: /
+Disallow: /auth/
+Disallow: /dashboard/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /auth/
+Disallow: /dashboard/
+
+User-agent: Slurp
+Allow: /
+Disallow: /auth/
+Disallow: /dashboard/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /auth/
+Disallow: /dashboard/
+
+# Sitemap location
+Sitemap: https://krishikutumb.com/sitemap.xml
+
+# Host preference
+Host: https://krishikutumb.com
