@@ -10,6 +10,8 @@ import {
   Share2,
   Repeat2,
   Leaf,
+  Menu,
+  X,
 } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import useAuthStore from "../../store/authStore";
@@ -87,6 +89,7 @@ const Header = ({
   const [appDropOpen, setAppDropOpen] = React.useState(false);
   const [unitData, setUnitData] = React.useState(null);
   const [unitLoading, setUnitLoading] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const dropRef = React.useRef(null);
   const resourcesRef = React.useRef(null);
   const appDropRef = React.useRef(null);
@@ -371,6 +374,15 @@ const Header = ({
               transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
               className="flex items-center gap-3"
             >
+              {/* ── Hamburger — mobile only ── */}
+              <button
+                className="block md:hidden p-2 rounded-lg hover:bg-gray-100 transition text-gray-700"
+                onClick={() => setMobileOpen((p) => !p)}
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+
               {!isLoggedIn ? (
                 <div className="hidden md:block relative" ref={appDropRef}>
                   <motion.button
@@ -526,6 +538,64 @@ const Header = ({
           </div>
         </div>
       </div>
+
+      {/* ── Mobile Menu ── */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-1 shadow-lg">
+          {navLinks.map((link) =>
+            link.label === "FPO Login" ? (
+              <button
+                key={link.label}
+                onClick={() => { handleNavClick(link); setMobileOpen(false); }}
+                className="w-full text-left px-4 py-3 rounded-xl border-2 border-green-700 text-green-700 font-semibold text-base hover:bg-green-700 hover:text-white transition"
+              >
+                {link.label}
+              </button>
+            ) : link.label === "Get App" ? (
+              <div key={link.label} className="space-y-1 pt-1">
+                <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">Download App</p>
+                <button
+                  onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank"); setMobileOpen(false); }}
+                  className="w-full text-left px-4 py-3 rounded-xl bg-green-700 text-white font-semibold text-base hover:bg-green-800 transition"
+                >
+                  Android (Google Play)
+                </button>
+                <button
+                  onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank"); setMobileOpen(false); }}
+                  className="w-full text-left px-4 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium text-base hover:bg-gray-50 transition"
+                >
+                  iOS (App Store)
+                </button>
+              </div>
+            ) : (
+              <button
+                key={link.label}
+                onClick={() => { handleNavClick(link); setMobileOpen(false); }}
+                className={`w-full text-left px-4 py-3 rounded-xl text-base font-medium transition ${
+                  !link.external && location.pathname === link.path
+                    ? "bg-green-50 text-green-700"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {link.label}
+              </button>
+            )
+          )}
+
+          <div className="pt-1">
+            <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">Resources</p>
+            {RESOURCES_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => { handleNavClick(item); setMobileOpen(false); }}
+                className="w-full text-left px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:bg-gray-50 transition"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.header>
   );
 };
