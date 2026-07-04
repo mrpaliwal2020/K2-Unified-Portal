@@ -1,24 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  Search,
-  MapPin,
-  Filter,
-  Users,
-  TrendingUp,
-  LayoutGrid,
-  X,
-} from "lucide-react";
+import { Search, MapPin, Users, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import useAuth from "../../hooks/useAuth";
 import Header from "../../components/Common/Header";
+import FpoSidebar from "../../StandardK2/FpoSidebar";
 import { getAllBusinessUnits } from "../../services/api/authApi";
 
-const STATUS_OPTIONS = [
-  { value: "all", label: "All", icon: LayoutGrid },
-  { value: "myfpo", label: "My FPO", icon: Users },
-  { value: "trending", label: "Trending FPO", icon: TrendingUp },
-];
+const VALID_STATUS = ["all", "myfpo", "trending"];
 
 const Units = () => {
   const navigate = useNavigate();
@@ -31,7 +20,7 @@ const Units = () => {
 
   // map incoming typeFilter state → statusFilter
   const fromState = location.state?.typeFilter;
-  const initialStatus = fromState === "myfpo" ? "myfpo" : "all";
+  const initialStatus = VALID_STATUS.includes(fromState) ? fromState : "all";
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef(null);
@@ -55,7 +44,11 @@ const Units = () => {
 
   useEffect(() => {
     if (location.state?.typeFilter) {
-      setStatusFilter(location.state.typeFilter === "myfpo" ? "myfpo" : "all");
+      setStatusFilter(
+        VALID_STATUS.includes(location.state.typeFilter)
+          ? location.state.typeFilter
+          : "all",
+      );
       setSearchQuery("");
     }
   }, [location.state?.typeFilter]);
@@ -160,57 +153,12 @@ const Units = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ── Sidebar ───────────────────────────────────────────────────── */}
-        <div className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-          <div className="p-4">
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-              <Filter size={15} className="text-green-600" />
-              <span className="text-sm font-bold text-gray-700 tracking-wide">
-                Filters
-              </span>
-            </div>
-
-            {/* Status */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">
-                Status
-              </p>
-              <div className="flex flex-col gap-0.5">
-                {STATUS_OPTIONS.map(({ value, label, icon: Icon }) => (
-                  <button
-                    key={value}
-                    onClick={() => setStatusFilter(value)}
-                    className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2.5 ${
-                      statusFilter === value
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    <Icon
-                      size={13}
-                      className={
-                        statusFilter === value
-                          ? "text-green-600"
-                          : "text-gray-400"
-                      }
-                    />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Clear search if active */}
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="mt-5 w-full text-xs font-semibold text-red-500 hover:text-red-600 py-2 rounded-lg hover:bg-red-50 transition-all"
-              >
-                Clear Search
-              </button>
-            )}
-          </div>
-        </div>
+        <FpoSidebar
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          searchQuery={searchQuery}
+          onClearSearch={() => setSearchQuery("")}
+        />
 
         {/* ── Main Content ──────────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col overflow-hidden">

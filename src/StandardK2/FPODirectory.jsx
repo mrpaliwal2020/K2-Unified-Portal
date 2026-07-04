@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import Header from "./StandardHeader";
+import FpoTabs from "./FpoTabs";
 import Footer from "../components/Common/Footer";
 import { VARIANTS, TRANSITIONS, PRESETS } from "../animations";
 import { Button, Card } from "../components/ui";
@@ -448,6 +449,7 @@ const FPODirectory = () => {
       transition={TRANSITIONS.default}
     >
       <Header />
+      <FpoTabs />
 
       {/* ── Hero ── */}
       <section

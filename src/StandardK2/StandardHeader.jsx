@@ -22,11 +22,10 @@ import { getUnitDetails } from "../services/api/authApi";
 
 const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
-  { label: "FPO Directory", path: ROUTES.FPO },
-  { label: "FPO Compliance", path: ROUTES.FPO_COMPLIANCE },
+  { label: "FPO", path: ROUTES.FPO },
   { label: "About", path: ROUTES.ABOUT },
   // { label: "News", path: ROUTES.NEWS },
-  { label: "Store", path: ROUTES.STORE },
+  { label: "K2 Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
 
   { label: "FPO Login", path: ROUTES.LOGIN },
@@ -34,11 +33,10 @@ const NAV_LINKS_PRE = [
 
 const NAV_LINKS_POST = [
   { label: "Home", path: ROUTES.HOME },
-  { label: "FPO Directory", path: ROUTES.UNITS },
-  { label: "FPO Compliance", path: ROUTES.FPO_COMPLIANCE },
+  { label: "FPO", path: ROUTES.UNITS },
   { label: "About", path: ROUTES.ABOUT },
   // { label: "News", path: ROUTES.NEWS },
-  { label: "Store", path: ROUTES.STORE },
+  { label: "K2 Store", path: ROUTES.STORE },
   { label: "Contact", path: ROUTES.GETINTOUCH },
   {
     label: "Get App",
@@ -142,27 +140,24 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
   // StandardK2 pages always show Krishi Kutumb branding (unit branding is only on dashboard)
   const showUnitBranding = false;
 
-  // FPO tab path when logged in: go directly to the selected unit's dashboard
-  const fpoPath =
-    isLoggedIn && selectedUnit?.unitCode
-      ? `/dashboard/${selectedUnit.unitCode.replace(/\s+/g, "")}`
-      : ROUTES.UNITS;
-
   const navLinks = isLoggedIn ? NAV_LINKS_POST : NAV_LINKS_PRE;
-  const storeIndex = navLinks.findIndex((l) => l.label === "Store");
+  const storeIndex = navLinks.findIndex((l) => l.label === "K2 Store");
   const navLinksFirst = navLinks.slice(0, storeIndex + 1);
   const navLinksRest = navLinks.slice(storeIndex + 1);
 
+  // "FPO" section stays highlighted across the Directory, Compliance,
+  // FPO listing and dashboard routes.
   const isFpoActive =
     location.pathname === ROUTES.FPO ||
+    location.pathname === ROUTES.FPO_COMPLIANCE ||
     location.pathname.startsWith("/auth/units") ||
     location.pathname.startsWith("/dashboard/");
 
+  const isLinkActive = (link) =>
+    !link.external &&
+    (link.label === "FPO" ? isFpoActive : location.pathname === link.path);
+
   const handleNavClick = (link) => {
-    if (link.label === "FPO" && isLoggedIn) {
-      navigate(fpoPath);
-      return;
-    }
     if (link.external) {
       window.open(link.path, "_blank", "noopener,noreferrer");
     } else {
@@ -236,7 +231,7 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                     variants={navItemVariants}
                     onClick={() => handleNavClick(link)}
                     className={`text-base lg:text-lg font-medium transition-colors ${
-                      !link.external && location.pathname === link.path
+                      isLinkActive(link)
                         ? "text-green-600"
                         : "text-gray-700 hover:text-green-600"
                     }`}
@@ -345,10 +340,7 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                       variants={navItemVariants}
                       onClick={() => handleNavClick(link)}
                       className={`text-base lg:text-lg font-medium transition-colors ${
-                        !link.external &&
-                        (link.label === "FPO"
-                          ? isFpoActive
-                          : location.pathname === link.path)
+                        isLinkActive(link)
                           ? "text-green-600"
                           : "text-gray-700 hover:text-green-600"
                       }`}
@@ -565,7 +557,7 @@ const StandardHeader = ({ onMenuClick, title = "", onSwitchRole }) => {
                 key={link.label}
                 onClick={() => { handleNavClick(link); setMobileOpen(false); }}
                 className={`w-full text-left px-4 py-3 rounded-xl text-base font-medium transition ${
-                  !link.external && location.pathname === link.path
+                  isLinkActive(link)
                     ? "bg-green-50 text-green-700"
                     : "text-gray-700 hover:bg-gray-50"
                 }`}

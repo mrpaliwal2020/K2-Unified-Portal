@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 
 import Header from "./StandardHeader";
+import FpoTabs from "./FpoTabs";
+import FpoSidebar from "./FpoSidebar";
+import useAuthStore from "../store/authStore";
 import Footer from "../components/Common/Footer";
 import { VARIANTS, TRANSITIONS, PRESETS } from "../animations";
 import { Button, Card } from "../components/ui";
@@ -220,6 +223,7 @@ const SCHEMES = [
 
 const FPOComplience = () => {
   const [billing, setBilling] = useState("annual");
+  const { isLoggedIn } = useAuthStore();
 
   const pricing = useMemo(() => PLAN_PRICING[billing], [billing]);
 
@@ -235,7 +239,15 @@ const FPOComplience = () => {
       transition={TRANSITIONS.default}
     >
       <Header />
+      <FpoTabs />
 
+      <div className="md:flex">
+        {isLoggedIn && (
+          <aside className="hidden md:block sticky top-24 self-start h-[calc(100vh-6rem)] shrink-0">
+            <FpoSidebar />
+          </aside>
+        )}
+        <div className="flex-1 min-w-0">
       {/* ── Hero ── */}
       <section className="pt-24 pb-20 px-6 md:px-16 bg-linear-to-b from-green-50 to-white">
         <motion.div
@@ -646,6 +658,8 @@ const FPOComplience = () => {
           </div>
         </div>
       </motion.section>
+        </div>
+      </div>
 
       <Footer />
     </motion.div>
