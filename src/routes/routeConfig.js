@@ -13,7 +13,7 @@ export const ROUTES = {
   MEMBER_PROFILE: "/dashboard/members/:id",
 
   // ── Dashboard Subsections ─────────────────────────────────────────────────
-  PRODUCE: "/dashboard/produce", 
+  PRODUCE: "/dashboard/produce",
   // ── Standard K2 ───────────────────────────────────────────────────────────
   HOME: "/home",
   ABOUT: "/about",
@@ -25,6 +25,8 @@ export const ROUTES = {
   TERMS: "/terms",
   CANCELLATION: "/cancellation",
   STORE: "/store",
+  DELETE_ACCOUNT: "/removeaccount",
+  ACCOUNT_DELETION_REQUESTS: "/account-deletion-requests",
   BLOG: "/blog",
   BLOG_1: "/blog/1",
   BLOG_2: "/blog/2",

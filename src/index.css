@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 html {
   overflow-y: scroll;
@@ -7,4 +8,51 @@ html {
 
 html::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
+}
+
+/* ---------------------------------------------------------------------------
+   K2Store (agri-shop) design tokens.
+   Defined globally so radix portals (dialog/select/sheet rendered to <body>)
+   resolve them too. These are variable definitions only — they do not change
+   any page unless the store's semantic utilities (bg-background, etc.) are
+   used, which only happens inside the .k2store-root subtree.
+   All colors are HSL.
+--------------------------------------------------------------------------- */
+:root {
+  --background: 36 38% 91%; /* #F5E9DA cream */
+  --surface: 0 0% 100%;
+  --foreground: 0 0% 26%; /* #424242 */
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 26%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 26%;
+
+  --primary: 123 46% 34%; /* #2E7D32 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 122 39% 49%; /* #4CAF50 */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 36 25% 95%;
+  --muted-foreground: 0 0% 45%;
+
+  --accent: 123 38% 64%; /* #81C784 */
+  --accent-foreground: 0 0% 15%;
+
+  --gold: 43 78% 47%; /* #D4A017 */
+  --gold-foreground: 0 0% 100%;
+
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 36 20% 84%;
+  --input: 36 20% 84%;
+  --ring: 123 46% 34%;
+
+  --radius: 0.875rem;
+
+  --shadow-soft: 0 4px 16px -8px hsl(123 46% 20% / 0.15);
+  --shadow-card: 0 2px 12px -6px hsl(123 46% 20% / 0.08);
 }

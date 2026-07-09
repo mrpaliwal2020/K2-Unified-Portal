@@ -12,6 +12,7 @@ import {
   Leaf,
   Menu,
   X,
+  Trash2,
 } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import useAuthStore from "../../store/authStore";
@@ -19,6 +20,7 @@ import { getInitials } from "../../utils/formatters";
 import { ROUTES } from "../../routes/routeConfig";
 import useAuth from "../../hooks/useAuth";
 import { getUnitDetails } from "../../services/api/authApi";
+import { isAdminMobile } from "../../services/firebase/accountDeletionService";
 
 const NAV_LINKS_PRE = [
   { label: "Home", path: ROUTES.HOME },
@@ -147,6 +149,7 @@ const Header = ({
     fetchUnitDetails();
   }, [isLoggedIn, profile?.profileId, selectedUnit?.unitCode]);
 
+  const isAdmin = isAdminMobile(profile?.mobileNumber);
   const initials = getInitials(profile?.firstName, profile?.lastName);
   const fullName =
     `${profile?.firstName || ""} ${profile?.lastName || ""}`.trim();
@@ -516,9 +519,35 @@ const Header = ({
                           </p>
                         </button>
 
-                        <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
-                          <Settings className="w-5 h-5 text-green-500" />
-                          <p className="text-sm font-semibold">Settings</p>
+                        {isAdmin ? (
+                          <button
+                            onClick={() => {
+                              navigate(ROUTES.ACCOUNT_DELETION_REQUESTS);
+                              setDropOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100"
+                          >
+                            <Settings className="w-5 h-5 text-green-500" />
+                            <p className="text-sm font-semibold">Settings</p>
+                          </button>
+                        ) : (
+                          <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100">
+                            <Settings className="w-5 h-5 text-green-500" />
+                            <p className="text-sm font-semibold">Settings</p>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            navigate(ROUTES.DELETE_ACCOUNT);
+                            setDropOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-b border-gray-100 text-red-600"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                          <p className="text-sm font-semibold">
+                            Delete your account
+                          </p>
                         </button>
 
                         <button
@@ -548,22 +577,39 @@ const Header = ({
             link.label === "FPO Login" ? (
               <button
                 key={link.label}
-                onClick={() => { handleNavClick(link); setMobileOpen(false); }}
+                onClick={() => {
+                  handleNavClick(link);
+                  setMobileOpen(false);
+                }}
                 className="w-full text-left px-4 py-3 rounded-xl border-2 border-green-700 text-green-700 font-semibold text-base hover:bg-green-700 hover:text-white transition"
               >
                 {link.label}
               </button>
             ) : link.label === "Get App" ? (
               <div key={link.label} className="space-y-1 pt-1">
-                <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">Download App</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">
+                  Download App
+                </p>
                 <button
-                  onClick={() => { window.open("https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1", "_blank"); setMobileOpen(false); }}
+                  onClick={() => {
+                    window.open(
+                      "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+                      "_blank",
+                    );
+                    setMobileOpen(false);
+                  }}
                   className="w-full text-left px-4 py-3 rounded-xl bg-green-700 text-white font-semibold text-base hover:bg-green-800 transition"
                 >
                   Android (Google Play)
                 </button>
                 <button
-                  onClick={() => { window.open("https://apps.apple.com/app/k2-krishi-kutumb/id6753887854", "_blank"); setMobileOpen(false); }}
+                  onClick={() => {
+                    window.open(
+                      "https://apps.apple.com/app/k2-krishi-kutumb/id6753887854",
+                      "_blank",
+                    );
+                    setMobileOpen(false);
+                  }}
                   className="w-full text-left px-4 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium text-base hover:bg-gray-50 transition"
                 >
                   iOS (App Store)
@@ -572,7 +618,10 @@ const Header = ({
             ) : (
               <button
                 key={link.label}
-                onClick={() => { handleNavClick(link); setMobileOpen(false); }}
+                onClick={() => {
+                  handleNavClick(link);
+                  setMobileOpen(false);
+                }}
                 className={`w-full text-left px-4 py-3 rounded-xl text-base font-medium transition ${
                   isLinkActive(link)
                     ? "bg-green-50 text-green-700"
@@ -581,15 +630,20 @@ const Header = ({
               >
                 {link.label}
               </button>
-            )
+            ),
           )}
 
           <div className="pt-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">Resources</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase px-4 pb-1">
+              Resources
+            </p>
             {RESOURCES_ITEMS.map((item) => (
               <button
                 key={item.label}
-                onClick={() => { handleNavClick(item); setMobileOpen(false); }}
+                onClick={() => {
+                  handleNavClick(item);
+                  setMobileOpen(false);
+                }}
                 className="w-full text-left px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:bg-gray-50 transition"
               >
                 {item.label}

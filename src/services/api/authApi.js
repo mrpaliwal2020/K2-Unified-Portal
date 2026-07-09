@@ -60,6 +60,31 @@ export const createProfile = async (profileData) => {
   }
 };
 
+// ─── Create Record For Delete Account ─────────────────────────────────────────
+// OTP verify hone ke baad user delete button dabata hai to yeh call hoti hai.
+export const createRecordForDeleteAccount = async (mobileNumber) => {
+  try {
+    const { data } = await apiClient.post(ENDPOINTS.PROFILE, {
+      operation: OPS.CREATE_RECORD_FOR_DELETE_ACCOUNT,
+      user: {
+        mobileNumber,
+      },
+    });
+    if (data?.result === "success") {
+      return { success: true, data };
+    }
+    return {
+      success: false,
+      error: data?.message || "Delete request submit nahi hui",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.userMessage || "Something went wrong",
+    };
+  }
+};
+
 // ─── Get State & District List ────────────────────────────────────────────────
 export const getStateDistrictList = async () => {
   try {

@@ -44,6 +44,7 @@ export const OPS = {
   UPDATE_PROFILE: "updateProfile",
   DELETE_PROFILE: "deleteProfile",
   UNIT_DETAILS: "getUnitDetails",
+  CREATE_RECORD_FOR_DELETE_ACCOUNT: "createRecordForDeleteAccount",
 
   // managek2App
   GET_STATE_DISTRICT: "getStateDistrictList",

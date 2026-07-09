@@ -29,6 +29,10 @@ const K2Store = lazy(() => import("../StandardK2/K2Store"));
 const GetInTouch = lazy(() => import("../StandardK2/Connect"));
 const FPO = lazy(() => import("../StandardK2/FPO"));
 const FPOComplience = lazy(() => import("../StandardK2/FPOComplience"));
+const DeleteAccount = lazy(() => import("../pages/Account/DeleteAccount"));
+const AccountDeletionRequests = lazy(
+  () => import("../pages/Account/AccountDeletionRequests"),
+);
 
 const AppRoutes = () => {
   return (
@@ -48,6 +52,11 @@ const AppRoutes = () => {
       <Route path={ROUTES.GETINTOUCH} element={<GetInTouch />} />
       <Route path={ROUTES.FPO} element={<FPO />} />
       <Route path={ROUTES.FPO_COMPLIANCE} element={<FPOComplience />} />
+      <Route path={ROUTES.DELETE_ACCOUNT} element={<DeleteAccount />} />
+      <Route
+        path={ROUTES.ACCOUNT_DELETION_REQUESTS}
+        element={<AccountDeletionRequests />}
+      />
       <Route path={ROUTES.TERMS} element={<Terms />} />
       <Route path={ROUTES.CANCELLATION} element={<Condition />} />
       <Route path={ROUTES.BLOG} element={<Blog />} />
