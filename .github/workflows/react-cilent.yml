@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: k2-unified-portal-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Test and build validation
@@ -33,7 +37,7 @@ jobs:
           # Build-time placeholders let pull requests validate without exposing
           # deployment secrets. The deployed static bundle is rebuilt below
           # with the production configuration after main validation succeeds.
-          VITE_API_URL: https://example.invalid
+          VITE_API_BASE_URL: https://example.invalid
           VITE_FIREBASE_API_KEY: validation-only
           VITE_FIREBASE_AUTH_DOMAIN: validation-only.firebaseapp.com
           VITE_FIREBASE_PROJECT_ID: validation-only
@@ -63,7 +67,7 @@ jobs:
       - name: Build production bundle
         run: npm run build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || secrets.VITE_API_URL }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
