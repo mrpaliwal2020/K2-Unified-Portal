@@ -9,6 +9,8 @@ export const buttonStyles = cva(
         secondary: "bg-white text-black shadow hover:bg-green-700 hover:text-white",
         ghost: "text-green-900 hover:bg-green-800 hover:text-white",
         outline: "border border-green-700 text-green-700 hover:bg-green-700 hover:text-white",
+        leaf: "bg-custom-leaf text-white hover:bg-custom-leafDark",
+        bark: "bg-custom-bark text-white hover:bg-custom-barkSoft",
       },
       size: {
         sm: "text-sm px-5 py-1",

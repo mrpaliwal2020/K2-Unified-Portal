@@ -1,11 +1,210 @@
 export const CONTENT = {
   hero: {
     badge: "Trusted by Thousands!",
-    titleLine1: "Rooted in Tradition.",
-    titleLine2: "Powered by Innovation",
-    description: "K2 is a unified agri-platform connecting farmers, workers, FPOs, and services in one smart ecosystem. From soil to market, manage everything in your language, your way — easily, efficiently, powerfully.",
-    primaryButton: "Get Started",
-    secondaryButton: "Learn more",
+    eyebrow: "Annual Returns · GST · Meetings · Audit",
+    titleLine1: "You're running a producer company on a",
+    titleAccent: "paper register.",
+    titleLine2: "K2 gives you one that works with you.",
+    description:
+      "Members, governance, finance, compliance, mobile and trade — one register, one truth, in the language your team already speaks. Built with FPOs, not for them.",
+    primaryButton: "Book a demo",
+    secondaryButton: "Install the app",
+    note: "One register — every role reads from it",
+    highlights: [
+      "10 Indic languages",
+      "Works offline · Lite mode",
+      "Data owned by the FPO",
+      "Built with real FPOs",
+    ],
+  },
+  stats: [
+    { value: "47", label: "Producer companies" },
+    { value: "5", label: "States" },
+    { value: "10", label: "Indic languages" },
+    { value: "₹18cr+", label: "Recorded in K2" },
+  ],
+  roles: {
+    subtitle: "Who uses the register",
+    title: "Six roles — one shared source of truth",
+    description:
+      "The same entry appears differently to a CEO, an accountant, a member on WhatsApp, a nodal officer at NABARD, and the buyer picking up a truck at the gate.",
+    cards: [
+      {
+        icon: "fa-user-tie",
+        title: "FPO leaders",
+        desc: "Board, CEO and accountant — one live view of the company.",
+      },
+      {
+        icon: "fa-sitemap",
+        title: "CBBOs & promoters",
+        desc: "Portfolio dashboard across the FPOs you support.",
+      },
+      {
+        icon: "fa-landmark",
+        title: "Government",
+        desc: "Nodal officers see filings, audits and scheme plans in one place.",
+      },
+      {
+        icon: "fa-building-columns",
+        title: "Financial institutions",
+        desc: "Loan-ready books, ready to share, ready to reconcile.",
+      },
+      {
+        icon: "fa-box-open",
+        title: "Agribusiness",
+        desc: "Traceable lots, contract acreage and delivery windows.",
+      },
+      {
+        icon: "fa-people-group",
+        title: "NGOs",
+        desc: "Programme reporting without a parallel spreadsheet.",
+      },
+    ],
+  },
+  workflow: {
+    subtitle: "The K2 workflow",
+    title: "Capture in the field. Reconcile in the office. File on time.",
+    description:
+      "The same entry travels the whole loop — one register, three shifts of hands.",
+    steps: [
+      {
+        title: "Capture",
+        desc: "Members, procurement, meetings — recorded on a low-end Android, offline, in seconds.",
+      },
+      {
+        title: "Reconcile",
+        desc: "Ledgers, bank statements and board decisions cross-check on one screen for the accountant.",
+      },
+      {
+        title: "File",
+        desc: "MCA, GST, income tax and MIS — filed on time from a track that reminds you, not the other way round.",
+      },
+    ],
+  },
+  mobile: {
+    subtitle: "Why it works in a field",
+    title:
+      "The phone is the ledger — for the person who was never going to open a laptop",
+    description:
+      "Icon-led, plain-language screens. Ten Indic languages. Works with a ₹5,000 phone on 2G. Under 15 MB installed. Made to be used with a thumb between two rows of soybean.",
+    specs: [
+      { tag: "Offline", desc: "Syncs when the tower comes back." },
+      { tag: "Icon UI", desc: "Designed for limited digital literacy." },
+      {
+        tag: "10 langs",
+        desc: "Hindi, Marathi, Tamil, Telugu, Kannada, Gujarati, Bengali, Odia, Punjabi, English.",
+      },
+      { tag: "<15 MB", desc: "No space anxiety on shared phones." },
+    ],
+  },
+  onboarding: {
+    subtitle: "Onboarding",
+    title: "You are live in a fortnight — not a fiscal year.",
+    description:
+      "The first two weeks aren't training. They're a supervised switch-over from your paper books to the K2 register, one entry type at a time.",
+    rows: [
+      {
+        day: "D1",
+        title: "Kick-off · board briefing",
+        desc: "1 hour · on site or WhatsApp video",
+        status: "Filed",
+        state: "done",
+        note: "on time",
+      },
+      {
+        day: "D3",
+        title: "Member register migrated",
+        desc: "from your existing sheets or paper roll",
+        status: "Filed",
+        state: "done",
+        note: "on time",
+      },
+      {
+        day: "D6",
+        title: "Accountant switch-over",
+        desc: "trial balance matched with your books",
+        status: "Filed",
+        state: "done",
+        note: "on time",
+      },
+      {
+        day: "D9",
+        title: "Board resolutions imported",
+        desc: "last 12 months of minutes",
+        status: "Filed",
+        state: "done",
+        note: "on time",
+      },
+      {
+        day: "D12",
+        title: "First MCA filing on K2",
+        desc: "quarterly return, filed from the register",
+        status: "Due",
+        state: "due",
+        note: "action needed",
+      },
+      {
+        day: "D14",
+        title: "Field team on the app",
+        desc: "5–15 members using the mobile app daily",
+        status: "Upcoming",
+        state: "upcoming",
+        note: "auto-reminder",
+      },
+    ],
+  },
+  presence: {
+    subtitle: "Where the register runs",
+    title: "From Timarni — outward, one district at a time.",
+    panelSubtitle: "Presence",
+    panelTitle: "Working with FPOs across —",
+    panelStates: "Madhya Pradesh, Maharashtra, Karnataka, Odisha, Assam.",
+    originLabel: "Timarni, MP",
+    legend: [
+      { label: "Origin — Timarni, MP", tone: "origin" },
+      { label: "Active FPO clusters", tone: "cluster" },
+    ],
+    // lon/lat of the origin and the active FPO clusters. Projected onto the
+    // map SVG's geoviewbox (68.18401 37.084109 → 97.418146 6.753659).
+    origin: { lon: 77.229, lat: 22.36 },
+    clusters: [
+      { lon: 76.13, lat: 23.18 },
+      { lon: 78.65, lat: 23.83 },
+      { lon: 75.86, lat: 22.72 },
+      { lon: 79.95, lat: 22.85 },
+      { lon: 77.41, lat: 23.26 },
+      { lon: 80.33, lat: 24.53 },
+      { lon: 75.04, lat: 23.33 },
+      { lon: 80.19, lat: 21.81 },
+      { lon: 78.57, lat: 21.15 },
+      { lon: 75.34, lat: 19.88 },
+      { lon: 73.86, lat: 18.52 },
+      { lon: 76.79, lat: 20.93 },
+      { lon: 74.78, lat: 20.01 },
+      { lon: 79.09, lat: 21.15 },
+      { lon: 77.02, lat: 19.15 },
+      { lon: 73.79, lat: 19.99 },
+      { lon: 75.71, lat: 17.66 },
+      { lon: 77.59, lat: 12.97 },
+      { lon: 75.81, lat: 15.35 },
+      { lon: 74.5, lat: 15.85 },
+      { lon: 76.65, lat: 14.47 },
+      { lon: 77.12, lat: 16.2 },
+      { lon: 75.13, lat: 13.34 },
+      { lon: 78.14, lat: 13.34 },
+      { lon: 85.83, lat: 20.27 },
+      { lon: 83.48, lat: 20.71 },
+      { lon: 86.94, lat: 21.5 },
+      { lon: 83.97, lat: 21.47 },
+      { lon: 85.1, lat: 21.47 },
+      { lon: 84.23, lat: 20.28 },
+      { lon: 91.75, lat: 26.14 },
+      { lon: 94.21, lat: 26.74 },
+      { lon: 92.79, lat: 26.35 },
+      { lon: 94.9, lat: 27.47 },
+      { lon: 90.63, lat: 26.4 },
+      { lon: 93.97, lat: 26.51 },
+    ],
   },
   services: {
     subtitle: "Services",
@@ -24,7 +223,7 @@ export const CONTENT = {
         title: "Group Farming / FPO",
         desc: "Collaborate with farmer groups or FPOs for shared resources, planning, and better market access.",
       },
-    ]
+    ],
   },
   features: {
     subtitle: "Features",
@@ -50,7 +249,7 @@ export const CONTENT = {
         title: "For Innovators",
         desc: "Bring new ideas, tools, and technology to revolutionize modern agricultural practices.",
       },
-    ]
+    ],
   },
   faqs: {
     subtitle: "FAQs Section",
@@ -76,7 +275,7 @@ export const CONTENT = {
         q: "Is the K2 app free to use?",
         a: "Yes, it's free for farmers and basic users. Some premium features may be introduced in the future.",
       },
-    ]
+    ],
   },
   subscribe: {
     subtitle: "NEVER MISS AN UPDATE!",
@@ -88,8 +287,9 @@ export const CONTENT = {
   common: {
     loading: "Loading...",
     brandName: "K2KrishiKutumb",
-    playStoreLink: "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
-    getAppText: "Get the App for More"
+    playStoreLink:
+      "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",
+    getAppText: "Get the App for More",
   },
   auth: {
     login: {
@@ -99,7 +299,7 @@ export const CONTENT = {
       countryCode: "+91",
       buttonText: "Send OTP",
       buttonLoadingText: "Sending...",
-      errorPrefix: "⚠"
+      errorPrefix: "⚠",
     },
     otp: {
       title: "Verify your number",
@@ -109,7 +309,7 @@ export const CONTENT = {
       resendWait: "Resend in",
       buttonText: "Verify OTP",
       buttonLoadingText: "Verifying...",
-      editNumber: "Edit"
+      editNumber: "Edit",
     },
     register: {
       title: "Complete Your Profile",
@@ -130,7 +330,7 @@ export const CONTENT = {
       buttonText: "Create Profile",
       buttonLoadingText: "Processing...",
       loadingData: "Loading...",
-      errorPrefix: "⚠"
-    }
-  }
+      errorPrefix: "⚠",
+    },
+  },
 };

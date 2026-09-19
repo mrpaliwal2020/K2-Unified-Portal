@@ -28,5 +28,15 @@ export const colors = {
   },
   custom: {
     accentLight: "#eef9d4", // The light green background used in StandardK2
+    // The two page tones the Home sections alternate between.
+    sand: "#F5FAED", // green-tinted
+    cream: "#F9F6F1", // warm paper
+    // Accents. A bright leaf green carries the primary actions and figures;
+    // a dark bark brown carries labels and secondary actions against it.
+    leaf: "#7CB342",
+    leafDark: "#5E9432", // hover
+    leafSoft: "#DCEBC4", // hairlines and card borders
+    bark: "#5C3A21",
+    barkSoft: "#8A6F55", // muted label text
   },
 };

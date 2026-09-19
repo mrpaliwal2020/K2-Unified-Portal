@@ -12,6 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    allowedHosts: ["uselessly-savior-causation.ngrok-free.dev"],
     proxy: {
       "/k2kapi": {
         target: "http://3.109.253.115",
