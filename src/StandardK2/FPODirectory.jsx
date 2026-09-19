@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import {
   Search,
   MapPin,
@@ -17,37 +17,46 @@ import FpoTabs from "./FpoTabs";
 import Footer from "../components/Common/Footer";
 import { VARIANTS, TRANSITIONS, PRESETS } from "../animations";
 import { Button, Card } from "../components/ui";
+import { LANGUAGES } from "../config/constants";
+import { LOCALIZATION_DOMAINS } from "../core/localization/localizationDomains";
+import { useLocalizedDomain } from "../core/localization/useLocalizedDomain";
 import { getFPODirectory } from "../services/api";
 
 const HOW_IT_WORKS = [
   {
     step: "1",
     icon: "🔍",
-    title: "Find Your FPO",
-    desc: "Search by CIN number, FPO name, or browse by state. We have every registered FPO in India.",
+    titleKey: "fpo.how.find.title",
+    titleFallback: "Find Your FPO",
+    descriptionKey: "fpo.how.find.description",
+    descriptionFallback: "Search by CIN number, FPO name, or browse by state. We have every registered FPO in India.",
   },
   {
     step: "2",
     icon: "📋",
-    title: "See Eligible Schemes",
-    desc: "Instantly see which government schemes your FPO qualifies for — with benefits and apply links.",
+    titleKey: "fpo.how.schemes.title",
+    titleFallback: "See Eligible Schemes",
+    descriptionKey: "fpo.how.schemes.description",
+    descriptionFallback: "Instantly see which government schemes your FPO qualifies for — with benefits and apply links.",
   },
   {
     step: "3",
     icon: "💰",
-    title: "Get the Benefits",
-    desc: "Apply directly or let us connect you with scheme consultants who handle the paperwork.",
+    titleKey: "fpo.how.benefits.title",
+    titleFallback: "Get the Benefits",
+    descriptionKey: "fpo.how.benefits.description",
+    descriptionFallback: "Apply directly or let us connect you with scheme consultants who handle the paperwork.",
   },
 ];
 
 const SEARCH_TABS = [
-  { key: "cin", label: "CIN Number", icon: FileText },
-  { key: "name", label: "FPO Name", icon: Search },
-  { key: "state", label: "Browse by State", icon: MapPin },
+  { key: "cin", labelKey: "fpo.search.tab.cin", labelFallback: "CIN Number", icon: FileText },
+  { key: "name", labelKey: "fpo.search.tab.name", labelFallback: "FPO Name", icon: Search },
+  { key: "state", labelKey: "fpo.search.tab.state", labelFallback: "Browse by State", icon: MapPin },
 ];
 
 // ─── Custom State Dropdown ────────────────────────────────────────────────────
-const StateDropdown = ({ stateOpts, selectedState, onSelect, loading }) => {
+const StateDropdown = ({ stateOpts, selectedState, onSelect, loading, t }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -61,7 +70,9 @@ const StateDropdown = ({ stateOpts, selectedState, onSelect, loading }) => {
 
   const label =
     selectedState ||
-    (loading ? "States load ho rahi hain..." : "Select a state…");
+    (loading
+      ? t("fpo.state.loading", "Loading states...")
+      : t("fpo.state.placeholder", "Select a state..."));
 
   return (
     <div className="relative flex-1" ref={ref}>
@@ -110,15 +121,15 @@ const StateDropdown = ({ stateOpts, selectedState, onSelect, loading }) => {
 
 // ─── Report Modal ─────────────────────────────────────────────────────────────
 const ROLES = [
-  { value: "director", label: "FPO Director / Board Member" },
-  { value: "ceo", label: "FPO CEO / Manager" },
-  { value: "cbbo", label: "CBBO Representative" },
-  { value: "farmer", label: "Farmer Member" },
-  { value: "consultant", label: "Consultant / CA" },
-  { value: "other", label: "Other" },
+  { value: "director", labelKey: "fpo.role.director", labelFallback: "FPO Director / Board Member" },
+  { value: "ceo", labelKey: "fpo.role.ceo", labelFallback: "FPO CEO / Manager" },
+  { value: "cbbo", labelKey: "fpo.role.cbbo", labelFallback: "CBBO Representative" },
+  { value: "farmer", labelKey: "fpo.role.farmer", labelFallback: "Farmer Member" },
+  { value: "consultant", labelKey: "fpo.role.consultant", labelFallback: "Consultant / CA" },
+  { value: "other", labelKey: "fpo.role.other", labelFallback: "Other" },
 ];
 
-const ReportModal = ({ fpo, onClose }) => {
+const ReportModal = ({ fpo, onClose, t }) => {
   const [form, setForm] = useState({ name: "", phone: "", email: "", role: "" });
   const [submitted, setSubmitted] = useState(false);
   const set = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
@@ -132,15 +143,17 @@ const ReportModal = ({ fpo, onClose }) => {
         {submitted ? (
           <div className="p-8 text-center">
             <div className="text-5xl mb-4">✅</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Report Coming Your Way!</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              {t("fpo.report.success.title", "Report Coming Your Way!")}
+            </h3>
             <p className="text-gray-500 text-sm mb-6">
-              We'll send your FPO's full eligibility report to WhatsApp within 2 hours.
+              {t("fpo.report.success.description", "We'll send your FPO's full eligibility report to WhatsApp within 2 hours.")}
             </p>
             <button
               onClick={onClose}
               className="px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white font-semibold rounded-xl transition"
             >
-              Done
+              {t("common.action.done", "Done")}
             </button>
           </div>
         ) : (
@@ -148,9 +161,11 @@ const ReportModal = ({ fpo, onClose }) => {
             {/* Fixed header */}
             <div className="flex items-start justify-between p-6 pb-4 shrink-0">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">📄 Get Your FPO Report</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  {t("fpo.report.title", "📄 Get Your FPO Report")}
+                </h3>
                 <p className="text-sm text-gray-500">
-                  We'll send a detailed eligibility report to your WhatsApp — all schemes, benefits, and how to apply.
+                  {t("fpo.report.description", "We'll send a detailed eligibility report to your WhatsApp — all schemes, benefits, and how to apply.")}
                 </p>
               </div>
               <button
@@ -172,7 +187,9 @@ const ReportModal = ({ fpo, onClose }) => {
               <input type="hidden" name="_template" value="box" />
               <input type="hidden" name="_subject" value="FPO Report Request" />
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">FPO Name</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  {t("fpo.field.name", "FPO Name")}
+                </label>
                 <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500 truncate">
                   {fpo.name}
                 </div>
@@ -180,13 +197,13 @@ const ReportModal = ({ fpo, onClose }) => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                  Your Name <span className="text-red-500">*</span>
+                  {t("fpo.report.field.name", "Your Name")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={set("name")}
-                  placeholder="Enter your name"
+                  placeholder={t("fpo.report.field.name.placeholder", "Enter your name")}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-400 transition"
                 />
@@ -194,7 +211,7 @@ const ReportModal = ({ fpo, onClose }) => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                  WhatsApp Number <span className="text-red-500">*</span>
+                  {t("fpo.report.field.whatsapp", "WhatsApp Number")} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -211,7 +228,7 @@ const ReportModal = ({ fpo, onClose }) => {
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                  Email <span className="text-gray-400 font-normal">(optional)</span>
+                  {t("fpo.report.field.email", "Email")} <span className="text-gray-400 font-normal">{t("common.optional", "(optional)")}</span>
                 </label>
                 <input
                   type="email"
@@ -223,15 +240,19 @@ const ReportModal = ({ fpo, onClose }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Your Role</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                  {t("fpo.report.field.role", "Your Role")}
+                </label>
                 <select
                   value={form.role}
                   onChange={set("role")}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-400 transition bg-white text-gray-700"
                 >
-                  <option value="">Select...</option>
+                  <option value="">{t("common.select", "Select...")}</option>
                   {ROLES.map((r) => (
-                    <option key={r.value} value={r.value}>{r.label}</option>
+                    <option key={r.value} value={r.value}>
+                      {t(r.labelKey, r.labelFallback)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -240,9 +261,11 @@ const ReportModal = ({ fpo, onClose }) => {
                 type="submit"
                 className="w-full py-3.5 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl transition flex items-center justify-center gap-2"
               >
-                <Phone size={16} /> Send Report to WhatsApp →
+                <Phone size={16} /> {t("fpo.report.submit", "Send Report to WhatsApp →")}
               </button>
-              <p className="text-xs text-gray-400 text-center">🔒 We respect your privacy. No spam, ever.</p>
+              <p className="text-xs text-gray-400 text-center">
+                {t("fpo.report.privacy", "🔒 We respect your privacy. No spam, ever.")}
+              </p>
             </form>
           </>
         )}
@@ -252,7 +275,7 @@ const ReportModal = ({ fpo, onClose }) => {
 };
 
 // ─── FPO Result Card ──────────────────────────────────────────────────────────
-const FpoCard = ({ fpo }) => {
+const FpoCard = ({ fpo, t }) => {
   const [reportOpen, setReportOpen] = useState(false);
 
   const schemes = fpo.eligibleSchemes
@@ -265,7 +288,7 @@ const FpoCard = ({ fpo }) => {
   return (
     <>
       {reportOpen && (
-        <ReportModal fpo={fpo} onClose={() => setReportOpen(false)} />
+        <ReportModal fpo={fpo} onClose={() => setReportOpen(false)} t={t} />
       )}
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition">
@@ -299,9 +322,9 @@ const FpoCard = ({ fpo }) => {
 
           <div className="grid grid-cols-2 gap-2">
             {[
-              { l: "CIN", v: fpo.cin },
-              { l: "Category", v: fpo.category || "—" },
-              { l: "State", v: fpo.state || "—" },
+              { l: t("fpo.field.cin", "CIN"), v: fpo.cin },
+              { l: t("fpo.field.category", "Category"), v: fpo.category || "—" },
+              { l: t("fpo.field.state", "State"), v: fpo.state || "—" },
             ].map((f, i) => (
               <div key={i} className="bg-gray-50 rounded-lg px-3 py-2">
                 <p className="text-xs text-gray-400 font-semibold uppercase">
@@ -320,7 +343,7 @@ const FpoCard = ({ fpo }) => {
           <div className="border-t border-gray-100 px-5 py-4 bg-gray-50">
             <h4 className="text-sm font-bold text-gray-800 flex items-center gap-2 mb-3">
               <CheckCircle size={15} className="text-green-600" />
-              Eligible Schemes ({schemes.length})
+              {t("fpo.schemes.eligible", "Eligible Schemes")} ({schemes.length})
             </h4>
 
             <div className="grid grid-cols-1 gap-2 mb-3">
@@ -343,7 +366,7 @@ const FpoCard = ({ fpo }) => {
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-green-700 hover:bg-green-50 transition"
             >
               <Lock size={14} className="text-green-600" />
-              Show all {schemes.length} schemes
+              {t("fpo.schemes.showAll", "Show all")} {schemes.length} {t("fpo.schemes.label", "schemes")}
             </button>
           </div>
         )}
@@ -355,6 +378,9 @@ const FpoCard = ({ fpo }) => {
 };
 
 const FPODirectory = () => {
+  const { locale, setLocale, t } = useLocalizedDomain(
+    LOCALIZATION_DOMAINS.portalPublic,
+  );
   const [activeTab, setActiveTab] = useState("cin");
   const [searchValue, setSearchValue] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -415,7 +441,7 @@ const FPODirectory = () => {
     } else if (activeTab === "state" && selectedState) {
       params = { state: selectedState };
     } else {
-      setError("Kripya search karne ke liye value enter karein.");
+      setError(t("fpo.search.validation", "Enter a value to search."));
       setLoading(false);
       return;
     }
@@ -424,7 +450,7 @@ const FPODirectory = () => {
     const data = await getFPODirectory(params).catch(() => []);
     setResults(Array.isArray(data) ? data : []);
     if (!Array.isArray(data) || data.length === 0) {
-      setError("No FPO Found , Please Try again Later");
+      setError(t("fpo.search.empty", "No FPO was found. Please try again later."));
     }
     setLoading(false);
   };
@@ -432,18 +458,18 @@ const FPODirectory = () => {
   const STATS = [
     {
       value: initLoading ? "..." : allFpos.length.toLocaleString(),
-      label: "FPOs Listed",
+      label: t("fpo.stats.listed", "FPOs Listed"),
     },
-    { value: "30+", label: "Schemes Tracked" },
+    { value: "30+", label: t("fpo.stats.schemes", "Schemes Tracked") },
     {
       value: initLoading ? "..." : stateOpts.length.toString(),
-      label: "States Covered",
+      label: t("fpo.stats.states", "States Covered"),
     },
-    { value: "₹2L Cr+", label: "Scheme Benefits" },
+    { value: "₹2L Cr+", label: t("fpo.stats.benefits", "Scheme Benefits") },
   ];
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={TRANSITIONS.default}
@@ -459,47 +485,64 @@ const FPODirectory = () => {
             "linear-gradient(110deg, #1a5528 0%, #1f6830 25%, #2d8a3d 55%, #3ea84a 80%, #50c05a 100%)",
         }}
       >
-        <motion.div
+        <Motion.div
           className="relative max-w-5xl mx-auto space-y-5"
           variants={VARIANTS.heroContainer}
           initial="hidden"
           animate="visible"
         >
-          <motion.div
+          <Motion.div
             variants={VARIANTS.heroItem}
-            className="flex justify-center"
+            className="flex justify-between gap-4"
           >
             <span className="inline-flex items-center gap-2 bg-black/25 border border-white/10 text-white px-4 py-1.5 rounded-full text-sm font-medium">
               <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
               {initLoading
-                ? "Loading..."
-                : `${allFpos.length.toLocaleString()} FPOs listed`}{" "}
-              &bull; Updated 2026
+                ? t("common.loading", "Loading...")
+                : `${allFpos.length.toLocaleString()} ${t("fpo.stats.listed", "FPOs listed")}`}{" "}
+              &bull; {t("fpo.updated", "Updated 2026")}
             </span>
-          </motion.div>
+            <label className="rounded-full bg-black/25 px-3 py-1.5 text-sm text-white">
+              <span className="sr-only">{t("common.language", "Language")}</span>
+              <select
+                className="bg-transparent text-white outline-none"
+                onChange={(event) => setLocale(event.target.value)}
+                value={locale}
+              >
+                {LANGUAGES.map((language) => (
+                  <option className="text-gray-900" key={language.code} value={language.code}>
+                    {language.nativeLabel}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </Motion.div>
 
-          <motion.h1
+          <Motion.h1
             variants={VARIANTS.heroItem}
             className="text-4xl md:text-6xl font-bold leading-tight font-serif text-white"
           >
-            Is your FPO missing out on{" "}
-            <span className="text-lime-300">government schemes?</span>
-          </motion.h1>
+            {t("fpo.hero.title.before", "Is your FPO missing out on")}{" "}
+            <span className="text-lime-300">
+              {t("fpo.hero.title.highlight", "government schemes?")}
+            </span>
+          </Motion.h1>
 
-          <motion.p
+          <Motion.p
             variants={VARIANTS.heroItem}
             className="text-green-100/90 text-base md:text-lg max-w-xl mx-auto"
           >
-            Most Farmer Producer Organizations leave lakhs on the table. Check
-            in 30 seconds if yours qualifies for 30+ schemes — equity grants,
-            credit guarantees, subsidies, and more.
-          </motion.p>
-        </motion.div>
+            {t(
+              "fpo.hero.description",
+              "Most Farmer Producer Organizations leave lakhs on the table. Check in 30 seconds if yours qualifies for 30+ schemes — equity grants, credit guarantees, subsidies, and more.",
+            )}
+          </Motion.p>
+        </Motion.div>
       </section>
 
       {/* ── Search Card (overlapping hero) ── */}
       <section className="relative px-4 -mt-20 z-10">
-        <motion.div
+        <Motion.div
           className="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-8"
           variants={VARIANTS.sectionFadeUp}
           initial="hidden"
@@ -509,11 +552,11 @@ const FPODirectory = () => {
           <div className="flex items-center gap-2 mb-1">
             <Search className="w-5 h-5 text-green-700" />
             <h2 className="text-base font-semibold text-gray-900">
-              Check Your FPO&apos;s Eligibility
+              {t("fpo.search.title", "Check Your FPO's Eligibility")}
             </h2>
           </div>
           <p className="text-sm text-gray-500 mb-5">
-            Enter your CIN number or FPO name to find eligible schemes
+            {t("fpo.search.description", "Enter your CIN number or FPO name to find eligible schemes")}
           </p>
 
           {/* Tabs */}
@@ -535,7 +578,7 @@ const FPODirectory = () => {
                     : "text-gray-500 hover:text-gray-800"
                 }`}
               >
-                {tab.label}
+                {t(tab.labelKey, tab.labelFallback)}
               </button>
             ))}
           </div>
@@ -558,7 +601,7 @@ const FPODirectory = () => {
                 onClick={handleSearch}
                 className="px-6 py-3 rounded-xl shrink-0"
               >
-                Check Schemes
+                {t("fpo.search.submit", "Check Schemes")}
               </Button>
             </div>
           ) : (
@@ -568,6 +611,7 @@ const FPODirectory = () => {
                 selectedState={selectedState}
                 onSelect={setSelectedState}
                 loading={initLoading}
+                t={t}
               />
               <Button
                 whileHover={PRESETS.hover.scaleSlight}
@@ -576,25 +620,25 @@ const FPODirectory = () => {
                 onClick={handleSearch}
                 className="px-6 py-3 rounded-xl shrink-0"
               >
-                Browse FPOs
+                {t("fpo.search.browse", "Browse FPOs")}
               </Button>
             </div>
           )}
 
           {activeTab === "cin" && (
             <p className="text-xs text-gray-400 mt-3">
-              Your CIN is on your MCA registration certificate.{" "}
+              {t("fpo.search.cin.help", "Your CIN is on your MCA registration certificate.")}{" "}
               <a
                 href="https://www.mca.gov.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-green-700 hover:underline"
               >
-                Find it here →
+                {t("fpo.search.cin.link", "Find it here →")}
               </a>
             </p>
           )}
-        </motion.div>
+        </Motion.div>
       </section>
 
       {/* ── Search Results ── */}
@@ -604,7 +648,7 @@ const FPODirectory = () => {
             {loading && (
               <div className="flex items-center justify-center py-10 text-gray-500 text-sm gap-3">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600" />
-                Searching...
+                {t("fpo.search.loading", "Searching...")}
               </div>
             )}
 
@@ -617,14 +661,14 @@ const FPODirectory = () => {
             {!loading && !error && results.length > 0 && (
               <>
                 <p className={`text-sm font-semibold text-gray-500 mb-4 ${results.length === 1 ? "text-center" : ""}`}>
-                  {results.length} FPOs found
-                  {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
+                  {results.length} {t("fpo.search.results", "FPOs found")}
+                  {totalPages > 1 && ` — ${t("common.page", "Page")} ${currentPage} ${t("common.of", "of")} ${totalPages}`}
                 </p>
 
                 <div className={paginatedResults.length === 1 ? "flex justify-center" : "grid grid-cols-1 md:grid-cols-2 gap-4"}>
                   {paginatedResults.map((fpo, i) => (
                     <div key={fpo.cin || i} className={paginatedResults.length === 1 ? "w-full max-w-2xl" : ""}>
-                      <FpoCard fpo={fpo} />
+                      <FpoCard fpo={fpo} t={t} />
                     </div>
                   ))}
                 </div>
@@ -644,7 +688,7 @@ const FPODirectory = () => {
                           : "bg-green-700 hover:bg-green-800 text-white"
                       }`}
                     >
-                      ← Prev
+                      {t("common.pagination.previous", "← Prev")}
                     </button>
 
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -693,7 +737,7 @@ const FPODirectory = () => {
                           : "bg-green-700 hover:bg-green-800 text-white"
                       }`}
                     >
-                      Next →
+                      {t("common.pagination.next", "Next →")}
                     </button>
                   </div>
                 )}
@@ -705,7 +749,7 @@ const FPODirectory = () => {
 
       {/* ── Stats ── */}
       <section className="py-16 px-4 bg-white mt-6">
-        <motion.div
+        <Motion.div
           className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4"
           variants={VARIANTS.cardContainer}
           initial="hidden"
@@ -726,31 +770,38 @@ const FPODirectory = () => {
               <p className="text-sm text-gray-500">{label}</p>
             </Card>
           ))}
-        </motion.div>
+        </Motion.div>
       </section>
 
       {/* ── How It Works ── */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto">
-          <motion.h2
+          <Motion.h2
             className="text-3xl md:text-4xl font-semibold font-serif text-center mb-12"
             variants={VARIANTS.sectionFadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={PRESETS.viewport}
           >
-            How It Works
-          </motion.h2>
+            {t("fpo.how.title", "How It Works")}
+          </Motion.h2>
 
-          <motion.div
+          <Motion.div
             className="grid gap-8 md:grid-cols-3"
             variants={VARIANTS.cardContainer}
             initial="hidden"
             whileInView="visible"
             viewport={PRESETS.viewportSmall}
           >
-            {HOW_IT_WORKS.map(({ step, icon, title, desc }) => (
-              <motion.div
+            {HOW_IT_WORKS.map(({
+              step,
+              icon,
+              titleKey,
+              titleFallback,
+              descriptionKey,
+              descriptionFallback,
+            }) => (
+              <Motion.div
                 key={step}
                 variants={VARIANTS.cardItem}
                 className="flex flex-col items-center text-center"
@@ -759,17 +810,19 @@ const FPODirectory = () => {
                   {icon}
                 </div>
                 <h3 className="font-semibold text-base text-gray-900 mb-2">
-                  {step}. {title}
+                  {step}. {t(titleKey, titleFallback)}
                 </h3>
-                <p className="text-sm text-gray-500 leading-snug">{desc}</p>
-              </motion.div>
+                <p className="text-sm text-gray-500 leading-snug">
+                  {t(descriptionKey, descriptionFallback)}
+                </p>
+              </Motion.div>
             ))}
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
       {/* ── Bottom CTA ── */}
-      <motion.section
+      <Motion.section
         className="py-16 px-4 bg-green-800 text-white"
         variants={VARIANTS.sectionFadeUp}
         initial="hidden"
@@ -778,11 +831,13 @@ const FPODirectory = () => {
       >
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <h2 className="text-3xl md:text-4xl font-semibold font-serif">
-            Want the full report for your FPO?
+            {t("fpo.cta.title", "Want the full report for your FPO?")}
           </h2>
           <p className="text-green-100 max-w-xl mx-auto">
-            Get a detailed PDF with all eligible schemes, compliance deadlines,
-            and market opportunities — delivered to your WhatsApp.
+            {t(
+              "fpo.cta.description",
+              "Get a detailed PDF with all eligible schemes, compliance deadlines, and market opportunities — delivered to your WhatsApp.",
+            )}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2">
             <Button
@@ -793,14 +848,14 @@ const FPODirectory = () => {
               onClick={() => (window.location.href = "/getInTouch")}
               className="bg-white text-green-800 hover:bg-gray-100"
             >
-              Get Free Report →
+              {t("fpo.cta.action", "Get Free Report →")}
             </Button>
           </div>
         </div>
-      </motion.section>
+      </Motion.section>
 
       <Footer />
-    </motion.div>
+    </Motion.div>
   );
 };
 

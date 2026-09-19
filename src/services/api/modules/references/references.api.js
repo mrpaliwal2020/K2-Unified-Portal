@@ -1,4 +1,5 @@
 import apiClient from "../../client/apiClient";
+import { assertSuccessfulEnvelope } from "../../../../core/http/ApiFailure";
 import { REFERENCES_ENDPOINTS } from "./references.endpoints";
 
 // Response shape: { success, message, data, meta }
@@ -12,7 +13,7 @@ export const getStateDistrictList = async () => {
     const { data } = await apiClient.get(REFERENCES_ENDPOINTS.STATE_DISTRICTS);
     if (data?.success && Array.isArray(data?.data)) return data.data;
     return [];
-  } catch (error) {
+  } catch {
     return [];
   }
 };
@@ -27,7 +28,18 @@ export const getVillageList = async (districtId) => {
     });
     if (data?.success && Array.isArray(data?.data)) return data.data;
     return [];
-  } catch (error) {
+  } catch {
     return [];
   }
+};
+
+export const getLocalizedTexts = async ({ domain, locale }) => {
+  const { data } = await apiClient.get(REFERENCES_ENDPOINTS.LOCALIZED_TEXTS, {
+    params: { domain, locale },
+  });
+  const response = assertSuccessfulEnvelope(data, "getLocalizedTexts");
+  if (!Array.isArray(response.data)) {
+    throw new Error("The localization service returned an invalid response.");
+  }
+  return response.data;
 };

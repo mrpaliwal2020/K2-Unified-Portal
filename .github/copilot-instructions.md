@@ -29,12 +29,26 @@ their code or share their release lifecycle.
 
 - For every new or materially changed page, read
   `docs/portal-page-development-standard.md` and `docs/design-system.md`.
+- Use `K2AsyncStateView` for asynchronous Operations-page states. Use
+  `K2PortalPageLayout` when the applicable existing layout does not already
+  provide the page heading, actions, and content frame.
+- Use `K2DateField` for date-only inputs and `K2ReferenceSelect` for
+  feature-owned reference data; do not introduce another date/select library
+  without a documented need.
+- Read `docs/architecture/portal-time-core.md` before adding date parsing or
+  formatting. Use `src/core/time/k2Date.js`; never parse a date-only API value
+  with `new Date("YYYY-MM-DD")`.
+- Read `docs/architecture/portal-upload-core.md` before adding a file upload.
+  Use `uploadK2File`; save its CDN URL only after the presigned PUT succeeds.
+- Read `docs/architecture/portal-read-cache-and-connectivity.md` before
+  adding browser caching or offline behavior. Use cached data only for reads;
+  do not queue Portal writes offline.
 - Reuse `src/components/ui`, layouts, `src/tokens`, and existing common
   components before adding a page-local design system or another UI library.
-- New visible copy, errors, tooltips, labels, and semantic text must be ready
-  for K2 localization. Do not spread unmanaged user-visible literals through
-  shared UI; record a localization decision before broad multilingual portal
-  work begins.
+- For localized UI, use `useLocalizedDomain("<backend-domain>")` and
+  `t("stable.key", "English fallback")`. Do not hard-code a closed list of
+  backend domains or use visible English sentences as translation keys; read
+  `docs/data-contracts/localization.md`.
 - Every data page must explicitly render loading, content, empty, API-error,
   unauthorized, and relevant limited-connectivity/retry states.
 - Do not log or expose Firebase tokens, personal/contact data, financial data,
@@ -44,6 +58,9 @@ their code or share their release lifecycle.
 
 - Route application API traffic through `src/services/api/`; reuse module
   endpoint/API files and `services/utils/errorHandler.js`.
+- Read `docs/architecture/portal-http-core.md` before changing an API
+  consumer. Use `ApiFailure` and `assertSuccessfulEnvelope`; never represent
+  API or transport failure as an empty successful result.
 - Preserve the existing React, route, auth, context, Zustand, and component
   patterns unless a documented decision approves a change.
 - Keep API calls, storage access, and side effects outside render paths.
@@ -51,7 +68,9 @@ their code or share their release lifecycle.
   unregistered hard-coded application routes.
 - Browser configuration is public build-time configuration only. Never commit
   credentials or rely on browser code to keep a secret.
-- Run `npm run lint` and `npm run build` for relevant portal changes.
+- Run focused `npm run lint`, `npm test`, and `npm run build` for relevant
+  Portal changes. Add focused component and accessibility coverage when a
+  shared UI primitive gains behavior.
 
 ## Change discipline
 

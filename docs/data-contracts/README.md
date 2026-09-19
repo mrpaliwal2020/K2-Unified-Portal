@@ -6,3 +6,5 @@ pagination, compatibility, and affected mobile/portal clients.
 
 The backend is the contract owner. A portal document records the client view; it
 does not replace backend API documentation.
+
+- [Localization Contract](localization.md)

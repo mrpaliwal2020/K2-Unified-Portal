@@ -1,5 +1,9 @@
 import axios from "axios";
-import { getErrorMessage } from "../../utils/errorHandler";
+import {
+  API_FAILURE_KIND,
+  assertSuccessfulEnvelope,
+  toApiFailure,
+} from "../../../core/http/ApiFailure";
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 const apiClient = axios.create({
@@ -13,7 +17,13 @@ apiClient.interceptors.request.use(
   (config) => {
     const stored = localStorage.getItem("k2k-auth-store");
     if (stored) {
-      const parsed = JSON.parse(stored);
+      let parsed;
+      try {
+        parsed = JSON.parse(stored);
+      } catch {
+        localStorage.removeItem("k2k-auth-store");
+        return config;
+      }
       const token = parsed?.state?.token;
       const profileId = parsed?.state?.profile?.profileId;
       if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -29,12 +39,12 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = getErrorMessage(error);
-    if (error.response?.status === 401) {
+    const failure = toApiFailure(error);
+    if (failure.kind === API_FAILURE_KIND.unauthorized) {
       localStorage.removeItem("k2k-auth-store");
       window.location.href = "/login";
     }
-    return Promise.reject({ ...error, userMessage: message });
+    return Promise.reject(failure);
   },
 );
 
@@ -45,11 +55,16 @@ export const apiPost = async (endpoint, operation, data = {}) => {
       operation,
       ...data,
     });
-    return { success: true, data: responseData };
+    return {
+      success: true,
+      data: assertSuccessfulEnvelope(responseData, operation),
+    };
   } catch (error) {
+    const failure = toApiFailure(error);
     return {
       success: false,
-      error: error.userMessage || "Something went wrong",
+      error: failure.message,
+      failure,
     };
   }
 };

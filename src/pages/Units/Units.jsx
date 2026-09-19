@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, MapPin, Users, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
@@ -6,6 +6,7 @@ import useAuth from "../../hooks/useAuth";
 import Header from "../../components/Common/Header";
 import FpoSidebar from "../../StandardK2/FpoSidebar";
 import { getAllBusinessUnits, getMyUnits } from "../../services/api";
+import { K2AsyncStateView } from "../../components/ui";
 
 const VALID_STATUS = ["all", "myfpo", "trending"];
 
@@ -28,26 +29,40 @@ const Units = () => {
   // Naye API se: getMyUnits (purane profile.unitDetails ki jagah)
   const [myFPOList, setMyFPOList] = useState([]);
   const [loadingFPOs, setLoadingFPOs] = useState(true);
+  const [unitLoadError, setUnitLoadError] = useState(false);
+  const authActionsRef = useRef({ syncProfile, startProfileWatch });
+  authActionsRef.current = { syncProfile, startProfileWatch };
+
+  const loadUnits = useCallback(async () => {
+    setLoadingFPOs(true);
+    setUnitLoadError(false);
+
+    try {
+      await authActionsRef.current.syncProfile();
+      const profile = useAuthStore.getState().profile;
+      const [myUnits, allUnits] = await Promise.all([
+        getMyUnits(profile?.profileId, profile?.mobileNumber),
+        getAllBusinessUnits(profile?.latitude || "", profile?.longitude || ""),
+      ]);
+
+      setMyFPOList(Array.isArray(myUnits) ? myUnits : []);
+      setAllFPOs(Array.isArray(allUnits) ? allUnits : []);
+    } catch {
+      setUnitLoadError(true);
+    } finally {
+      setLoadingFPOs(false);
+      setSyncing(false);
+    }
+  }, []);
 
   useEffect(() => {
     setSelectedUnit(null);
-    const watchInterval = startProfileWatch(3000);
+    const watchInterval = authActionsRef.current.startProfileWatch(3000);
 
-    syncProfile().finally(() => {
-      setSyncing(false);
-      const p = useAuthStore.getState().profile;
-      Promise.allSettled([
-        getMyUnits(p?.profileId, p?.mobileNumber).then((data) =>
-          setMyFPOList(Array.isArray(data) ? data : []),
-        ),
-        getAllBusinessUnits(p?.latitude || "", p?.longitude || "").then(
-          (data) => setAllFPOs(Array.isArray(data) ? data : []),
-        ),
-      ]).finally(() => setLoadingFPOs(false));
-    });
+    loadUnits();
 
     return () => clearInterval(watchInterval);
-  }, []);
+  }, [loadUnits, setSelectedUnit]);
 
   useEffect(() => {
     if (location.state?.typeFilter) {
@@ -121,8 +136,6 @@ const Units = () => {
   };
 
   const filteredList = getDisplayList();
-  const hiddenCount = Math.max(0, allFPOs.length - filteredList.length);
-
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleCardClick = (unit) => {
@@ -200,38 +213,40 @@ const Units = () => {
 
           {/* Cards */}
           <div className="flex-1 overflow-y-auto px-5 py-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-            {loadingFPOs ? (
-              <div className="flex flex-col items-center justify-center py-24">
-                <div className="relative w-16 h-16 mb-5">
-                  <div className="absolute inset-0 border-4 border-green-100 rounded-full" />
-                  <div className="absolute inset-0 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+            <K2AsyncStateView
+              state={
+                loadingFPOs
+                  ? "loading"
+                  : unitLoadError
+                    ? "error"
+                    : filteredList.length === 0
+                      ? "empty"
+                      : "content"
+              }
+              onRetry={loadUnits}
+              renderEmpty={() => (
+                <div className="flex flex-col items-center justify-center py-24">
+                  <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mb-5">
+                    <Search size={36} className="text-gray-400" />
+                  </div>
+                  <h2 className="text-xl font-black text-gray-800 mb-2">
+                    No Results
+                  </h2>
+                  <p className="text-gray-400 text-sm text-center mb-6">
+                    No FPO matches your current filters.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setStatusFilter("all");
+                      setSearchQuery("");
+                    }}
+                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95"
+                  >
+                    Clear Filters
+                  </button>
                 </div>
-                <p className="text-gray-500 text-sm font-semibold">
-                  Loading FPOs...
-                </p>
-              </div>
-            ) : filteredList.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24">
-                <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mb-5">
-                  <Search size={36} className="text-gray-400" />
-                </div>
-                <h2 className="text-xl font-black text-gray-800 mb-2">
-                  No Results
-                </h2>
-                <p className="text-gray-400 text-sm text-center mb-6">
-                  No FPO matches your current filters.
-                </p>
-                <button
-                  onClick={() => {
-                    setStatusFilter("all");
-                    setSearchQuery("");
-                  }}
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95"
-                >
-                  Clear Filters
-                </button>
-              </div>
-            ) : (
+              )}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
                 {filteredList.map((unit) => {
                   const mine = isMyFPOUnit(unit);
@@ -330,7 +345,7 @@ const Units = () => {
                   );
                 })}
               </div>
-            )}
+            </K2AsyncStateView>
           </div>
         </div>
       </div>

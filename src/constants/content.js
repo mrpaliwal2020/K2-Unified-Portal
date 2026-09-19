@@ -286,6 +286,33 @@ export const CONTENT = {
   },
   common: {
     loading: "Loading...",
+    asyncState: {
+      loading: "Loading...",
+      refreshing: "Refreshing...",
+      empty: {
+        title: "No information is available yet",
+        description: "Try again later or update the available filters.",
+      },
+      error: {
+        title: "We could not load this information",
+        description: "Check your connection and try again.",
+      },
+      unauthorized: {
+        title: "You do not have access to this information",
+        description: "Select another unit or contact an administrator.",
+      },
+      offline: {
+        title: "You are offline",
+        description: "Reconnect and try again.",
+      },
+      offlineCached: "Showing the most recently available information.",
+      retry: "Try again",
+    },
+    form: {
+      emptyOptions: "No options are available",
+      loadingOptions: "Loading options...",
+      selectPlaceholder: "Select an option",
+    },
     brandName: "K2KrishiKutumb",
     playStoreLink:
       "https://play.google.com/store/apps/details?id=com.ambaokrishikutumb.k2k&pli=1",

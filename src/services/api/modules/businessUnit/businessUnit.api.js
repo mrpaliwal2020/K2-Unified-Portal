@@ -30,6 +30,9 @@ export const getFPODirectory = async ({
         companyStatus,
       },
     );
+    if (!result.success) {
+      throw result.failure;
+    }
     if (result.success && result.data?.fpoList?.length > 0) {
       return result.data.fpoList.map((f) => ({
         cin: f.cin,
@@ -77,7 +80,10 @@ export const getAllBusinessUnits = async (latitude = "", longitude = "") => {
     BUSINESS_UNIT_OPS.GET_ALL_BUSINESSUNITS,
     { latitude, longitude, unitType: "NA" },
   );
-  return result.success ? result.data?.userlist || [] : [];
+  if (!result.success) {
+    throw result.failure;
+  }
+  return result.data?.userlist || [];
 };
 
 // ─── Get Farmer Land Info ─────────────────────────────────────────────────────

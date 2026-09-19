@@ -1,4 +1,5 @@
 import apiClient from "../../client/apiClient";
+import { assertSuccessfulEnvelope } from "../../../../core/http/ApiFailure";
 import { UNITS_ENDPOINTS } from "./units.endpoints";
 
 // Response shape: { success, message, data, meta }
@@ -95,15 +96,11 @@ const extractList = (data) => {
 //        isActive, unitDetails, memberMobile, memberTypePrimary, memberTypeSecondary,
 //        managedBy, lastUpdateDate, ... }
 export const getMyUnits = async (profileId, mobileNumber) => {
-  try {
-    const { data } = await apiClient.get(UNITS_ENDPOINTS.MY_UNITS, {
-      params: { profileId, mobileNumber },
-    });
-    if (data?.success && Array.isArray(data?.data)) return data.data;
-    return [];
-  } catch (error) {
-    return [];
-  }
+  const { data } = await apiClient.get(UNITS_ENDPOINTS.MY_UNITS, {
+    params: { profileId, mobileNumber },
+  });
+  const response = assertSuccessfulEnvelope(data, "getMyUnits");
+  return Array.isArray(response.data) ? response.data : [];
 };
 
 // ─── Get Unit Members ─────────────────────────────────────────────────────────
@@ -122,7 +119,7 @@ export const getUnitMembers = async (groupId, unitId) => {
     if (unitId) params.unitId = unitId;
     const { data } = await apiClient.get(UNITS_ENDPOINTS.MEMBERS, { params });
     return extractList(data).map(normalizeUnitMember);
-  } catch (error) {
+  } catch {
     return [];
   }
 };
@@ -139,7 +136,7 @@ export const getUnitMemberPriSecProfiles = async (groupId, unitId) => {
       { params },
     );
     return extractList(data);
-  } catch (error) {
+  } catch {
     return [];
   }
 };
@@ -156,7 +153,7 @@ export const getUnitMemberTriFourProfiles = async (groupId, unitId) => {
       { params },
     );
     return extractList(data);
-  } catch (error) {
+  } catch {
     return [];
   }
 };

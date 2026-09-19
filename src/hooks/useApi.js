@@ -61,7 +61,7 @@ export const usePaginatedApi = (pageSize = 10) => {
         setLoading(true);
         setError(null);
 
-        const result = await apiPost(endapoint, operation, {
+        const result = await apiPost(endpoint, operation, {
           ...userData,
           page,
           pageSize,

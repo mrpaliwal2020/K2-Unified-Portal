@@ -2,6 +2,7 @@ import React, { Suspense, useEffect } from "react";
 import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { FPOProvider } from "./context/FPOContext";
+import { LocalizationProvider } from "./core/localization/LocalizationProvider";
 import AppRoutes from "./routes/index";
 
 import { FullScreenLoader } from "./components/ui";
@@ -25,11 +26,13 @@ function App() {
     <Router>
       <CanonicalUpdater />
       <AuthProvider>
-        <FPOProvider>
-          <Suspense fallback={<FullScreenLoader />}>
-            <AppRoutes />
-          </Suspense>
-        </FPOProvider>
+        <LocalizationProvider>
+          <FPOProvider>
+            <Suspense fallback={<FullScreenLoader />}>
+              <AppRoutes />
+            </Suspense>
+          </FPOProvider>
+        </LocalizationProvider>
       </AuthProvider>
     </Router>
   );

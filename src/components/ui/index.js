@@ -6,3 +6,6 @@ export * from './Accordion/Accordion';
 export * from './Typography/Typography';
 export * from './Layouts/AuthLayout';
 export * from './Forms/FormComponents';
+export * from './Forms/K2FormFields';
+export * from './Feedback/K2AsyncStateView';
+export * from './Page/K2PortalPageLayout';
