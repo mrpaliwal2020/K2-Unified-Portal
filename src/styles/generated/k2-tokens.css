@@ -1,0 +1,21 @@
+/* GENERATED from design-tokens/source/k2.tokens.json. Do not edit. */
+:root {
+  --k2-color-primary: #06570C;
+  --k2-color-on-primary: #FFFFFF;
+  --k2-color-surface: #FFFFFF;
+  --k2-color-surface-subtle: #F7FAF8;
+  --k2-color-text-primary: #000000;
+  --k2-color-border-default: #DDD9D9;
+  --k2-color-danger: #F44336;
+  --k2-space-xs: 4px;
+  --k2-space-sm: 8px;
+  --k2-space-md: 12px;
+  --k2-space-lg: 16px;
+  --k2-space-xl: 20px;
+  --k2-space-2xl: 24px;
+  --k2-radius-sm: 5px;
+  --k2-radius-md: 8px;
+  --k2-radius-lg: 12px;
+  --k2-radius-xl: 16px;
+  --k2-radius-pill: 999px;
+}

@@ -1,0 +1,8 @@
+{
+  "sourceRepository": "K2-Unified-Mobile",
+  "sourcePath": "design-tokens/source/k2.tokens.json",
+  "sourceCommit": "8112b8bd949801ad0b4c87546bae412fe004d0f3",
+  "sourceSha256": "843f580f3db2d617da92bc9c0039f4202abb4eae41b6b47db5cfd1c9881e7ae2",
+  "generatedPath": "src/styles/generated/k2-tokens.css",
+  "generatedSha256": "a2174a09fe6cf5bf6d39dcabd33b53c98540e532ed4015f06bea22a405f78b21"
+}
