@@ -19,7 +19,7 @@ import useAuthStore from "../store/authStore";
 import { getInitials } from "../utils/formatters";
 import { ROUTES } from "../routes/routeConfig";
 import useAuth from "../hooks/useAuth";
-import { getUnitDetails } from "../services/api/authApi";
+import { getUnitDetails } from "../services/api";
 import { isAdminMobile } from "../services/firebase/accountDeletionService";
 
 // ── Navigation model ─────────────────────────────────────────────────────────

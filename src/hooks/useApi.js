@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { apiPost } from "../services/api/apiClient";
+import { apiPost } from "../services/api";
 
 // ─── Generic API Hook ─────────────────────────────────────────────────────────
 const useApi = () => {

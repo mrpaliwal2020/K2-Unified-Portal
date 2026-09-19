@@ -7,7 +7,7 @@ import {
   Mail,
   Globe,
 } from "lucide-react";
-import { getUnitSummary } from "../../../../services/api/authApi";
+import { getUnitSummary } from "../../../../services/api";
 import useAuthStore from "../../../../store/authStore";
 
 // ─── HTML Builder ─────────────────────────────────────────────────────────────

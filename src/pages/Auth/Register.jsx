@@ -7,7 +7,7 @@ import { validateForm } from "../../utils/validators";
 import {
   getStateDistrictList,
   getVillageList,
-} from "../../services/api/authApi";
+} from "../../services/api";
 import { CONTENT } from "../../constants/content";
 import { 
   Button, 
@@ -34,6 +34,10 @@ const Register = () => {
     district: "",
     tehsil: "",
     village: "",
+    stateId: null,
+    districtId: null,
+    tehsilId: null,
+    villageId: null,
     latitude: "",
     longitude: "",
   });
@@ -65,21 +69,23 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    if (!form.state || !form.district) return;
+    if (!form.districtId) return;
     setVillageList([]);
     setForm((p) => ({
       ...p,
       tehsil: "",
       village: "",
+      tehsilId: null,
+      villageId: null,
       latitude: "",
       longitude: "",
     }));
     setLoadingVillage(true);
-    getVillageList(form.state, form.district)
+    getVillageList(form.districtId)
       .then((data) => setVillageList(data))
       .catch(() => {})
       .finally(() => setLoadingVillage(false));
-  }, [form.state, form.district]);
+  }, [form.districtId]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -88,34 +94,48 @@ const Register = () => {
   };
 
   const handleStateSelect = (state) => {
+    const found = stateDistrictList.find((i) => i.state === state);
     setVillageList([]);
     setForm((p) => ({
       ...p,
       state,
+      stateId: found?.stateId ?? null,
       district: "",
       tehsil: "",
       village: "",
+      districtId: null,
+      tehsilId: null,
+      villageId: null,
       latitude: "",
       longitude: "",
     }));
   };
 
   const handleDistrictSelect = (district) => {
+    const found = stateDistrictList.find(
+      (i) => i.state === form.state && i.district === district,
+    );
     setForm((p) => ({
       ...p,
       district,
+      districtId: found?.districtId ?? null,
       tehsil: "",
       village: "",
+      tehsilId: null,
+      villageId: null,
       latitude: "",
       longitude: "",
     }));
   };
 
   const handleTehsilSelect = (tehsil) => {
+    const found = villageList.find((v) => v.tehsil === tehsil);
     setForm((p) => ({
       ...p,
       tehsil,
+      tehsilId: found?.tehsilId ?? null,
       village: "",
+      villageId: null,
       latitude: "",
       longitude: "",
     }));
@@ -128,6 +148,8 @@ const Register = () => {
       ...p,
       village: found.village,
       tehsil: found.tehsil,
+      villageId: found.villageId,
+      tehsilId: found.tehsilId,
       latitude: found.latitude,
       longitude: found.longitude,
     }));

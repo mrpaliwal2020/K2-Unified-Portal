@@ -14,7 +14,7 @@ import {
   Loader,
 } from "lucide-react";
 import useAuthStore from "../../../store/authStore";
-import { getAgriBusinessPlan } from "../../../services/api/authApi";
+import { getAgriBusinessPlan } from "../../../services/api";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const fmt = (v) => {

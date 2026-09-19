@@ -4,7 +4,7 @@ import {
   getStockItems,
   getCollections,
   getDistributions,
-} from "../../../../services/api/authApi";
+} from "../../../../services/api";
 import useAuthStore from "../../../../store/authStore";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthChange } from "../services/firebase/authService";
-import { getProfile } from "../services/api/authApi";
+import { getProfile } from "../services/api";
 import useAuthStore from "../store/authStore";
 
 // ─── Context ──────────────────────────────────────────────────────────────────

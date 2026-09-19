@@ -22,7 +22,7 @@ import {
   getUnitIssues,
   getGroupDemandAvailability,
   getGroupActivities,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 import useAuthStore from "../../../store/authStore";
 
 const convertToAcre = (value, unit) => {
@@ -70,6 +70,7 @@ const Dashboard = () => {
   const { selectedUnit } = useAuthStore();
   const unitCode = selectedUnit?.unitCode || "";
   const groupId = selectedUnit?.groupId || "";
+  const unitId = selectedUnit?.unitId || "";
 
   const [unitDetails, setUnitDetails] = useState(null);
   const [currentCropIndex, setCurrentCropIndex] = useState(0);
@@ -107,9 +108,9 @@ const Dashboard = () => {
         activities,
       ] = await Promise.all([
         getUnitDetails(unitCode, groupId),
-        getUnitMembers(groupId, unitCode),
+        getUnitMembers(groupId, unitId),
         getUnitItems(unitCode),
-        getUnitSownAreaPerCropPerMember(unitCode),
+        getUnitSownAreaPerCropPerMember(unitId, groupId),
         getUnitIssues(unitCode),
         getGroupDemandAvailability(groupId),
         getGroupActivities(groupId),
@@ -134,7 +135,7 @@ const Dashboard = () => {
         const mapped = cropStats.map((crop, idx) => ({
           name: crop.cropName,
           area: parseFloat(crop.totalSownArea).toFixed(2),
-          areaUnit: crop.areaUnit,
+          areaUnit: crop.sownAreaUnit || crop.areaUnit,
           members: crop.totalMemberSown,
           quantity: 1250,
           daysToHarvest: 45,

@@ -19,7 +19,7 @@ import {
 import {
   getUnitMembers,
   getFarmerLandInfo,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 import useAuthStore from "../../../store/authStore";
 
 const DUMMY_AVATAR = (name = "DefaultUser") =>
@@ -131,7 +131,9 @@ const Member = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      if (!selectedUnit?.groupId || !selectedUnit?.unitCode) {
+      // Naya API: GET /k2uApi/units/members/?groupId=&unitId=
+      // groupId required hai; unitId na ho to group ke saare members aayenge.
+      if (!selectedUnit?.groupId) {
         setError("Unit information not available");
         setLoading(false);
         return;
@@ -139,37 +141,49 @@ const Member = () => {
       try {
         setLoading(true);
         setError(null);
+        setLandDataMap({});
         const data = await getUnitMembers(
           selectedUnit.groupId,
-          selectedUnit.unitCode,
+          selectedUnit.unitId,
         );
 
-        const transformedData = data.map((member) => ({
-          id: `#M${member.memberId}`,
-          profileId: member.memberProfileId,
-          name: `${member.memberFirstName} ${member.memberLastName}`,
-          phone: member.memberMobile,
-          area: 0,
-          crop: member.scheduledCropsName
-            ? member.scheduledCropsName.split(",")
-            : ["NA"],
-          status: member.memberStatus,
-          joinDate: new Date(member.lastUpdateDate).toLocaleDateString(
-            "en-GB",
-            {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            },
-          ),
-          type: member.memberTypePrimary || "Member",
-          typeSecondary: member.memberTypeSecondary || "Farmer",
-          village: member.village || "Unknown",
-          managedBy: member.managedBy || "Unassigned",
-          image:
-            member.memberImageUrl ||
-            DUMMY_AVATAR(`${member.memberFirstName} ${member.memberLastName}`),
-        }));
+        const transformedData = data.map((member, idx) => {
+          const fullName =
+            `${member.memberFirstName || ""} ${member.memberLastName || ""}`.trim() ||
+            "Unknown";
+          const rawId =
+            member.memberId ?? member.memberProfileId ?? `row-${idx}`;
+          const joinDateRaw = member.lastUpdateDate
+            ? new Date(member.lastUpdateDate)
+            : null;
+          return {
+            id: `#M${rawId}`,
+            profileId: member.memberProfileId,
+            name: fullName,
+            phone: member.memberMobile ? String(member.memberMobile) : "",
+            area: 0,
+            crop: member.scheduledCropsName
+              ? String(member.scheduledCropsName)
+                  .split(",")
+                  .map((c) => c.trim())
+                  .filter(Boolean)
+              : ["NA"],
+            status: member.memberStatus || "Active",
+            joinDate:
+              joinDateRaw && !Number.isNaN(joinDateRaw.getTime())
+                ? joinDateRaw.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "N/A",
+            type: member.memberTypePrimary || "Member",
+            typeSecondary: member.memberTypeSecondary || "Farmer",
+            village: member.village || "Unknown",
+            managedBy: member.managedBy || "Unassigned",
+            image: member.memberImageUrl || DUMMY_AVATAR(fullName),
+          };
+        });
 
         setMembersData(transformedData);
 
@@ -185,7 +199,9 @@ const Member = () => {
 
           const promises1 = currentPageMembers.map(async (member) => {
             try {
-              const lands = await getFarmerLandInfo(member.profileId);
+              const lands = member.profileId
+                ? await getFarmerLandInfo(member.profileId)
+                : [];
               landMap[member.id] = lands || [];
             } catch (err) {
               landMap[member.id] = [];
@@ -204,7 +220,9 @@ const Member = () => {
             const batch = remainingMembers.slice(i, i + BATCH_SIZE);
             const promises = batch.map(async (member) => {
               try {
-                const lands = await getFarmerLandInfo(member.profileId);
+                const lands = member.profileId
+                  ? await getFarmerLandInfo(member.profileId)
+                  : [];
                 landMap[member.id] = lands || [];
               } catch (err) {
                 landMap[member.id] = [];
@@ -252,10 +270,13 @@ const Member = () => {
 
   const filteredMembers = useMemo(() => {
     return membersData.filter((member) => {
+      const q = searchTerm.trim().toLowerCase();
       const matchesSearch =
-        member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.phone.includes(searchTerm);
+        !q ||
+        member.name.toLowerCase().includes(q) ||
+        member.id.toLowerCase().includes(q) ||
+        (member.phone || "").includes(q) ||
+        (member.village || "").toLowerCase().includes(q);
       const matchesStatus =
         statusFilter === "all" || member.status === statusFilter;
       const matchesType = typeFilter === "all" || member.type === typeFilter;
@@ -386,7 +407,7 @@ const Member = () => {
       </div>
 
       {/* Results Info */}
-      {!loading && !landLoading && !error && (
+      {!loading && !error && (
         <div className="mb-6 flex justify-between items-center">
           <p className="text-slate-600">
             Showing{" "}
@@ -396,6 +417,12 @@ const Member = () => {
             of <span className="font-semibold">{filteredMembers.length}</span>{" "}
             members
           </p>
+          {landLoading && (
+            <span className="flex items-center gap-2 text-xs text-slate-500">
+              <Loader size={14} className="animate-spin text-emerald-600" />
+              Loading land data...
+            </span>
+          )}
           <div className="flex gap-4 text-sm">
             <span className="text-slate-600">
               Active:{" "}
@@ -414,12 +441,12 @@ const Member = () => {
       )}
 
       {/* Loading State */}
-      {(loading || landLoading) && (
+      {loading && (
         <div className="flex flex-col items-center justify-center py-55">
           <div className="flex items-center gap-3">
             <Loader size={32} className="text-emerald-600 animate-spin" />
             <span className="text-slate-600 font-semibold">
-              {loading ? "Loading members..." : "Loading land data..."}
+              Loading members...
             </span>
           </div>
         </div>
@@ -438,7 +465,7 @@ const Member = () => {
       )}
 
       {/* Members Grid */}
-      {!loading && !landLoading && !error && (
+      {!loading && !error && (
         <>
           {filteredMembers.length > 0 ? (
             <>

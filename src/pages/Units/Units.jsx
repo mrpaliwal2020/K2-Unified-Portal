@@ -5,14 +5,14 @@ import useAuthStore from "../../store/authStore";
 import useAuth from "../../hooks/useAuth";
 import Header from "../../components/Common/Header";
 import FpoSidebar from "../../StandardK2/FpoSidebar";
-import { getAllBusinessUnits } from "../../services/api/authApi";
+import { getAllBusinessUnits, getMyUnits } from "../../services/api";
 
 const VALID_STATUS = ["all", "myfpo", "trending"];
 
 const Units = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { profile, setSelectedUnit } = useAuthStore();
+  const { setSelectedUnit } = useAuthStore();
   const { syncProfile, startProfileWatch, isLoading } = useAuth();
 
   const [syncing, setSyncing] = useState(true);
@@ -25,7 +25,9 @@ const Units = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const searchRef = useRef(null);
 
-  const myFPOList = profile?.unitDetails || [];
+  // Naye API se: getMyUnits (purane profile.unitDetails ki jagah)
+  const [myFPOList, setMyFPOList] = useState([]);
+  const [loadingFPOs, setLoadingFPOs] = useState(true);
 
   useEffect(() => {
     setSelectedUnit(null);
@@ -34,9 +36,14 @@ const Units = () => {
     syncProfile().finally(() => {
       setSyncing(false);
       const p = useAuthStore.getState().profile;
-      getAllBusinessUnits(p?.latitude || "", p?.longitude || "").then((data) =>
-        setAllFPOs(Array.isArray(data) ? data : []),
-      );
+      Promise.allSettled([
+        getMyUnits(p?.profileId, p?.mobileNumber).then((data) =>
+          setMyFPOList(Array.isArray(data) ? data : []),
+        ),
+        getAllBusinessUnits(p?.latitude || "", p?.longitude || "").then(
+          (data) => setAllFPOs(Array.isArray(data) ? data : []),
+        ),
+      ]).finally(() => setLoadingFPOs(false));
     });
 
     return () => clearInterval(watchInterval);
@@ -193,7 +200,7 @@ const Units = () => {
 
           {/* Cards */}
           <div className="flex-1 overflow-y-auto px-5 py-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-            {allFPOs.length === 0 ? (
+            {loadingFPOs ? (
               <div className="flex flex-col items-center justify-center py-24">
                 <div className="relative w-16 h-16 mb-5">
                   <div className="absolute inset-0 border-4 border-green-100 rounded-full" />

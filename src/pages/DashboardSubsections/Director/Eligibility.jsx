@@ -28,7 +28,7 @@ import {
   getProgram,
   getProgramEligibility,
   getFPODirectory,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 
 // ─── LocalStorage cache (instant render on revisit; background refresh) ────
 const CACHE = {

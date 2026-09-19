@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Inbox, Clock, MapPin, Users, Tag, Phone, Loader } from "lucide-react";
 import { Input, Button } from "../../../components/ui";
-import { getUnitIssues, getUnitMembers } from "../../../services/api/authApi";
+import { getUnitIssues, getUnitMembers } from "../../../services/api";
 import useAuthStore from "../../../store/authStore";
 
 const IssueBox = () => {

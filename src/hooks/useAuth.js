@@ -6,7 +6,7 @@ import {
   resendPhoneOTP,
   firebaseSignOut,
 } from "../services/firebase/authService";
-import { getProfile, createProfile } from "../services/api/authApi";
+import { getProfile, createProfile } from "../services/api";
 import {
   getValidationError,
   getFirebaseError,

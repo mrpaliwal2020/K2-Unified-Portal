@@ -14,7 +14,7 @@ import {
   sendPhoneOTP,
   verifyPhoneOTP,
 } from "../../services/firebase/authService";
-import { createRecordForDeleteAccount } from "../../services/api/authApi";
+import { createRecordForDeleteAccount } from "../../services/api";
 
 const DeleteAccount = () => {
   const { profile } = useAuthStore();

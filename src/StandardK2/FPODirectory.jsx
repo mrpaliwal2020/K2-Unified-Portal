@@ -17,7 +17,7 @@ import FpoTabs from "./FpoTabs";
 import Footer from "../components/Common/Footer";
 import { VARIANTS, TRANSITIONS, PRESETS } from "../animations";
 import { Button, Card } from "../components/ui";
-import { getFPODirectory } from "../services/api/authApi";
+import { getFPODirectory } from "../services/api";
 
 const HOW_IT_WORKS = [
   {

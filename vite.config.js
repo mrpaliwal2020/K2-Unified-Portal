@@ -14,11 +14,17 @@ export default defineConfig({
     open: true,
     allowedHosts: ["uselessly-savior-causation.ngrok-free.dev"],
     proxy: {
-      "/k2kapi": {
-        target: "http://3.109.253.115",
+      "/k2uApi": {
+        target: "http://43.204.64.179",
         changeOrigin: true,
         secure: false,
       },
+      // Legacy modules (group, businessUnit, myBusiness, government, ...) abhi purane server par hain
+      // "/k2kapi": {
+      //   target: "http://3.109.253.115",
+      //   changeOrigin: true,
+      //   secure: false,
+      // },
     },
   },
 });

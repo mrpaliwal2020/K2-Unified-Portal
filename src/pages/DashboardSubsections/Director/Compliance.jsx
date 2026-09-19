@@ -33,7 +33,7 @@ import {
   getUserProgramDocument,
   getNotifications,
   getCalendarTasks,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 
 // ─── Tab config ───────────────────────────────────────────────────────────────
 const TABS = [

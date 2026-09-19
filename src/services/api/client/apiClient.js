@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getErrorMessage } from "../../services/utils/errorHandler";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
 const apiClient = axios.create({
@@ -15,7 +15,10 @@ apiClient.interceptors.request.use(
     if (stored) {
       const parsed = JSON.parse(stored);
       const token = parsed?.state?.token;
+      const profileId = parsed?.state?.profile?.profileId;
       if (token) config.headers.Authorization = `Bearer ${token}`;
+      // Naya k2uApi ownership check ke liye X-Profile-Id header padhta hai.
+      if (profileId) config.headers["X-Profile-Id"] = profileId;
     }
     return config;
   },

@@ -32,7 +32,7 @@ import {
   getDistributions,
   editDistribution,
   deleteDistribution,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 import useAuthStore from "../../../store/authStore";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -929,11 +929,11 @@ const Inventory = () => {
   // ─── Fetch Members ───────────────────────────────────────────────────────────
   useEffect(() => {
     const fetchMembers = async () => {
-      if (!selectedUnit?.groupId || !selectedUnit?.unitCode) return;
+      if (!selectedUnit?.groupId) return;
       try {
         const data = await getUnitMembers(
           selectedUnit.groupId,
-          selectedUnit.unitCode,
+          selectedUnit.unitId,
         );
         setMembersData(
           data.map((m) => ({

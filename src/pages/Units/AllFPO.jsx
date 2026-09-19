@@ -12,7 +12,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import Header from "../../components/Common/Header";
-import { getAllBusinessUnits } from "../../services/api/authApi";
+import { getAllBusinessUnits } from "../../services/api";
 
 const TYPE_OPTIONS = [
   { value: "all", label: "All" },

@@ -11,7 +11,7 @@ import {
   LocateFixed,
 } from "lucide-react";
 import Header from "./StandardHeader";
-import ENDPOINTS from "../services/api/endpoints";
+import { NEWS_ENDPOINT } from "../services/api/modules/news/news.endpoints";
 
 // ─── Category Colors ──────────────────────────────────────────────────────────
 const CAT_COLORS = {
@@ -908,7 +908,7 @@ export default function News() {
 
       // 3. Hit backend API
       try {
-        const res = await fetch(ENDPOINTS.GET_NEWS, {
+        const res = await fetch(NEWS_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(locationFilters),

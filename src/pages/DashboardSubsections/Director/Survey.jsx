@@ -24,7 +24,7 @@ import {
   getCropsInFarm,
   getCollections,
   getDistributions,
-} from "../../../services/api/authApi";
+} from "../../../services/api";
 
 // ─── Survey section item lists ────────────────────────────────────────────────
 const PROFILE_ITEMS = [
@@ -559,6 +559,7 @@ const Survey = () => {
   const { selectedUnit } = useAuthStore();
   const unitCode = selectedUnit?.unitCode;
   const groupId = selectedUnit?.groupId;
+  const unitId = selectedUnit?.unitId;
 
   const [members, setMembers] = useState([]);
   const [surveyData, setSurveyData] = useState({}); // pid → { profile, experience, engagement, completedStepCount, _raw }
@@ -579,13 +580,13 @@ const Survey = () => {
 
   // Load members on mount
   useEffect(() => {
-    if (!unitCode || !groupId) return;
+    if (!groupId) return;
     setLoadingMembers(true);
-    getUnitMembers(groupId, unitCode).then((list) => {
+    getUnitMembers(groupId, unitId).then((list) => {
       setMembers(list || []);
       setLoadingMembers(false);
     });
-  }, [unitCode, groupId]);
+  }, [unitId, groupId]);
 
   // Load survey for one member via getFarmerDetails
   const loadMemberSurvey = async (member) => {

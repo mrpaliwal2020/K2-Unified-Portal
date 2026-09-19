@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Phone, MapPin, ChevronDown, Loader } from "lucide-react";
 import { Input, Button } from "../../../components/ui";
-import { getUnitItems, getUnitMembers } from "../../../services/api/authApi";
+import { getUnitItems, getUnitMembers } from "../../../services/api";
 import useAuthStore from "../../../store/authStore";
 
 const Store = () => {
