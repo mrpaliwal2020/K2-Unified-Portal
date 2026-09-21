@@ -17,8 +17,8 @@ const blogs = [
     href: "/blog/2",
     img: "/Images/blog2_coverimage.png",
     alt: "Tomatoes",
-    read: "5 mins read",
-    title: "How FPO'S Are Transforming Farming With K2 App",
+    read: "5 Mins read",
+    title: "How FPO'S Are Transforming Farming With K2 App.",
     desc: "K2 App helps FPOs streamline farm management and finance tracking, empowering farmers with better collaboration and real-time insights.",
   },
   {
