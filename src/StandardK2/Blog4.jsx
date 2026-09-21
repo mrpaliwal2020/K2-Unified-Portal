@@ -61,7 +61,7 @@ const Blog4 = () => {
           viewport={{ once: true, amount: 0.2 }}
         >
           <motion.p variants={fadeUp} className="mb-6 text-lg md:text-xl text-gray-600">
-            In the past decade, Agriculture has witnessed one of the most
+            In the past decade, Agriculture has Witnessed one of the most
             remarkable shifts in its long Gistory—a move from traditional,
             manual practices to technology-driven, precision-based farming.
             While innovations like drones, IoT sensors, and AI analytics are
@@ -70,7 +70,7 @@ const Blog4 = () => {
           </motion.p>
           <motion.p variants={fadeUp} className="mb-10 text-lg md:text-xl text-gray-600">
             From providing weather updates to connecting farmers with markets,
-            mobile apps are playing a vital role in modernizing Indian
+            mobile apps are playing a vital role in Modernizing Indian
             agriculture. Let's explore how these powerful tools are not just
             supporting farmers—but empowering them.
           </motion.p>
