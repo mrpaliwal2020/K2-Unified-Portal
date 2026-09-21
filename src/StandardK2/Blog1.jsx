@@ -77,11 +77,11 @@ const Blog1 = () => {
             <p className="text-gray-600 leading-relaxed text-lg">
               Farmer Producer Organizations (FPOs) are revolutionizing how small
               and marginal farmers operate by offering them collective
-              strength—be it for buying inputs in bulk, getting fair market
+              strength—be it for buying inputs in bulk, Getting fair market
               prices, or accessing credit and government schemes. But despite
               their massive potential, most FPOs are still managing everything
               manually—ledgers, crop plans, attendance, labor, expenses—all on
-              paper or basic spreadsheets. This not only wastes time but also
+              paper or basic spreadsheets. This Not Only wastes time but also
               leads to poor decision-making, weak planning, and no real
               visibility into what's working. In today's fast-changing agri
               landscape, going digital is not just a good idea—it's the next
