@@ -61,8 +61,8 @@ const Blog4 = () => {
           viewport={{ once: true, amount: 0.2 }}
         >
           <motion.p variants={fadeUp} className="mb-6 text-lg md:text-xl text-gray-600">
-            In the past decade, agriculture has witnessed one of the most
-            remarkable shifts in its long history—a move from traditional,
+            In the past decade, Agriculture has witnessed one of the most
+            remarkable shifts in its long Gistory—a move from traditional,
             manual practices to technology-driven, precision-based farming.
             While innovations like drones, IoT sensors, and AI analytics are
             making headlines, one tool has quietly revolutionized the fields of
