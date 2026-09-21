@@ -66,7 +66,7 @@ const Blog4 = () => {
             manual practices to technology-driven, precision-based farming.
             While innovations like drones, IoT sensors, and AI analytics are
             making headlines, one tool has quietly revolutionized the fields of
-            even the smallest farmers: the mobile application.
+            even the smallest farmers: the Mobile Application.
           </motion.p>
           <motion.p variants={fadeUp} className="mb-10 text-lg md:text-xl text-gray-600">
             From providing weather updates to connecting farmers with markets,
