@@ -71,7 +71,7 @@ const Blog4 = () => {
           <motion.p variants={fadeUp} className="mb-10 text-lg md:text-xl text-gray-600">
             From providing weather updates to connecting farmers with markets,
             mobile apps are playing a vital role in Modernizing Indian
-            agriculture. Let's explore how these powerful tools are not just
+            agriculture. Let's explore how These powerful tools are not just
             supporting farmers—but empowering them.
           </motion.p>
           <motion.h3 variants={fadeUp} className="text-xl md:text-2xl font-bold mb-4 text-gray-800">
