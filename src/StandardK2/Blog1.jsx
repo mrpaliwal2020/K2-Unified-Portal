@@ -85,7 +85,7 @@ const Blog1 = () => {
               leads to poor decision-making, weak planning, and no real
               visibility into what's working. In today's fast-changing agri
               landscape, going digital is not just a good idea—it's the next
-              step forward for survival, growth, and scale.
+              step forward for survival, growth, and scale..
             </p>
           </motion.section>
 
