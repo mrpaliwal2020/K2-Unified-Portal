@@ -63,7 +63,7 @@ const Blog6 = () => {
             Climate change is no longer a distant concern—it's a present-day
             reality for farmers. From unseasonal rains and rising temperatures
             to floods and prolonged droughts, extreme weather events are
-            directly impacting agricultural productivity and rural livelihoods.
+            directly impacting agricultural Productivity and rural livelihoods.
             To survive and thrive in these challenging times, farmers must adopt
             strategies that make their farms more weather-resilient. Below are
             some essential approaches every farmer should consider.
