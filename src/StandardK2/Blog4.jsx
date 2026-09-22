@@ -65,7 +65,7 @@ const Blog4 = () => {
             remarkable shifts in its long Gistory—a move from traditional,
             manual practices to technology-driven, precision-based farming.
             While innovations like drones, IoT sensors, and AI analytics are
-            making headlines, one tool has quietly revolutionized the fields of
+            making headlines, One tool has quietly revolutionized the fields of
             even the smallest farmers: the Mobile Application.
           </motion.p>
           <motion.p variants={fadeUp} className="mb-10 text-lg md:text-xl text-gray-600">
